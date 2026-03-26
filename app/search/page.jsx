@@ -1,7 +1,7 @@
 // app/search/page.jsx
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Header from "@/components/Header";
@@ -184,7 +184,7 @@ function PressResult({ result }) {
 
 function MediaResult({ result }) {
   return (
-    <div onClick={() => {}} className="block group cursor-pointer">
+    <div className="block group cursor-pointer">
       <div className="border border-[#d4c8b4] bg-[#faf6ee] p-5 hover:bg-white hover:shadow-md transition-all result-item">
         <div className="flex items-start justify-between flex-wrap gap-2 mb-3">
           <div className="flex items-center gap-2">
@@ -211,8 +211,32 @@ function MediaResult({ result }) {
   );
 }
 
-/* ── MAIN SEARCH PAGE ── */
-export default function SearchPage() {
+/* ── LOADING COMPONENT ── */
+function SearchLoading() {
+  return (
+    <div className="min-h-screen bg-[#f5f0e8]">
+      <Header />
+      <div className="bg-[#1e2d4a] border-b-4 border-[#b8974a]">
+        <div className="max-w-6xl mx-auto px-6 py-12">
+          <div className="h-8 w-32 bg-[#3a4e6a] animate-pulse mb-4" />
+          <div className="h-16 w-96 bg-[#2a3a54] animate-pulse mb-6" />
+          <div className="h-14 w-full max-w-2xl bg-[#2a3a54] animate-pulse" />
+        </div>
+      </div>
+      <div className="max-w-6xl mx-auto px-6 py-12">
+        <div className="space-y-4">
+          <div className="h-8 w-48 bg-[#e4ddd0] animate-pulse" />
+          <div className="h-32 bg-[#faf6ee] animate-pulse rounded" />
+          <div className="h-32 bg-[#faf6ee] animate-pulse rounded" />
+        </div>
+      </div>
+      <Footer />
+    </div>
+  );
+}
+
+/* ── SEARCH CONTENT COMPONENT ── */
+function SearchContent() {
   const searchParams = useSearchParams();
   const query = searchParams.get("q") || "";
   const [activeCategory, setActiveCategory] = useState("all");
@@ -301,10 +325,7 @@ export default function SearchPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f5f0e8]">
-      <FontStyle />
-      <Header />
-
+    <>
       <div className="bg-[#1e2d4a] border-b-4 border-[#b8974a]">
         <div className="max-w-6xl mx-auto px-6 py-12">
           <p className="font-mono-dm text-xs tracking-[0.16em] text-[#3a4e6a] uppercase mb-4">
@@ -565,7 +586,19 @@ export default function SearchPage() {
           </div>
         )}
       </main>
+    </>
+  );
+}
 
+/* ── MAIN SEARCH PAGE WITH SUSPENSE ── */
+export default function SearchPage() {
+  return (
+    <div className="min-h-screen bg-[#f5f0e8]">
+      <FontStyle />
+      <Header />
+      <Suspense fallback={<SearchLoading />}>
+        <SearchContent />
+      </Suspense>
       <Footer />
     </div>
   );
