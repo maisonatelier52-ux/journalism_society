@@ -1,0 +1,355 @@
+// app/document-room/page.jsx
+"use client";
+
+import { useState, useMemo } from "react";
+import Link from "next/link";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+
+/* ── GOOGLE FONTS (consistent with dockets) ── */
+const FontStyle = () => (
+  <style>{`
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400;1,700&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=DM+Mono:wght@400;500&display=swap');
+    html { font-family: 'EB Garamond', Georgia, serif; }
+    .font-playfair { font-family: 'Playfair Display', Georgia, serif; }
+    .font-garamond { font-family: 'EB Garamond', Georgia, serif; }
+    .font-mono-dm { font-family: 'DM Mono', monospace; }
+    .document-row:hover { background-color: #ede8dc; }
+    .document-row:hover .download-arrow { opacity: 1; transform: translateX(4px); }
+    .download-arrow { opacity: 0; transition: opacity 0.2s, transform 0.2s; }
+    @media (max-width: 640px) {
+      .download-arrow { opacity: 1; }
+    }
+    input[type="text"]::placeholder { color: #9a8870; font-style: italic; }
+    input[type="text"]:focus { outline: none; }
+  `}</style>
+);
+
+/* ── SAMPLE DATA (documents) ── */
+const ALL_DOCUMENTS = [
+  {
+    id: "DOC-001",
+    title: "Healthcare Providers Alliance — Full Response Docket (JS-2026-003)",
+    type: "Response Docket",
+    date: "2026-03-22",
+    fileUrl: "/documents/js-2026-003-full-docket.pdf",
+    checksum: "sha256:3f8a9b2c...e4d5",
+    preview: "Full response including exhibits, legal review, and regulatory correspondence."
+  },
+  {
+    id: "DOC-002",
+    title: "Kerala Clinical Establishments Act — 2012 Amendment (Full Text)",
+    type: "Regulatory Document",
+    date: "2024-01-15",
+    fileUrl: "/documents/kerala-clinical-act-amendment.pdf",
+    checksum: "sha256:7d2f1a8e...b9c3",
+    preview: "Official government gazette notification of the 2012 amendment to the Kerala Clinical Establishments Act."
+  },
+  {
+    id: "DOC-003",
+    title: "NABH Standard Rate Card — Diagnostic Procedures, 2024 Edition",
+    type: "Benchmark",
+    date: "2024-03-10",
+    fileUrl: "/documents/nabh-rate-card-2024.pdf",
+    checksum: "sha256:1e4f6a2b...c8d9",
+    preview: "Standard reference rates for diagnostic procedures as published by NABH."
+  },
+  {
+    id: "DOC-004",
+    title: "HPA Kerala Chapter — Membership Register (Redacted)",
+    type: "Institutional Record",
+    date: "2025-12-01",
+    fileUrl: "/documents/hpa-membership-register.pdf",
+    checksum: "sha256:5a8c3b2d...f1e0",
+    preview: "Redacted membership list of the HPA Kerala Chapter as of December 2025."
+  },
+  {
+    id: "DOC-005",
+    title: "Kerala Health Dept. Show-Cause Notice to HPA (17 March 2026)",
+    type: "Regulatory Document",
+    date: "2026-03-17",
+    fileUrl: "/documents/health-dept-notice.pdf",
+    checksum: "sha256:9d4c2f6e...a7b8",
+    preview: "Official show-cause notice issued by the Kerala Health Department to HPA Kerala Chapter."
+  },
+  {
+    id: "DOC-006",
+    title: "Independent Legal Review — Krishnaswamy & Associates (HPA Response)",
+    type: "Legal Analysis",
+    date: "2026-03-21",
+    fileUrl: "/documents/legal-review-krishnaswamy.pdf",
+    checksum: "sha256:2b7e5a1c...d3f4",
+    preview: "Independent legal review commissioned by HPA regarding the billing circular cited in the article."
+  },
+  {
+    id: "DOC-007",
+    title: "The Malabar Record — 'Inside the Billing Cartel' (15 March 2026)",
+    type: "Original Claim",
+    date: "2026-03-15",
+    fileUrl: "/documents/malabar-record-article.pdf",
+    checksum: "sha256:4c8a2f9b...e6d7",
+    preview: "Full text of the investigative article that prompted the HPA response."
+  },
+  {
+    id: "DOC-008",
+    title: "Patient Feedback Survey Results — HPA Member Hospitals (2024–2025)",
+    type: "Evidence",
+    date: "2026-02-28",
+    fileUrl: "/documents/patient-feedback-survey.pdf",
+    checksum: "sha256:6a1e4c8d...b2f3",
+    preview: "Aggregate results of patient satisfaction and billing transparency surveys."
+  },
+  {
+    id: "DOC-009",
+    title: "Journalism Society — Right of Reply Guidelines",
+    type: "Policy Document",
+    date: "2025-06-10",
+    fileUrl: "/documents/ror-guidelines.pdf",
+    checksum: "sha256:0f3a7c2e...d9b1",
+    preview: "Official guidelines for submitting a Right of Reply docket."
+  },
+  {
+    id: "DOC-010",
+    title: "Kerala STC Safety Inspection Records (2025)",
+    type: "Evidence",
+    date: "2025-11-20",
+    fileUrl: "/documents/stc-inspection-records.pdf",
+    checksum: "sha256:8b4d2f1e...c7a9",
+    preview: "Inspection records from the Kerala State Transport Corporation's 2025 safety audit."
+  },
+  {
+    id: "DOC-011",
+    title: "Calicut University Admissions Data (Anonymised) — 2024-2025",
+    type: "Institutional Record",
+    date: "2025-08-15",
+    fileUrl: "/documents/university-admissions-data.pdf",
+    checksum: "sha256:3c7a5e2b...f8d4",
+    preview: "Anonymised admission data for the 2024-2025 academic year."
+  },
+  {
+    id: "DOC-012",
+    title: "MLA Asset Declaration — Beypore Constituency (2025)",
+    type: "Public Record",
+    date: "2025-12-20",
+    fileUrl: "/documents/mla-asset-declaration.pdf",
+    checksum: "sha256:7e2a1c5d...b6f9",
+    preview: "Annual asset declaration filed by the elected representative."
+  },
+];
+
+const TYPE_LIST = ["All", ...Array.from(new Set(ALL_DOCUMENTS.map(d => d.type)))];
+
+function fmtDate(iso) {
+  return new Date(iso).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
+}
+
+/* ── COMPONENT ── */
+export default function DocumentRoomPage() {
+  const [search, setSearch] = useState("");
+  const [typeFilter, setType] = useState("All");
+  const [sortBy, setSort] = useState("newest");
+
+  const filtered = useMemo(() => {
+    let l = [...ALL_DOCUMENTS];
+    if (search.trim()) {
+      const q = search.toLowerCase();
+      l = l.filter(d => d.title.toLowerCase().includes(q) || d.id.toLowerCase().includes(q));
+    }
+    if (typeFilter !== "All") l = l.filter(d => d.type === typeFilter);
+    l.sort((a, b) => sortBy === "newest" ? new Date(b.date) - new Date(a.date) : new Date(a.date) - new Date(b.date));
+    return l;
+  }, [search, typeFilter, sortBy]);
+
+  const counts = {
+    total: ALL_DOCUMENTS.length,
+    byType: ALL_DOCUMENTS.reduce((acc, d) => {
+      acc[d.type] = (acc[d.type] || 0) + 1;
+      return acc;
+    }, {})
+  };
+
+  const clearAll = () => { setSearch(""); setType("All"); };
+
+  return (
+    <div className="min-h-screen" style={{ background: "#f5f0e8" }}>
+      <FontStyle />
+
+      {/* ─── TOP NAV BAR (same as dockets) ─── */}
+    <Header/>
+
+      {/* ── MAIN CONTENT ── */}
+      <main className="max-w-6xl mx-auto px-6 pb-20">
+
+        {/* ── PAGE HEADER ── */}
+        <div className="pt-10 pb-8">
+          <p className="font-mono-dm text-xs tracking-widest uppercase mb-4" style={{ color: "#9a8870" }}>
+            Public Record <span className="mx-2 opacity-40">/</span> Document Room
+          </p>
+          <div className="flex items-end justify-between flex-wrap gap-4 mb-8">
+            <h1 className="font-playfair leading-none">
+              <span className="block font-black text-5xl md:text-6xl" style={{ color: "#1e2d4a" }}>Document</span>
+              <span className="block font-normal italic text-5xl md:text-6xl" style={{ color: "#b8974a" }}>Room</span>
+            </h1>
+            <p className="font-garamond italic text-base max-w-xs leading-relaxed" style={{ color: "#7a6e5e" }}>
+              Full public records, exhibits, and supporting documents from every docket.
+            </p>
+          </div>
+
+          {/* ── STAT STRIP ── */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-0 border-b border-[#d4c8b4]">
+            {[
+              { label: "Total Documents", val: counts.total, accent: "#1e2d4a" },
+              { label: "Response Dockets", val: counts.byType["Response Docket"] || 0, accent: "#2d6a4f" },
+              { label: "Regulatory Docs", val: (counts.byType["Regulatory Document"] || 0) + (counts.byType["Benchmark"] || 0), accent: "#b8974a" },
+              { label: "Evidence & Records", val: (counts.byType["Evidence"] || 0) + (counts.byType["Institutional Record"] || 0) + (counts.byType["Public Record"] || 0), accent: "#7a6e5e" },
+            ].map(s => (
+              <div key={s.label} className="pr-8 pb-6">
+                <div className="mb-3 h-0.5" style={{ background: s.accent }} />
+                <div className="font-playfair font-black text-5xl leading-none" style={{ color: s.accent }}>{s.val}</div>
+                <div className="font-mono-dm text-xs tracking-widest uppercase mt-2" style={{ color: "#9a8870" }}>{s.label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* ── FILTER / SEARCH BAR ── */}
+        <div className="mb-2" style={{ background: "#ede8dc", border: "1px solid #d4c8b4", padding: "14px 20px" }}>
+          <div className="flex items-center gap-4 flex-wrap">
+            {/* Search input */}
+            <div className="flex items-center gap-2 flex-1 min-w-52" style={{ borderBottom: "1.5px solid #1e2d4a" }}>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#9a8870" strokeWidth="2" className="flex-shrink-0">
+                <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+              </svg>
+              <input
+                type="text"
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                placeholder="Search by title or document ID…"
+                className="bg-transparent w-full py-1.5 font-garamond text-sm"
+                style={{ color: "#1e2d4a" }}
+              />
+              {search && (
+                <button onClick={() => setSearch("")} className="text-[#9a8870] hover:text-[#1e2d4a] text-lg leading-none">×</button>
+              )}
+            </div>
+
+            <div className="hidden md:block w-px h-6 bg-[#c4b89a]" />
+
+            {/* Type filter chips */}
+            <div className="flex items-center gap-1 flex-wrap">
+              <span className="font-mono-dm text-xs tracking-widest uppercase mr-1" style={{ color: "#9a8870" }}>Type</span>
+              {TYPE_LIST.map(t => (
+                <button
+                  key={t}
+                  onClick={() => setType(t)}
+                  className="font-mono-dm text-xs tracking-wider uppercase px-3 py-1 border transition-all"
+                  style={typeFilter === t
+                    ? { background: "#1e2d4a", color: "#f5f0e8", borderColor: "#1e2d4a" }
+                    : { background: "transparent", color: "#7a6e5e", borderColor: "#c4b89a" }
+                  }
+                >
+                  {t}
+                </button>
+              ))}
+            </div>
+
+            <div className="hidden md:block w-px h-6 bg-[#c4b89a]" />
+
+            {/* Sort order + reset */}
+            <div className="flex items-center gap-3 ml-auto">
+              <div className="flex items-center gap-1 font-mono-dm text-xs uppercase tracking-wider" style={{ color: "#9a8870" }}>
+                <span>Sort:</span>
+                <button onClick={() => setSort("newest")} className={`px-1.5 transition-colors ${sortBy === "newest" ? "text-[#1e2d4a] font-medium" : "hover:text-[#1e2d4a]"}`}>Latest</button>
+                <span className="opacity-30">·</span>
+                <button onClick={() => setSort("oldest")} className={`px-1.5 transition-colors ${sortBy === "oldest" ? "text-[#1e2d4a] font-medium" : "hover:text-[#1e2d4a]"}`}>Oldest</button>
+              </div>
+              {(search || typeFilter !== "All") && (
+                <button
+                  onClick={clearAll}
+                  className="font-mono-dm text-xs tracking-wider uppercase px-3 py-1 border border-dashed transition-colors"
+                  style={{ color: "#b8974a", borderColor: "#b8974a" }}
+                >
+                  Reset
+                </button>
+              )}
+              <span className="font-mono-dm text-xs uppercase tracking-wider" style={{ color: "#9a8870" }}>
+                {filtered.length} of {ALL_DOCUMENTS.length}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* ── DOCUMENT LIST (4 fields: Title, Type, Date, Open/Download) ── */}
+        {filtered.length === 0 ? (
+          <div className="text-center py-20 border border-[#d4c8b4]">
+            <p className="font-playfair italic text-2xl mb-2" style={{ color: "#c4b89a" }}>No documents found</p>
+            <p className="font-garamond text-base" style={{ color: "#9a8870" }}>Try adjusting your filters.</p>
+          </div>
+        ) : (
+          <div className="mt-4">
+            {/* Header */}
+            <div className="grid grid-cols-12 gap-4 pb-3 border-b-2 mb-0" style={{ borderColor: "#1e2d4a" }}>
+              <span className="col-span-6 font-mono-dm text-xs tracking-widest uppercase" style={{ color: "#9a8870" }}>Document Title</span>
+              <span className="col-span-2 font-mono-dm text-xs tracking-widest uppercase" style={{ color: "#9a8870" }}>Type</span>
+              <span className="col-span-2 font-mono-dm text-xs tracking-widest uppercase" style={{ color: "#9a8870" }}>Date</span>
+              <span className="col-span-2 font-mono-dm text-xs tracking-widest uppercase text-right" style={{ color: "#9a8870" }}>Action</span>
+            </div>
+
+            {filtered.map(doc => (
+              <Link
+                key={doc.id}
+                href={`/document-room/${doc.id}`}
+                className="document-row grid grid-cols-12 gap-4 py-4 border-b cursor-pointer transition-colors no-underline"
+                style={{ borderColor: "#d4c8b4", textDecoration: "none", color: "inherit" }}
+              >
+                {/* Title */}
+                <div className="col-span-6">
+                  <div className="font-playfair font-bold text-[10px] md:text-base leading-snug" style={{ color: "#1e2d4a" }}>{doc.title}</div>
+                  <div className="font-mono-dm text-[8px] md:text-xs mt-1" style={{ color: "#9a8870" }}>{doc.id}</div>
+                </div>
+                {/* Type badge */}
+                <div className="col-span-2 flex items-center">
+                  <span className="font-mono-dm text-[7px] md:text-xs tracking-wider uppercase px-1 md:px-2 py-0.5 border" style={{ color: "#7a6e5e", borderColor: "#c4b89a" }}>
+                    {doc.type}
+                  </span>
+                </div>
+                {/* Date */}
+                <div className="col-span-2 flex items-center">
+                  <span className="font-mono-dm text-[7px] md:text-xs" style={{ color: "#9a8870" }}>{fmtDate(doc.date)}</span>
+                </div>
+                {/* Open/Download */}
+                <div className="col-span-2 flex items-center justify-end gap-3">
+                  <span className="font-mono-dm text-[7px] md:text-xs uppercase tracking-wider px-1 md:px-2 py-1" style={{ color: "#1e2d4a", border: "1px solid #c4b89a", background: "transparent" }}>
+                    Open
+                  </span>
+                  <span className="download-arrow" style={{ color: "#b8974a" }}>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                      <polyline points="7 10 12 15 17 10" />
+                      <line x1="12" y1="15" x2="12" y2="3" />
+                    </svg>
+                  </span>
+                </div>
+              </Link>
+            ))}
+          </div>
+        )}
+
+        {/* ── BOTTOM CTA ── */}
+        <div className="mt-16 pt-8 flex items-center justify-between flex-wrap gap-5 border-t-2" style={{ borderColor: "#1e2d4a" }}>
+          <div>
+            <div className="font-playfair font-bold text-xl mb-1" style={{ color: "#1e2d4a" }}>Missing a document?</div>
+            <p className="font-garamond italic text-base" style={{ color: "#9a8870" }}>Submit a Right of Reply and we'll add all exhibits to the Document Room.</p>
+          </div>
+          <Link href="#" className="font-mono-dm text-xs tracking-widest uppercase px-6 py-3.5 flex items-center gap-2.5 text-[#f5f0e8] hover:opacity-90 transition-opacity" style={{ background: "#1e2d4a" }}>
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 5v14M5 12h14"/></svg>
+            Submit a Reply
+          </Link>
+        </div>
+      </main>
+
+      {/* ── FOOTER ── */}
+     <Footer/>
+    </div>
+  );
+}
