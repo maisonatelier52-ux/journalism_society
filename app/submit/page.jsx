@@ -1,6 +1,8 @@
+
+// // app/submit/page.jsx
 // "use client";
 
-// import { useState, useRef } from "react";
+// import { useState, useRef, useCallback } from "react";
 // import Link from "next/link";
 // import Header from "@/components/Header";
 // import Footer from "@/components/Footer";
@@ -201,8 +203,8 @@
 // export default function SubmitReplyPage() {
 //   const [step, setStep]         = useState(1);
 //   const [form, setForm]         = useState(INITIAL);
-//   const [files, setFiles]       = useState([]);        // uploaded docs
-//   const [timeline, setTimeline] = useState([          // timeline entries
+//   const [files, setFiles]       = useState([]);
+//   const [timeline, setTimeline] = useState([
 //     { date: "", event: "", detail: "", type: "Original Claim Published" },
 //   ]);
 //   const [dragging, setDragging] = useState(false);
@@ -210,12 +212,85 @@
 //   const [errors, setErrors]     = useState({});
 //   const fileInputRef            = useRef(null);
 
-//   /* helpers */
-//   const set = (k, v) => setForm(f => ({ ...f, [k]: v }));
-//   const totalSteps = STEPS.length;
+//   /* helpers - FIXED: Use functional updates */
+//   const set = useCallback((k, v) => {
+//     setForm(f => ({ ...f, [k]: v }));
+//   }, []);
 
-//   /* field validation per step */
-//   const validate = (s) => {
+//   /* FIXED: Generic field change handler */
+//   const handleFieldChange = useCallback((field, value) => {
+//     set(field, value);
+//     if (errors[field]) {
+//       setErrors(prev => ({ ...prev, [field]: undefined }));
+//     }
+//   }, [set, errors]);
+
+//   /* FIXED: Specific handlers for each field */
+//   const handleRespondentNameChange = useCallback((e) => {
+//     handleFieldChange("respondentName", e.target.value);
+//   }, [handleFieldChange]);
+
+//   const handleRespondentTypeChange = useCallback((e) => {
+//     handleFieldChange("respondentType", e.target.value);
+//   }, [handleFieldChange]);
+
+//   const handleContactEmailChange = useCallback((e) => {
+//     handleFieldChange("contactEmail", e.target.value);
+//   }, [handleFieldChange]);
+
+//   const handleContactPhoneChange = useCallback((e) => {
+//     handleFieldChange("contactPhone", e.target.value);
+//   }, [handleFieldChange]);
+
+//   const handleRespondentRoleChange = useCallback((e) => {
+//     handleFieldChange("respondentRole", e.target.value);
+//   }, [handleFieldChange]);
+
+//   const handleClaimSourceChange = useCallback((e) => {
+//     handleFieldChange("claimSource", e.target.value);
+//   }, [handleFieldChange]);
+
+//   const handleClaimUrlChange = useCallback((e) => {
+//     handleFieldChange("claimUrl", e.target.value);
+//   }, [handleFieldChange]);
+
+//   const handleClaimDateChange = useCallback((e) => {
+//     handleFieldChange("claimDate", e.target.value);
+//   }, [handleFieldChange]);
+
+//   const handleClaimSummaryChange = useCallback((e) => {
+//     handleFieldChange("claimSummary", e.target.value);
+//   }, [handleFieldChange]);
+
+//   const handleClaimCategoryChange = useCallback((e) => {
+//     handleFieldChange("claimCategory", e.target.value);
+//   }, [handleFieldChange]);
+
+//   const handleResponseTitleChange = useCallback((e) => {
+//     handleFieldChange("responseTitle", e.target.value);
+//   }, [handleFieldChange]);
+
+//   const handleResponseBodyChange = useCallback((e) => {
+//     handleFieldChange("responseBody", e.target.value);
+//   }, [handleFieldChange]);
+
+//   const handleResponseTypeChange = useCallback((e) => {
+//     handleFieldChange("responseType", e.target.value);
+//   }, [handleFieldChange]);
+
+//   const handleRequestedActionChange = useCallback((e) => {
+//     handleFieldChange("requestedAction", e.target.value);
+//   }, [handleFieldChange]);
+
+//   const handleConsentChange = useCallback((key) => {
+//     setForm(f => ({ ...f, [key]: !f[key] }));
+//     if (errors[key]) {
+//       setErrors(prev => ({ ...prev, [key]: undefined }));
+//     }
+//   }, [errors]);
+
+//   /* validation per step */
+//   const validate = useCallback((s) => {
 //     const e = {};
 //     if (s === 1) {
 //       if (!form.respondentName.trim()) e.respondentName = "Name or organisation is required.";
@@ -238,38 +313,117 @@
 //       if (!form.consentPublish)  e.consentPublish  = "You must consent to publication.";
 //     }
 //     return e;
-//   };
+//   }, [form]);
 
-//   const next = () => {
+//   const next = useCallback(() => {
 //     const e = validate(step);
 //     if (Object.keys(e).length) { setErrors(e); return; }
 //     setErrors({});
-//     if (step < totalSteps) setStep(s => s + 1);
+//     if (step < STEPS.length) setStep(s => s + 1);
 //     else handleSubmit();
-//   };
+//   }, [step, validate]);
 
-//   const back = () => { setErrors({}); setStep(s => Math.max(1, s - 1)); };
+//   const back = useCallback(() => { setErrors({}); setStep(s => Math.max(1, s - 1)); }, []);
 
 //   /* file handling */
-//   const addFiles = (incoming) => {
+//   const addFiles = useCallback((incoming) => {
 //     const arr = Array.from(incoming).map(f => ({
 //       name: f.name, size: f.size, type: f.type, file: f,
 //       id: Math.random().toString(36).slice(2),
 //     }));
 //     setFiles(prev => [...prev, ...arr]);
-//   };
-//   const removeFile = (id) => setFiles(f => f.filter(x => x.id !== id));
+//   }, []);
+
+//   const removeFile = useCallback((id) => setFiles(f => f.filter(x => x.id !== id)), []);
 
 //   /* timeline */
-//   const addTL   = () => setTimeline(t => [...t, { date: "", event: "", detail: "", type: "Response Issued" }]);
-//   const removeTL = (i) => setTimeline(t => t.filter((_, idx) => idx !== i));
-//   const setTL   = (i, k, v) => setTimeline(t => t.map((e, idx) => idx === i ? { ...e, [k]: v } : e));
+//   const addTL = useCallback(() => setTimeline(t => [...t, { date: "", event: "", detail: "", type: "Response Issued" }]), []);
+//   const removeTL = useCallback((i) => setTimeline(t => t.filter((_, idx) => idx !== i)), []);
+//   const setTL = useCallback((i, k, v) => setTimeline(t => t.map((e, idx) => idx === i ? { ...e, [k]: v } : e)), []);
 
 //   /* submit */
-//   const handleSubmit = () => setSubmitted(true);
+//   const handleSubmit = useCallback(() => setSubmitted(true), []);
 
-//   const wordCount = (text) => text.trim() ? text.trim().split(/\s+/).length : 0;
-//   const fmtBytes  = (b) => b < 1024*1024 ? `${(b/1024).toFixed(0)} KB` : `${(b/1024/1024).toFixed(1)} MB`;
+//   const wordCount = useCallback((text) => text.trim() ? text.trim().split(/\s+/).length : 0, []);
+//   const fmtBytes  = useCallback((b) => b < 1024*1024 ? `${(b/1024).toFixed(0)} KB` : `${(b/1024/1024).toFixed(1)} MB`, []);
+
+//   /* ── LABEL COMPONENT ── */
+//   const Label = useCallback(({ children, required }) => (
+//     <label className="font-mono-dm text-xs tracking-widest uppercase block mb-2" style={{ color: "#9a8870" }}>
+//       {children}{required && <span style={{ color: "#b8974a", marginLeft: 3 }}>*</span>}
+//     </label>
+//   ), []);
+
+//   const Err = useCallback(({ k }) => errors[k] ? (
+//     <p className="font-mono-dm text-xs mt-1.5" style={{ color: "#b8190c" }}>{errors[k]}</p>
+//   ) : null, [errors]);
+
+//   const Field = useCallback(({ children, className = "" }) => (
+//     <div className={`mb-6 ${className}`}>{children}</div>
+//   ), []);
+
+//   /* ── SECTION HEADER ── */
+//   const SectionHead = useCallback(({ num, title, desc }) => (
+//     <div className="mb-8">
+//       <div className="flex items-center gap-3 mb-3">
+//         <span className="font-playfair font-black text-4xl leading-none" style={{ color: "#ede8dc" }}>{String(num).padStart(2, "0")}</span>
+//         <div className="w-px h-8 bg-[#d4c8b4]" />
+//         <h2 className="font-playfair font-bold text-2xl leading-tight" style={{ color: "#1e2d4a" }}>{title}</h2>
+//       </div>
+//       {desc && <p className="font-garamond italic text-base" style={{ color: "#9a8870" }}>{desc}</p>}
+//     </div>
+//   ), []);
+
+//   /* ── STEP INDICATOR ── */
+//   const StepBar = useCallback(() => (
+//     <div className="flex items-start gap-0 mb-10">
+//       {STEPS.map((s, i) => (
+//         <div key={s.num} className="flex items-center" style={{ flex: i < STEPS.length - 1 ? "1 1 0" : "0 0 auto" }}>
+//           <div className="flex flex-col items-center gap-1.5">
+//             <button
+//               onClick={() => { if (s.num < step) { setErrors({}); setStep(s.num); } }}
+//               className="w-9 h-9 rounded-full flex items-center justify-center font-mono-dm text-xs font-medium transition-all"
+//               style={
+//                 step === s.num
+//                   ? { background: "#1e2d4a", color: "#f5f0e8", boxShadow: "0 0 0 3px rgba(30,45,74,0.15)" }
+//                   : s.num < step
+//                   ? { background: "#b8974a", color: "#f5f0e8" }
+//                   : { background: "#ede8dc", color: "#9a8870", border: "1px solid #d4c8b4" }
+//               }
+//             >
+//               {s.num < step
+//                 ? <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+//                 : s.num
+//               }
+//             </button>
+//             <span className="step-label font-mono-dm text-center" style={{ fontSize: "0.52rem", letterSpacing: "0.1em", textTransform: "uppercase", color: step === s.num ? "#1e2d4a" : "#9a8870", fontWeight: step === s.num ? "500" : "400" }}>
+//               {s.label}
+//             </span>
+//           </div>
+//           {i < STEPS.length - 1 && (
+//             <div className="step-connector" style={{ flex: 1, height: 1, background: s.num < step ? "#b8974a" : "#d4c8b4", marginBottom: 20 }} />
+//           )}
+//         </div>
+//       ))}
+//     </div>
+//   ), [step]);
+
+//   /* ── NAVIGATION BUTTONS ── */
+//   const NavButtons = useCallback(({ nextLabel = "Continue →" }) => (
+//     <div className="flex items-center justify-between pt-8 mt-8 border-t border-[#d4c8b4]">
+//       {step > 1
+//         ? <button onClick={back} className="font-mono-dm text-xs tracking-widest uppercase flex items-center gap-2 px-5 py-2.5 border-2 transition-colors" style={{ borderColor: "#c4b89a", color: "#7a6e5e" }}
+//             onMouseEnter={e => { e.currentTarget.style.background = "#ede8dc"; }}
+//             onMouseLeave={e => { e.currentTarget.style.background = "transparent"; }}>
+//             ← Back
+//           </button>
+//         : <div />
+//       }
+//       <button onClick={next} className="font-mono-dm text-xs tracking-widest uppercase flex items-center gap-2 px-6 py-2.5 transition-opacity hover:opacity-90" style={{ background: "#1e2d4a", color: "#f5f0e8" }}>
+//         {nextLabel}
+//       </button>
+//     </div>
+//   ), [step, back, next]);
 
 //   /* ── SUCCESS PAGE ── */
 //   if (submitted) {
@@ -310,84 +464,6 @@
 //     );
 //   }
 
-//   /* ── LABEL COMPONENT ── */
-//   const Label = ({ children, required }) => (
-//     <label className="font-mono-dm text-xs tracking-widest uppercase block mb-2" style={{ color: "#9a8870" }}>
-//       {children}{required && <span style={{ color: "#b8974a", marginLeft: 3 }}>*</span>}
-//     </label>
-//   );
-
-//   const Err = ({ k }) => errors[k] ? (
-//     <p className="font-mono-dm text-xs mt-1.5" style={{ color: "#b8190c" }}>{errors[k]}</p>
-//   ) : null;
-
-//   const Field = ({ children, className = "" }) => (
-//     <div className={`mb-6 ${className}`}>{children}</div>
-//   );
-
-//   /* ── STEP INDICATOR ── */
-//   const StepBar = () => (
-//     <div className="flex items-start gap-0 mb-10">
-//       {STEPS.map((s, i) => (
-//         <div key={s.num} className="flex items-center" style={{ flex: i < STEPS.length - 1 ? "1 1 0" : "0 0 auto" }}>
-//           <div className="flex flex-col items-center gap-1.5">
-//             <button
-//               onClick={() => { if (s.num < step) { setErrors({}); setStep(s.num); } }}
-//               className="w-9 h-9 rounded-full flex items-center justify-center font-mono-dm text-xs font-medium transition-all"
-//               style={
-//                 step === s.num
-//                   ? { background: "#1e2d4a", color: "#f5f0e8", boxShadow: "0 0 0 3px rgba(30,45,74,0.15)" }
-//                   : s.num < step
-//                   ? { background: "#b8974a", color: "#f5f0e8" }
-//                   : { background: "#ede8dc", color: "#9a8870", border: "1px solid #d4c8b4" }
-//               }
-//             >
-//               {s.num < step
-//                 ? <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-//                 : s.num
-//               }
-//             </button>
-//             <span className="step-label font-mono-dm text-center" style={{ fontSize: "0.52rem", letterSpacing: "0.1em", textTransform: "uppercase", color: step === s.num ? "#1e2d4a" : "#9a8870", fontWeight: step === s.num ? "500" : "400" }}>
-//               {s.label}
-//             </span>
-//           </div>
-//           {i < STEPS.length - 1 && (
-//             <div className="step-connector" style={{ flex: 1, height: 1, background: s.num < step ? "#b8974a" : "#d4c8b4", marginBottom: 20 }} />
-//           )}
-//         </div>
-//       ))}
-//     </div>
-//   );
-
-//   /* ── NAVIGATION BUTTONS ── */
-//   const NavButtons = ({ nextLabel = "Continue →" }) => (
-//     <div className="flex items-center justify-between pt-8 mt-8 border-t border-[#d4c8b4]">
-//       {step > 1
-//         ? <button onClick={back} className="font-mono-dm text-xs tracking-widest uppercase flex items-center gap-2 px-5 py-2.5 border-2 transition-colors" style={{ borderColor: "#c4b89a", color: "#7a6e5e" }}
-//             onMouseEnter={e => { e.currentTarget.style.background = "#ede8dc"; }}
-//             onMouseLeave={e => { e.currentTarget.style.background = "transparent"; }}>
-//             ← Back
-//           </button>
-//         : <div />
-//       }
-//       <button onClick={next} className="font-mono-dm text-xs tracking-widest uppercase flex items-center gap-2 px-6 py-2.5 transition-opacity hover:opacity-90" style={{ background: "#1e2d4a", color: "#f5f0e8" }}>
-//         {nextLabel}
-//       </button>
-//     </div>
-//   );
-
-//   /* ── SECTION HEADER ── */
-//   const SectionHead = ({ num, title, desc }) => (
-//     <div className="mb-8">
-//       <div className="flex items-center gap-3 mb-3">
-//         <span className="font-playfair font-black text-4xl leading-none" style={{ color: "#ede8dc" }}>{String(num).padStart(2, "0")}</span>
-//         <div className="w-px h-8 bg-[#d4c8b4]" />
-//         <h2 className="font-playfair font-bold text-2xl leading-tight" style={{ color: "#1e2d4a" }}>{title}</h2>
-//       </div>
-//       {desc && <p className="font-garamond italic text-base" style={{ color: "#9a8870" }}>{desc}</p>}
-//     </div>
-//   );
-
 //   return (
 //     <div className="min-h-screen" style={{ background: "#f5f0e8" }}>
 //       <FontStyle />
@@ -405,7 +481,6 @@
 //           <p className="font-garamond text-lg leading-relaxed max-w-xl" style={{ color: "#8a9bb8" }}>
 //             File your documented response for permanent public record. All submissions undergo editorial review before publication.
 //           </p>
-//           {/* Trust badges */}
 //           <div className="flex flex-wrap gap-5 mt-6 pt-6 border-t border-white/10">
 //             {[
 //               ["🔒", "Confidential review process"],
@@ -437,15 +512,23 @@
 
 //                 <Field>
 //                   <Label required>Name or Organisation</Label>
-//                   <input className="field-input" value={form.respondentName} onChange={e => set("respondentName", e.target.value)}
-//                     placeholder="e.g. HPA Kerala Chapter or Dr. Rajan Menon" />
+//                   <input 
+//                     className="field-input" 
+//                     value={form.respondentName} 
+//                     onChange={handleRespondentNameChange}
+//                     placeholder="e.g. HPA Kerala Chapter or Dr. Rajan Menon" 
+//                   />
 //                   <Err k="respondentName" />
 //                 </Field>
 
 //                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
 //                   <Field className="mb-0">
 //                     <Label required>Respondent Type</Label>
-//                     <select className="field-select" value={form.respondentType} onChange={e => set("respondentType", e.target.value)}>
+//                     <select 
+//                       className="field-select" 
+//                       value={form.respondentType} 
+//                       onChange={handleRespondentTypeChange}
+//                     >
 //                       <option value="">Select type…</option>
 //                       {RESPONDENT_TYPES.map(t => <option key={t}>{t}</option>)}
 //                     </select>
@@ -453,22 +536,36 @@
 //                   </Field>
 //                   <Field className="mb-0">
 //                     <Label>Role / Designation</Label>
-//                     <input className="field-input" value={form.respondentRole} onChange={e => set("respondentRole", e.target.value)}
-//                       placeholder="e.g. Secretary General" />
+//                     <input 
+//                       className="field-input" 
+//                       value={form.respondentRole} 
+//                       onChange={handleRespondentRoleChange}
+//                       placeholder="e.g. Secretary General" 
+//                     />
 //                   </Field>
 //                 </div>
 
 //                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
 //                   <Field className="mb-0">
 //                     <Label required>Contact Email</Label>
-//                     <input type="email" className="field-input" value={form.contactEmail} onChange={e => set("contactEmail", e.target.value)}
-//                       placeholder="your@email.com" />
+//                     <input 
+//                       type="email" 
+//                       className="field-input" 
+//                       value={form.contactEmail} 
+//                       onChange={handleContactEmailChange}
+//                       placeholder="your@email.com" 
+//                     />
 //                     <Err k="contactEmail" />
 //                   </Field>
 //                   <Field className="mb-0">
 //                     <Label>Contact Phone</Label>
-//                     <input type="tel" className="field-input" value={form.contactPhone} onChange={e => set("contactPhone", e.target.value)}
-//                       placeholder="+91 98765 43210" />
+//                     <input 
+//                       type="tel" 
+//                       className="field-input" 
+//                       value={form.contactPhone} 
+//                       onChange={handleContactPhoneChange}
+//                       placeholder="+91 98765 43210" 
+//                     />
 //                   </Field>
 //                 </div>
 
@@ -488,26 +585,44 @@
 //                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
 //                   <Field className="mb-0">
 //                     <Label required>Publication / Source Name</Label>
-//                     <input className="field-input" value={form.claimSource} onChange={e => set("claimSource", e.target.value)}
-//                       placeholder="e.g. The Malabar Record" />
+//                     <input 
+//                       className="field-input" 
+//                       value={form.claimSource} 
+//                       onChange={handleClaimSourceChange}
+//                       placeholder="e.g. The Malabar Record" 
+//                     />
 //                     <Err k="claimSource" />
 //                   </Field>
 //                   <Field className="mb-0">
 //                     <Label required>Date of Original Claim</Label>
-//                     <input type="date" className="field-input" value={form.claimDate} onChange={e => set("claimDate", e.target.value)} />
+//                     <input 
+//                       type="date" 
+//                       className="field-input" 
+//                       value={form.claimDate} 
+//                       onChange={handleClaimDateChange} 
+//                     />
 //                     <Err k="claimDate" />
 //                   </Field>
 //                 </div>
 
 //                 <Field>
 //                   <Label>URL of Original Article</Label>
-//                   <input type="url" className="field-input" value={form.claimUrl} onChange={e => set("claimUrl", e.target.value)}
-//                     placeholder="https://example.com/article" />
+//                   <input 
+//                     type="url" 
+//                     className="field-input" 
+//                     value={form.claimUrl} 
+//                     onChange={handleClaimUrlChange}
+//                     placeholder="https://example.com/article" 
+//                   />
 //                 </Field>
 
 //                 <Field>
 //                   <Label required>Docket Category</Label>
-//                   <select className="field-select" value={form.claimCategory} onChange={e => set("claimCategory", e.target.value)}>
+//                   <select 
+//                     className="field-select" 
+//                     value={form.claimCategory} 
+//                     onChange={handleClaimCategoryChange}
+//                   >
 //                     <option value="">Select category…</option>
 //                     {DOCKET_TYPES.map(t => <option key={t}>{t}</option>)}
 //                   </select>
@@ -515,8 +630,13 @@
 
 //                 <Field>
 //                   <Label required>Summary of the Claim</Label>
-//                   <textarea className="field-textarea" style={{ minHeight: 120 }} value={form.claimSummary} onChange={e => set("claimSummary", e.target.value)}
-//                     placeholder="Briefly describe the allegation, report, or claim you are responding to. What was stated? Where was it published? Who saw it?" />
+//                   <textarea 
+//                     className="field-textarea" 
+//                     style={{ minHeight: 120 }} 
+//                     value={form.claimSummary} 
+//                     onChange={handleClaimSummaryChange}
+//                     placeholder="Briefly describe the allegation, report, or claim you are responding to. What was stated? Where was it published? Who saw it?" 
+//                   />
 //                   <Err k="claimSummary" />
 //                   <p className="font-mono-dm text-xs mt-1.5" style={{ color: "#b8b0a0" }}>{wordCount(form.claimSummary)} words</p>
 //                 </Field>
@@ -532,14 +652,22 @@
 
 //                 <Field>
 //                   <Label required>Response Title</Label>
-//                   <input className="field-input" value={form.responseTitle} onChange={e => set("responseTitle", e.target.value)}
-//                     placeholder="e.g. Right of Reply: HPA on Alleged Billing Practices" />
+//                   <input 
+//                     className="field-input" 
+//                     value={form.responseTitle} 
+//                     onChange={handleResponseTitleChange}
+//                     placeholder="e.g. Right of Reply: HPA on Alleged Billing Practices" 
+//                   />
 //                   <Err k="responseTitle" />
 //                 </Field>
 
 //                 <Field>
 //                   <Label required>Type of Response</Label>
-//                   <select className="field-select" value={form.responseType} onChange={e => set("responseType", e.target.value)}>
+//                   <select 
+//                     className="field-select" 
+//                     value={form.responseType} 
+//                     onChange={handleResponseTypeChange}
+//                   >
 //                     <option value="">Select type…</option>
 //                     {["Full Rebuttal", "Partial Correction", "Factual Clarification", "Context and Background", "Legal Response"].map(t => <option key={t}>{t}</option>)}
 //                   </select>
@@ -550,8 +678,13 @@
 //                   <p className="font-garamond italic text-sm mb-2" style={{ color: "#9a8870" }}>
 //                     Write your complete, unedited response. This will be published verbatim. Use clear paragraphs and reference your exhibits where applicable.
 //                   </p>
-//                   <textarea className="field-textarea" style={{ minHeight: 280 }} value={form.responseBody} onChange={e => set("responseBody", e.target.value)}
-//                     placeholder="Begin your response here. Address each claim specifically. Reference any exhibits you are attaching, e.g. 'See Exhibit 3 for the full billing records.'&#10;&#10;Be thorough — this is your permanent public record." />
+//                   <textarea 
+//                     className="field-textarea" 
+//                     style={{ minHeight: 280 }} 
+//                     value={form.responseBody} 
+//                     onChange={handleResponseBodyChange}
+//                     placeholder="Begin your response here. Address each claim specifically. Reference any exhibits you are attaching, e.g. 'See Exhibit 3 for the full billing records.'&#10;&#10;Be thorough — this is your permanent public record." 
+//                   />
 //                   <div className="flex justify-between mt-1.5">
 //                     <Err k="responseBody" />
 //                     <p className="font-mono-dm text-xs ml-auto" style={{ color: wordCount(form.responseBody) < 30 ? "#c4b89a" : "#2d6a4f" }}>
@@ -562,7 +695,11 @@
 
 //                 <Field>
 //                   <Label>Action Requested from Publication</Label>
-//                   <select className="field-select" value={form.requestedAction} onChange={e => set("requestedAction", e.target.value)}>
+//                   <select 
+//                     className="field-select" 
+//                     value={form.requestedAction} 
+//                     onChange={handleRequestedActionChange}
+//                   >
 //                     <option value="">Select…</option>
 //                     {["Publish this reply in full", "Issue a formal correction", "Remove or retract the article", "Publish a link to this docket", "No specific action requested"].map(a => <option key={a}>{a}</option>)}
 //                   </select>
@@ -667,23 +804,19 @@
 //                     </div>
 //                     {files.map((f, i) => (
 //                       <div key={f.id} className="flex items-center gap-3 py-3 border-b" style={{ borderColor: "#e4ddd0" }}>
-//                         {/* Icon */}
 //                         <div className="w-8 h-8 flex-shrink-0 flex items-center justify-center rounded" style={{ background: "#ede8dc" }}>
 //                           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#b8974a" strokeWidth="2">
 //                             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
 //                             <polyline points="14 2 14 8 20 8"/>
 //                           </svg>
 //                         </div>
-//                         {/* Exhibit badge */}
 //                         <span className="font-mono-dm text-xs flex-shrink-0" style={{ color: "#b8974a", letterSpacing: "0.06em" }}>
 //                           EX-{String(i + 1).padStart(2, "0")}
 //                         </span>
-//                         {/* Name */}
 //                         <div className="flex-1 min-w-0">
 //                           <p className="font-garamond text-sm truncate" style={{ color: "#1e2d4a" }}>{f.name}</p>
 //                           <p className="font-mono-dm text-xs" style={{ color: "#9a8870" }}>{fmtBytes(f.size)}</p>
 //                         </div>
-//                         {/* Remove */}
 //                         <button onClick={() => removeFile(f.id)} className="remove-btn flex-shrink-0">×</button>
 //                       </div>
 //                     ))}
@@ -710,7 +843,7 @@
 //                         <p className="font-mono-dm text-xs tracking-widest uppercase mb-2" style={{ color: title.startsWith("✓") ? "#2d6a4f" : "#b8190c" }}>{title}</p>
 //                         {items.map(item => (
 //                           <p key={item} className="font-garamond text-sm mb-1" style={{ color: "#6a5e4e" }}>
-//                             <span className="mr-2" style={{ color: title.startsWith("✓") ? "#2d6a4f" : "#b8190c" }}>{title.startsWith("✓") ? "·" : "·"}</span>{item}
+//                             <span className="mr-2" style={{ color: title.startsWith("✓") ? "#2d6a4f" : "#b8190c" }}>·</span>{item}
 //                           </p>
 //                         ))}
 //                       </div>
@@ -806,7 +939,7 @@
 //                     { k: "consentContact",  text: "I agree to be contacted by the Journalism Society editorial team for verification purposes prior to publication." },
 //                   ].map(({ k, text }) => (
 //                     <div key={k}>
-//                       <div className="check-item" onClick={() => set(k, !form[k])}>
+//                       <div className="check-item" onClick={() => handleConsentChange(k)}>
 //                         <div className={`check-box ${form[k] ? "checked" : ""}`}>
 //                           {form[k] && <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>}
 //                         </div>
@@ -831,12 +964,11 @@
 //                 <p className="font-mono-dm text-xs tracking-widest uppercase" style={{ color: "#9a8870" }}>Your Progress</p>
 //               </div>
 //               <div className="p-5">
-//                 {/* Progress bar */}
 //                 <div className="h-1.5 rounded-full mb-4" style={{ background: "#e4ddd0" }}>
-//                   <div className="h-1.5 rounded-full transition-all duration-500" style={{ background: "#b8974a", width: `${((step - 1) / (totalSteps - 1)) * 100}%` }} />
+//                   <div className="h-1.5 rounded-full transition-all duration-500" style={{ background: "#b8974a", width: `${((step - 1) / (STEPS.length - 1)) * 100}%` }} />
 //                 </div>
 //                 <p className="font-mono-dm text-xs tracking-wider uppercase" style={{ color: "#9a8870" }}>
-//                   Step {step} of {totalSteps}
+//                   Step {step} of {STEPS.length}
 //                 </p>
 //                 <p className="font-playfair font-bold text-base mt-1" style={{ color: "#1e2d4a" }}>
 //                   {STEPS[step - 1].label}
@@ -861,7 +993,7 @@
 //                     <div className="w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: item.done ? "#2d6a4f" : "#e4ddd0" }}>
 //                       {item.done && <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>}
 //                     </div>
-//                     <span className="font-mono-dm text-xs tracking-wider" style={{ color: item.done ? "#2d6a4f" : "#9a8870", textDecoration: item.done ? "none" : "none" }}>
+//                     <span className="font-mono-dm text-xs tracking-wider" style={{ color: item.done ? "#2d6a4f" : "#9a8870" }}>
 //                       {item.label}
 //                     </span>
 //                   </div>
@@ -896,6 +1028,9 @@
 //   );
 // }
 
+
+
+
 // app/submit/page.jsx
 "use client";
 
@@ -903,6 +1038,16 @@ import { useState, useRef, useCallback } from "react";
 import Link from "next/link";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { 
+  FiCheckCircle, 
+  FiAlertCircle, 
+  FiUpload, 
+  FiPlus, 
+  FiX,
+  FiMail,
+  FiFileText
+} from "react-icons/fi";
+import { submissionAPI } from "@/services/api";
 
 /* ── FONTS + STYLES ── */
 const FontStyle = () => (
@@ -1025,6 +1170,20 @@ const FontStyle = () => (
     @media (max-width: 640px) {
       .step-label { display: none; }
     }
+
+    /* Loading spinner */
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    .spinner {
+      width: 16px;
+      height: 16px;
+      border: 2px solid #f5f0e8;
+      border-top-color: transparent;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      display: inline-block;
+    }
   `}</style>
 );
 
@@ -1107,6 +1266,9 @@ export default function SubmitReplyPage() {
   const [dragging, setDragging] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [errors, setErrors]     = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState(null);
+  const [referenceId, setReferenceId] = useState(null);
   const fileInputRef            = useRef(null);
 
   /* helpers - FIXED: Use functional updates */
@@ -1238,8 +1400,58 @@ export default function SubmitReplyPage() {
   const removeTL = useCallback((i) => setTimeline(t => t.filter((_, idx) => idx !== i)), []);
   const setTL = useCallback((i, k, v) => setTimeline(t => t.map((e, idx) => idx === i ? { ...e, [k]: v } : e)), []);
 
-  /* submit */
-  const handleSubmit = useCallback(() => setSubmitted(true), []);
+  /* submit to API */
+  /* submit to API */
+const handleSubmit = useCallback(async () => {
+  setIsSubmitting(true);
+  setSubmitError(null);
+  
+  try {
+    // Prepare data for API - this will use FormData for file uploads
+    const submissionData = {
+      respondentName: form.respondentName,
+      respondentType: form.respondentType,
+      respondentRole: form.respondentRole,
+      contactEmail: form.contactEmail,
+      contactPhone: form.contactPhone,
+      
+      claimSource: form.claimSource,
+      claimUrl: form.claimUrl,
+      claimDate: form.claimDate,
+      claimSummary: form.claimSummary,
+      claimCategory: form.claimCategory,
+      
+      responseTitle: form.responseTitle,
+      responseBody: form.responseBody,
+      responseType: form.responseType,
+      requestedAction: form.requestedAction,
+      
+      timeline: timeline,
+      files: files, // This now includes the actual File objects
+      
+      consentAccurate: form.consentAccurate,
+      consentPublish: form.consentPublish,
+      consentContact: form.consentContact,
+    };
+    
+    // Send to backend
+    const response = await submissionAPI.submitDocket(submissionData);
+    
+    // Generate reference ID from response or create one
+    const refId = response.referenceId || `JS-2026-${String(Math.floor(Math.random()*900)+100)}`;
+    setReferenceId(refId);
+    
+    // Show success state
+    setSubmitted(true);
+    
+  } catch (error) {
+    console.error("Submission error:", error);
+    setSubmitError(error.response?.data?.message || "Failed to submit. Please try again.");
+    setSubmitted(false);
+  } finally {
+    setIsSubmitting(false);
+  }
+}, [form, files, timeline]);
 
   const wordCount = useCallback((text) => text.trim() ? text.trim().split(/\s+/).length : 0, []);
   const fmtBytes  = useCallback((b) => b < 1024*1024 ? `${(b/1024).toFixed(0)} KB` : `${(b/1024/1024).toFixed(1)} MB`, []);
@@ -1309,14 +1521,14 @@ export default function SubmitReplyPage() {
   const NavButtons = useCallback(({ nextLabel = "Continue →" }) => (
     <div className="flex items-center justify-between pt-8 mt-8 border-t border-[#d4c8b4]">
       {step > 1
-        ? <button onClick={back} className="font-mono-dm text-xs tracking-widest uppercase flex items-center gap-2 px-5 py-2.5 border-2 transition-colors" style={{ borderColor: "#c4b89a", color: "#7a6e5e" }}
+        ? <button onClick={back} className="font-mono-dm text-xs tracking-widest uppercase flex items-center gap-2 px-5 py-2.5 border-2 transition-colors cursor-pointer" style={{ borderColor: "#c4b89a", color: "#7a6e5e" }}
             onMouseEnter={e => { e.currentTarget.style.background = "#ede8dc"; }}
             onMouseLeave={e => { e.currentTarget.style.background = "transparent"; }}>
             ← Back
           </button>
         : <div />
       }
-      <button onClick={next} className="font-mono-dm text-xs tracking-widest uppercase flex items-center gap-2 px-6 py-2.5 transition-opacity hover:opacity-90" style={{ background: "#1e2d4a", color: "#f5f0e8" }}>
+      <button onClick={next} className="font-mono-dm text-xs tracking-widest uppercase flex items-center gap-2 px-6 py-2.5 transition-opacity hover:opacity-90 cursor-pointer" style={{ background: "#1e2d4a", color: "#f5f0e8" }}>
         {nextLabel}
       </button>
     </div>
@@ -1324,14 +1536,13 @@ export default function SubmitReplyPage() {
 
   /* ── SUCCESS PAGE ── */
   if (submitted) {
-    const refId = `JS-2026-${String(Math.floor(Math.random()*900)+100)}`;
     return (
       <div className="min-h-screen" style={{ background: "#f5f0e8" }}>
         <FontStyle />
         <Header />
         <main className="max-w-2xl mx-auto px-6 py-20 text-center success-anim">
           <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-8" style={{ background: "#1e2d4a" }}>
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#f5f0e8" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            <FiCheckCircle size={28} className="text-[#f5f0e8]" />
           </div>
           <p className="font-mono-dm text-xs tracking-widest uppercase mb-4" style={{ color: "#9a8870" }}>Submission Received</p>
           <h1 className="font-playfair font-black text-4xl md:text-5xl leading-tight mb-4" style={{ color: "#1e2d4a" }}>
@@ -1342,7 +1553,7 @@ export default function SubmitReplyPage() {
           </p>
           <div className="inline-block my-6 px-6 py-4 border" style={{ borderColor: "#d4c8b4", background: "#ede8dc" }}>
             <p className="font-mono-dm text-xs tracking-widest uppercase mb-1" style={{ color: "#9a8870" }}>Reference ID</p>
-            <p className="font-mono-dm text-2xl font-medium" style={{ color: "#1e2d4a" }}>{refId}</p>
+            <p className="font-mono-dm text-2xl font-medium" style={{ color: "#1e2d4a" }}>{referenceId || `JS-2026-${String(Math.floor(Math.random()*900)+100)}`}</p>
           </div>
           <p className="font-garamond italic text-base mb-8" style={{ color: "#9a8870" }}>
             A confirmation has been sent to <strong>{form.contactEmail}</strong>
@@ -1396,6 +1607,19 @@ export default function SubmitReplyPage() {
 
       {/* ── MAIN FORM ── */}
       <main className="max-w-4xl mx-auto px-6 py-12 pb-20">
+        {submitError && (
+          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded flex items-start gap-3">
+            <FiAlertCircle className="text-red-500 flex-shrink-0 mt-0.5" size={18} />
+            <div>
+              <p className="font-mono-dm text-xs text-red-700 uppercase mb-1">Submission Error</p>
+              <p className="font-garamond text-sm text-red-600">{submitError}</p>
+            </div>
+            <button onClick={() => setSubmitError(null)} className="ml-auto text-red-400 hover:text-red-600">
+              <FiX size={14} />
+            </button>
+          </div>
+        )}
+
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-10 items-start">
 
           {/* LEFT: FORM */}
@@ -1494,7 +1718,7 @@ export default function SubmitReplyPage() {
                     <Label required>Date of Original Claim</Label>
                     <input 
                       type="date" 
-                      className="field-input" 
+                      className="field-input cursor-pointer" 
                       value={form.claimDate} 
                       onChange={handleClaimDateChange} 
                     />
@@ -1609,11 +1833,11 @@ export default function SubmitReplyPage() {
                       <Label>Timeline of Events</Label>
                       <p className="font-garamond italic text-sm" style={{ color: "#9a8870" }}>Add key dates in chronological order.</p>
                     </div>
-                    <button onClick={addTL} className="font-mono-dm text-xs tracking-wider uppercase px-3 py-1.5 border transition-colors flex items-center gap-1.5"
+                    <button onClick={addTL} className="font-mono-dm text-xs tracking-wider uppercase px-3 py-1.5 border transition-colors flex items-center gap-1.5 cursor-pointer"
                       style={{ borderColor: "#c4b89a", color: "#1e2d4a" }}
                       onMouseEnter={e => e.currentTarget.style.background = "#ede8dc"}
                       onMouseLeave={e => e.currentTarget.style.background = "transparent"}>
-                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 5v14M5 12h14"/></svg>
+                      <FiPlus size={10} />
                       Add Entry
                     </button>
                   </div>
@@ -1676,11 +1900,7 @@ export default function SubmitReplyPage() {
                     onChange={e => addFiles(e.target.files)} />
                   <div className="flex flex-col items-center gap-3">
                     <div className="w-14 h-14 rounded-full flex items-center justify-center" style={{ background: "#ede8dc" }}>
-                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#9a8870" strokeWidth="1.5">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                        <polyline points="17 8 12 3 7 8"/>
-                        <line x1="12" y1="3" x2="12" y2="15"/>
-                      </svg>
+                      <FiUpload size={24} className="text-[#9a8870]" />
                     </div>
                     <div>
                       <p className="font-garamond text-base" style={{ color: "#1e2d4a" }}>
@@ -1702,10 +1922,7 @@ export default function SubmitReplyPage() {
                     {files.map((f, i) => (
                       <div key={f.id} className="flex items-center gap-3 py-3 border-b" style={{ borderColor: "#e4ddd0" }}>
                         <div className="w-8 h-8 flex-shrink-0 flex items-center justify-center rounded" style={{ background: "#ede8dc" }}>
-                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#b8974a" strokeWidth="2">
-                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                            <polyline points="14 2 14 8 20 8"/>
-                          </svg>
+                          <FiFileText size={14} className="text-[#b8974a]" />
                         </div>
                         <span className="font-mono-dm text-xs flex-shrink-0" style={{ color: "#b8974a", letterSpacing: "0.06em" }}>
                           EX-{String(i + 1).padStart(2, "0")}
@@ -1838,7 +2055,7 @@ export default function SubmitReplyPage() {
                     <div key={k}>
                       <div className="check-item" onClick={() => handleConsentChange(k)}>
                         <div className={`check-box ${form[k] ? "checked" : ""}`}>
-                          {form[k] && <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>}
+                          {form[k] && <FiCheckCircle size={10} className="text-white" />}
                         </div>
                         <p className="font-garamond text-sm leading-relaxed" style={{ color: "#4a4035" }}>{text}</p>
                       </div>
@@ -1847,7 +2064,7 @@ export default function SubmitReplyPage() {
                   ))}
                 </div>
 
-                <NavButtons nextLabel="📌 File This Docket" />
+                <NavButtons nextLabel={isSubmitting ? "Submitting..." : "📌 File This Docket"} />
               </div>
             )}
           </div>
@@ -1888,7 +2105,7 @@ export default function SubmitReplyPage() {
                 ].map(item => (
                   <div key={item.label} className="flex items-center gap-2.5">
                     <div className="w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: item.done ? "#2d6a4f" : "#e4ddd0" }}>
-                      {item.done && <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>}
+                      {item.done && <FiCheckCircle size={8} className="text-white" />}
                     </div>
                     <span className="font-mono-dm text-xs tracking-wider" style={{ color: item.done ? "#2d6a4f" : "#9a8870" }}>
                       {item.label}
@@ -1905,7 +2122,7 @@ export default function SubmitReplyPage() {
                 If you need assistance filing your docket, our editorial team is available.
               </p>
               <a href="mailto:submit@journalismsociety.org" className="font-mono-dm text-xs tracking-wider uppercase flex items-center gap-1.5" style={{ color: "#1e2d4a", textDecoration: "none" }}>
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                <FiMail size={11} />
                 Contact Editorial Team
               </a>
             </div>
