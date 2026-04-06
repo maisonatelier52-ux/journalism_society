@@ -1739,8 +1739,41 @@ export default function SingleDocketPage() {
   const mono = (extra = {}) => ({ fontFamily: "'DM Mono', monospace", wordWrap: "break-word", overflowWrap: "break-word", ...extra });
   const serif = (extra = {}) => ({ fontFamily: "'EB Garamond', Georgia, serif", wordWrap: "break-word", overflowWrap: "break-word", ...extra });
   const display = (extra = {}) => ({ fontFamily: "'Playfair Display', Georgia, serif", wordWrap: "break-word", overflowWrap: "break-word", ...extra });
+//   const mono = (extra = {}) => ({
+//   fontFamily: "Helvetica, Arial, sans-serif",
+//   ...extra
+// });
+
+// const serif = (extra = {}) => ({
+//   fontFamily: "Helvetica, Arial, sans-serif",
+//   ...extra
+// });
+
+// const display = (extra = {}) => ({
+//   fontFamily: "Helvetica, Arial, sans-serif",
+//   ...extra
+// });
 
   const formattedResponse = formatResponseText(docket.response?.body);
+
+  const formatFileSize = (bytes) => {
+    
+  if (!bytes && bytes !== 0) return "N/A";
+
+  const kb = bytes / 1024;
+  const mb = kb / 1024;
+  const gb = mb / 1024;
+
+  if (kb < 1024) {
+    return `${kb.toFixed(1)} KB`;
+  } else if (mb < 1024) {
+    return `${mb.toFixed(2)} MB`;
+  } else {
+    return `${gb.toFixed(2)} GB`;
+  }
+};
+  
+  
 
   return (
     <div style={{ minHeight: "100vh", background: "#f5f0e8", overflowX: "hidden", maxWidth: "100vw" }}>
@@ -1789,18 +1822,18 @@ export default function SingleDocketPage() {
       {/* Banner */}
       <div style={{ background: "#1e2d4a", borderBottom: "4px solid #b8974a" }}>
         <div className="banner-pad" style={{ maxWidth: 1160, margin: "0 auto" }}>
-          <p style={mono({ fontSize: "0.56rem", letterSpacing: "0.14em", color: "#3a4e6a", textTransform: "uppercase", marginBottom: 18 })}>
+          <p style={mono({ fontSize: "0.58rem", letterSpacing: "0.14em", color: "#d7dfeb", textTransform: "uppercase", marginBottom: 18 })}>
             Public Record / Dockets / {docket.docketId}
           </p>
           <div className="badge-row" style={{ marginBottom: 16 }}>
-            <span style={mono({ fontSize: "0.62rem", letterSpacing: "0.1em", color: "#8a9bb8", textTransform: "uppercase", background: "rgba(255,255,255,0.07)", padding: "4px 12px", border: "1px solid rgba(255,255,255,0.12)" })}>
+            <span style={mono({ fontSize: "0.62rem", letterSpacing: "0.1em", color: "#cfd5de", textTransform: "uppercase", background: "rgba(255,255,255,0.07)", padding: "4px 12px", border: "1px solid rgba(255,255,255,0.12)" })}>
               {docket.docketId}
             </span>
             <span style={mono({ fontSize: "0.6rem", letterSpacing: "0.1em", textTransform: "uppercase", padding: "4px 10px", border: `1px solid ${st.border}`, background: st.bg, color: st.text, display: "inline-flex", alignItems: "center", gap: 6 })}>
               <span style={{ width: 7, height: 7, borderRadius: "50%", background: st.dot, display: "inline-block", flexShrink: 0 }} />
               {docket.status}
             </span>
-            <span style={mono({ fontSize: "0.58rem", letterSpacing: "0.1em", color: "#5a6e8a", textTransform: "uppercase" })}>{docket.respondent?.type || docket.type || "Other"}</span>
+            <span style={mono({ fontSize: "0.58rem", letterSpacing: "0.1em", color: "#c6cdd7", textTransform: "uppercase" })}>{docket.respondent?.type || docket.type || "Other"}</span>
           </div>
           <h1 className="font-playfair banner-title" style={{ fontWeight: 900, color: "#f5f0e8", lineHeight: 1.12, maxWidth: 820, marginBottom: 26 }}>
             {displayTitle}
@@ -1816,7 +1849,7 @@ export default function SingleDocketPage() {
               <div key={label} style={{ display: "flex", alignItems: "flex-start", gap: 18, minWidth: 0 }}>
                 {i > 0 && <div className="meta-divider" />}
                 <div style={{ minWidth: 0 }}>
-                  <p style={mono({ fontSize: "0.52rem", color: "#3a4e6a", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 3 })}>{label}</p>
+                  <p style={mono({ fontSize: "0.52rem", color: "#d7dde4", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 3 })}>{label}</p>
                   <p className="meta-val" style={serif({ color: "#c8bfa8", fontSize: "0.92rem", fontStyle: italic ? "italic" : "normal" })}>{val}</p>
                 </div>
               </div>
@@ -1942,17 +1975,21 @@ export default function SingleDocketPage() {
       <span style={mono({ fontSize: "0.54rem", letterSpacing: "0.1em", textTransform: "uppercase", color: "#9a8870" })}>ID</span>
       <span style={mono({ fontSize: "0.54rem", letterSpacing: "0.1em", textTransform: "uppercase", color: "#9a8870" })}>Document</span>
       <span style={mono({ fontSize: "0.54rem", letterSpacing: "0.1em", textTransform: "uppercase", color: "#9a8870" })}>Category</span>
-      <span className="col-pages" style={mono({ fontSize: "0.54rem", letterSpacing: "0.1em", textTransform: "uppercase", color: "#9a8870" })}>Pages</span>
+      <span className="col-pages" style={mono({ fontSize: "0.54rem", letterSpacing: "0.1em", textTransform: "uppercase", color: "#9a8870" })}>Size</span>
       <span />
     </div>
     {filteredEx.map((ex) => {
       const cat = CAT_COLOR[ex.category] || CAT_COLOR["Evidence"];
+      console.log(filteredEx);
+      
       return (
-        <div key={ex.exhibitId} className="exhibit-row ex-table" style={{ padding: "11px 0", borderBottom: "1px solid #d4c8b4", alignItems: "center", transition: "background 0.15s" }}>
+        <div key={ex.exhibitId} className="exhibit-row ex-table cursor-pointer" style={{ padding: "11px 0", borderBottom: "1px solid #d4c8b4", alignItems: "center", transition: "background 0.15s" }}>
           <span style={mono({ fontSize: "0.6rem", fontWeight: 500, color: "#1e2d4a", letterSpacing: "0.05em" })}>{ex.exhibitId}</span>
           <span className="exhibit-title" style={serif({ fontSize: "0.95rem", color: "#1e2d4a", lineHeight: 1.3 })}>{ex.title}</span>
           <span className="ex-cat-badge" style={mono({ fontSize: "0.5rem", letterSpacing: "0.08em", textTransform: "uppercase", padding: "3px 6px", background: cat.bg, color: cat.text, border: `1px solid ${cat.border}` })}>{ex.category}</span>
-          <span className="col-pages" style={mono({ fontSize: "0.58rem", color: "#9a8870" })}>{ex.pages || "N/A"} {ex.pages ? "pp." : ""}</span>
+          <span className="col-pages text-gray-500 text-xs">
+            {formatFileSize(ex.fileSize)}
+          </span>
           <button
             onClick={async (e) => {
               e.preventDefault();
@@ -1989,7 +2026,7 @@ export default function SingleDocketPage() {
             className="dl-arrow"
             style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", color: "#b8974a", background: "none", border: "none", cursor: "pointer" }}
           >
-            <FiDownload size={13} />
+            <FiDownload size={13}/>
           </button>
         </div>
       );
@@ -2065,7 +2102,7 @@ export default function SingleDocketPage() {
 
             {/* Docket Details */}
             <div style={{ background: "#1e2d4a", padding: "20px 22px", marginBottom: 14 }}>
-              <p style={mono({ fontSize: "0.54rem", letterSpacing: "0.14em", color: "#3a4e6a", textTransform: "uppercase", paddingBottom: 12, marginBottom: 14, borderBottom: "1px solid rgba(255,255,255,0.08)" })}>
+              <p style={mono({ fontSize: "0.54rem", letterSpacing: "0.14em", color: "#c1c8d2", textTransform: "uppercase", paddingBottom: 12, marginBottom: 14, borderBottom: "1px solid rgba(255,255,255,0.08)" })}>
                 Docket Details
               </p>
               <div className="detail-grid">
@@ -2079,7 +2116,7 @@ export default function SingleDocketPage() {
                   ["Exhibits", `${exhibitsCount} documents`],
                 ].map(([label, val]) => (
                   <div key={label} style={{ marginBottom: 12, minWidth: 0 }}>
-                    <p style={mono({ fontSize: "0.5rem", letterSpacing: "0.1em", color: "#3a4e6a", textTransform: "uppercase", marginBottom: 3 })}>{label}</p>
+                    <p style={mono({ fontSize: "0.5rem", letterSpacing: "0.1em", color: "#c1c8d2", textTransform: "uppercase", marginBottom: 3 })}>{label}</p>
                     <p style={serif({ color: "#c8bfa8", fontSize: "0.9rem" })}>{val}</p>
                   </div>
                 ))}

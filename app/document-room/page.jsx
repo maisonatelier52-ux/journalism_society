@@ -696,7 +696,11 @@ export default function DocumentRoomPage() {
                     {downloading === (doc._id || doc.id) ? (
                       <div className="animate-spin rounded-full h-4 w-4 border-2 border-[#b8974a] border-t-transparent"></div>
                     ) : (
-                      <FiDownload size={16} />
+                      // <FiDownload size={16} />
+                       <div className="flex items-center gap-1 pe-2">
+                        <FiDownload size={14} />
+                        <span className="font-mono-dm text-xs">Download</span>
+                      </div>
                     )}
                   </button>
                 </div>

@@ -492,23 +492,18 @@
 
 
 
+// app/page.jsx
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FiSearch } from "react-icons/fi";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-
-const DOCKET = {
-  id: "JS-2026-001",
-  title: "Right of Reply: Example Corp. on Alleged Misreporting",
-  summary:
-    "A full documented response to claims published on 14 March 2026, including verified exhibits, a corrected timeline, and three witness statements previously unpublished.",
-  date: "18 Mar 2026",
-  type: "Docket",
-  status: "Open",
-};
+import docketsAPI from "@/services/docketsApi";
+import mediaAPI from "@/services/mediaApi";
+import documentsAPI from "@/services/documentsApi";
+import pressReleaseAPI from "@/services/pressReleaseApi";
 
 const SECTIONS = [
   {
@@ -555,7 +550,7 @@ const SECTIONS = [
     ),
     label: "Press Releases",
     desc: "Official statements and public clarifications to set the record.",
-    href: "press-releases",
+    href: "/press-releases",
   },
   {
     icon: (
@@ -582,39 +577,121 @@ const STEPS = [
   { num: "04", title: "The Record Stands", desc: "Once verified, the record is published so both claims and responses are fully accountable." },
 ];
 
-const UPDATES = [
-  { type: "DOCKET", id: "JS-2026-003", title: "Healthcare Providers Alliance — Response to Billing Claim", date: "22 Mar 2026", href: "/dockets/JS-2026-003" },
-  { type: "MEDIA WATCH", id: "MW-2026-011", title: "Fact-Check: Regional Outlet Corrects Demographic Data", date: "21 Mar 2026", href: "#" },
-  { type: "DOCUMENT", id: "DOC-2026-044", title: "Exhibit Set: Financial Audit Reports (2022–2024)", date: "20 Mar 2026", href: "/document-room/DOC-2026-044" },
-  { type: "DOCKET", id: "JS-2026-002", title: "City Council Response to Infrastructure Report", date: "19 Mar 2026", href: "/dockets/JS-2026-002" },
+const POLICIES = [
+  { name: "Publishing Principles", href: "/publishing-principles" },
+  { name: "Corrections Policy", href: "/corrections" },
+  { name: "Ethics Charter", href: "/ethics" },
+  { name: "Source Disclosures", href: "/disclosures" },
+  { name: "Editorial Standards", href: "/editorial-standards" },
 ];
 
+const formatDate = (dateString) => {
+  if (!dateString) return "N/A";
+  return new Date(dateString).toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+};
 
-const POLICIES = [
-  {
-    name : "Publishing Principles",
-    href : "/publishing-principles"
-  },
-  {
-    name : "Corrections Policy",
-    href : "/corrections"
-  },
-  {
-    name : "Ethics Charter",
-    href : "/ethics"
-  },
-  {
-    name : "Source Disclosures",
-    href : "/disclosures"
-  },
-  {
-    name : "Editorial Standards",
-    href : "/editorial-standards"
-  }
-
-]
 export default function Home() {
   const [searchOpen, setSearchOpen] = useState(false);
+  const [stats, setStats] = useState({
+    activeDockets: 0,
+    verifiedResponses: 0,
+    correctionsFiled: 0,
+    accountability: "100%",
+  });
+  const [featuredDocket, setFeaturedDocket] = useState(null);
+  const [latestUpdates, setLatestUpdates] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchHomeData();
+  }, []);
+
+  const fetchHomeData = async () => {
+    setLoading(true);
+    try {
+      // Fetch all dockets
+      const docketsRes = await docketsAPI.getAllDockets();
+      const dockets = Array.isArray(docketsRes) ? docketsRes : (docketsRes.dockets || []);
+      
+      // Calculate stats
+      const openDockets = dockets.filter(d => d.status === "Open").length;
+      const totalResponses = dockets.length;
+      const corrections = dockets.filter(d => d.response?.type === "Partial Correction" || d.response?.type === "Correction Request").length;
+      
+      setStats({
+        activeDockets: openDockets,
+        verifiedResponses: totalResponses,
+        correctionsFiled: corrections,
+        accountability: "100%",
+      });
+      
+      // Get featured docket (latest published docket)
+      if (dockets.length > 0) {
+        const sortedDockets = [...dockets].sort((a, b) => 
+          new Date(b.publishedDate || b.createdAt) - new Date(a.publishedDate || a.createdAt)
+        );
+        setFeaturedDocket(sortedDockets[0]);
+      }
+      
+      // Fetch latest updates (combine recent dockets, media, and press releases)
+      const updates = [];
+      
+      // Add recent dockets
+      const recentDockets = dockets.slice(0, 3).map(d => ({
+        type: "DOCKET",
+        id: d.docketId,
+        title: d.response?.title || "Untitled Docket",
+        date: d.publishedDate || d.createdAt,
+        href: `/dockets/${d._id}`,
+      }));
+      updates.push(...recentDockets);
+      
+      // Add recent media
+      try {
+        const mediaRes = await mediaAPI.getAllMedia();
+        const media = Array.isArray(mediaRes) ? mediaRes : (mediaRes.media || []);
+        const recentMedia = media.slice(0, 2).map(m => ({
+          type: "MEDIA WATCH",
+          id: m.mediaId || m.id,
+          title: m.headline,
+          date: m.publishedDate || m.date,
+          href: `/media-watch`,
+        }));
+        updates.push(...recentMedia);
+      } catch (err) {
+        console.error("Error fetching media for updates:", err);
+      }
+      
+      // Add recent press releases
+      try {
+        const pressRes = await pressReleaseAPI.getAllPressReleases();
+        const pressReleases = pressRes.releases || [];
+        const recentPress = pressReleases.slice(0, 2).map(p => ({
+          type: "PRESS RELEASE",
+          id: p.id,
+          title: p.title,
+          date: p.publishedDate || p.date,
+          href: `/press-releases/${p._id}`,
+        }));
+        updates.push(...recentPress);
+      } catch (err) {
+        console.error("Error fetching press releases for updates:", err);
+      }
+      
+      // Sort updates by date (newest first) and take top 5
+      const sortedUpdates = updates.sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 5);
+      setLatestUpdates(sortedUpdates);
+      
+    } catch (error) {
+      console.error("Error fetching home data:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[#f5f0e8]">
@@ -660,26 +737,21 @@ export default function Home() {
       <section className="bg-[#f5f0e8] py-14 px-6 md:py-16">
         <div className="max-w-6xl mx-auto">
           <div className="flex flex-col md:flex-row gap-10 items-start">
-            {/* Left Content */}
             <div className="flex-1">
               <h1 className="font-playfair font-black text-[clamp(3.2rem,8vw,5.5rem)] leading-[0.92] tracking-[-0.03em] text-[#1e2d4a] mb-6">
                 Journalism<br />Society
               </h1>
-
               <div className="border-l-4 border-[#b8974a] pl-4 mb-7">
                 <p className="font-playfair italic text-[clamp(1.2rem,3vw,1.75rem)] text-[#b8974a] leading-tight">
                   Right of Reply. In Full.
                 </p>
               </div>
-
               <p className="font-garamond text-[1.05rem] leading-relaxed text-[#4a4035] max-w-md mb-2">
                 Public record platform for publishing responses, evidence, corrections to counter inaccurate or false reporting.
               </p>
-
               <p className="font-garamond italic text-[0.9rem] text-[#9a8870] mb-8">
                 Audi alteram partem — hear the other side.
               </p>
-
               <div className="flex gap-3 flex-wrap">
                 <Link href="/dockets" className="inline-flex items-center gap-2 bg-[#1e2d4a] text-[#f5f0e8] font-mono-dm text-[0.62rem] tracking-[0.13em] uppercase px-5 py-2.5 hover:bg-[#2a3f6a] transition-colors">
                   Browse Dockets
@@ -690,19 +762,47 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Stats Panel */}
+            {/* Stats Panel - Connected to API */}
             <div className="flex-1 max-w-[260px] bg-[#ede8dc] border border-[#d4c8b4] p-7">
-              {[
-                { num: "47", label: "Active Dockets" },
-                { num: "203", label: "Verified Responses" },
-                { num: "31", label: "Corrections Filed" },
-                { num: "100%", label: "Accountability" },
-              ].map((s, i) => (
-                <div key={s.label} className={`pb-4 mb-4 ${i < 3 ? "border-b border-[#d4c8b4]" : ""}`}>
-                  <div className="font-playfair font-black text-[2.6rem] leading-none text-[#b8974a]">{s.num}</div>
-                  <div className="font-mono-dm text-[0.6rem] tracking-[0.14em] uppercase text-[#7a6e5e] mt-1">{s.label}</div>
-                </div>
-              ))}
+              {loading ? (
+                <>
+                  <div className="pb-4 mb-4 border-b border-[#d4c8b4]">
+                    <div className="h-10 w-16 bg-[#d4c8b4] animate-pulse rounded mb-2"></div>
+                    <div className="h-4 w-24 bg-[#d4c8b4] animate-pulse rounded"></div>
+                  </div>
+                  <div className="pb-4 mb-4 border-b border-[#d4c8b4]">
+                    <div className="h-10 w-16 bg-[#d4c8b4] animate-pulse rounded mb-2"></div>
+                    <div className="h-4 w-24 bg-[#d4c8b4] animate-pulse rounded"></div>
+                  </div>
+                  <div className="pb-4 mb-4 border-b border-[#d4c8b4]">
+                    <div className="h-10 w-16 bg-[#d4c8b4] animate-pulse rounded mb-2"></div>
+                    <div className="h-4 w-24 bg-[#d4c8b4] animate-pulse rounded"></div>
+                  </div>
+                  <div>
+                    <div className="h-10 w-16 bg-[#d4c8b4] animate-pulse rounded mb-2"></div>
+                    <div className="h-4 w-24 bg-[#d4c8b4] animate-pulse rounded"></div>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="pb-4 mb-4 border-b border-[#d4c8b4]">
+                    <div className="font-playfair font-black text-[2.6rem] leading-none text-[#b8974a]">{stats.activeDockets}</div>
+                    <div className="font-mono-dm text-[0.6rem] tracking-[0.14em] uppercase text-[#7a6e5e] mt-1">Active Dockets</div>
+                  </div>
+                  <div className="pb-4 mb-4 border-b border-[#d4c8b4]">
+                    <div className="font-playfair font-black text-[2.6rem] leading-none text-[#b8974a]">{stats.verifiedResponses}</div>
+                    <div className="font-mono-dm text-[0.6rem] tracking-[0.14em] uppercase text-[#7a6e5e] mt-1">Verified Responses</div>
+                  </div>
+                  <div className="pb-4 mb-4 border-b border-[#d4c8b4]">
+                    <div className="font-playfair font-black text-[2.6rem] leading-none text-[#b8974a]">{stats.correctionsFiled}</div>
+                    <div className="font-mono-dm text-[0.6rem] tracking-[0.14em] uppercase text-[#7a6e5e] mt-1">Corrections Filed</div>
+                  </div>
+                  <div>
+                    <div className="font-playfair font-black text-[2.6rem] leading-none text-[#b8974a]">{stats.accountability}</div>
+                    <div className="font-mono-dm text-[0.6rem] tracking-[0.14em] uppercase text-[#7a6e5e] mt-1">Accountability</div>
+                  </div>
+                </>
+              )}
 
               {/* Search Box */}
               <div
@@ -717,7 +817,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Featured Docket */}
+      {/* Featured Docket - Connected to API */}
       <section className="bg-[#f5f0e8] px-6 pb-12">
         <div className="max-w-6xl mx-auto">
           <div className="border-t-2 border-[#1e2d4a] pt-2.5 mb-5 flex justify-between items-baseline">
@@ -727,47 +827,74 @@ export default function Home() {
             </Link>
           </div>
 
-          <div className="grid md:grid-cols-[1fr_340px] border border-[#d4c8b4] bg-[#faf6ee] overflow-hidden">
-            <div className="p-8 md:p-9">
-              <div className="flex gap-2 items-center mb-5">
-                <span className="font-mono-dm text-[0.55rem] tracking-[0.1em] uppercase bg-[#1e2d4a] text-[#f5f0e8] px-2 py-0.5">Media Reply</span>
-                <span className="font-mono-dm text-[0.55rem] tracking-[0.1em] uppercase border border-[#1e2d4a] text-[#1e2d4a] px-2 py-0.5">Media Review</span>
+          {loading ? (
+            <div className="grid md:grid-cols-[1fr_340px] border border-[#d4c8b4] bg-[#faf6ee] overflow-hidden">
+              <div className="p-8 md:p-9">
+                <div className="h-6 w-32 bg-[#d4c8b4] animate-pulse rounded mb-5"></div>
+                <div className="h-8 w-full bg-[#d4c8b4] animate-pulse rounded mb-4"></div>
+                <div className="h-20 w-full bg-[#d4c8b4] animate-pulse rounded mb-7"></div>
+                <div className="flex gap-7 mb-7">
+                  <div><div className="h-4 w-16 bg-[#d4c8b4] animate-pulse rounded mb-1"></div><div className="h-5 w-20 bg-[#d4c8b4] animate-pulse rounded"></div></div>
+                  <div><div className="h-4 w-16 bg-[#d4c8b4] animate-pulse rounded mb-1"></div><div className="h-5 w-20 bg-[#d4c8b4] animate-pulse rounded"></div></div>
+                  <div><div className="h-4 w-16 bg-[#d4c8b4] animate-pulse rounded mb-1"></div><div className="h-5 w-20 bg-[#d4c8b4] animate-pulse rounded"></div></div>
+                </div>
+                <div className="h-10 w-32 bg-[#d4c8b4] animate-pulse rounded"></div>
               </div>
+              <div className="hidden md:block bg-[#d4c8b4] animate-pulse"></div>
+            </div>
+          ) : featuredDocket ? (
+            <div className="grid md:grid-cols-[1fr_340px] border border-[#d4c8b4] bg-[#faf6ee] overflow-hidden">
+              <div className="p-8 md:p-9">
+                <div className="flex gap-2 items-center mb-5">
+                  <span className="font-mono-dm text-[0.55rem] tracking-[0.1em] uppercase bg-[#1e2d4a] text-[#f5f0e8] px-2 py-0.5">
+                    {featuredDocket.respondent?.type || "Media Reply"}
+                  </span>
+                  <span className="font-mono-dm text-[0.55rem] tracking-[0.1em] uppercase border border-[#1e2d4a] text-[#1e2d4a] px-2 py-0.5">
+                    {featuredDocket.status || "Under Review"}
+                  </span>
+                </div>
 
-              <h2 className="font-playfair font-bold text-[clamp(1.3rem,2.5vw,1.9rem)] leading-tight text-[#1e2d4a] mb-4 max-w-[520px]">
-                {DOCKET.title}
-              </h2>
+                <h2 className="font-playfair font-bold text-[clamp(1.3rem,2.5vw,1.9rem)] leading-tight text-[#1e2d4a] mb-4 max-w-[520px]">
+                  {featuredDocket.response?.title || featuredDocket.title || "Featured Docket"}
+                </h2>
 
-              <p className="font-garamond text-[1.05rem] leading-relaxed text-[#5a5040] max-w-[500px] mb-7">
-                {DOCKET.summary}
-              </p>
+                <p className="font-garamond text-[1.05rem] leading-relaxed text-[#5a5040] max-w-[500px] mb-7">
+                  {featuredDocket.summary?.claim || featuredDocket.summary || "A documented response to public claims."}
+                </p>
 
-              <div className="flex gap-7 flex-wrap mb-7">
-                {[
-                  ["Filed", DOCKET.date],
-                  ["Status", "Under Review"],
-                  ["Exhibits", "12 documents"],
-                ].map(([k, v]) => (
-                  <div key={k}>
-                    <div className="font-mono-dm text-[0.58rem] tracking-[0.12em] uppercase text-[#9a8870] mb-0.5">{k}</div>
-                    <div className="font-garamond text-[0.95rem] text-[#3a3028]">{v}</div>
+                <div className="flex gap-7 flex-wrap mb-7">
+                  <div>
+                    <div className="font-mono-dm text-[0.58rem] tracking-[0.12em] uppercase text-[#9a8870] mb-0.5">Filed</div>
+                    <div className="font-garamond text-[0.95rem] text-[#3a3028]">{formatDate(featuredDocket.publishedDate || featuredDocket.filedDate)}</div>
                   </div>
-                ))}
+                  <div>
+                    <div className="font-mono-dm text-[0.58rem] tracking-[0.12em] uppercase text-[#9a8870] mb-0.5">Status</div>
+                    <div className="font-garamond text-[0.95rem] text-[#3a3028]">{featuredDocket.status || "Open"}</div>
+                  </div>
+                  <div>
+                    <div className="font-mono-dm text-[0.58rem] tracking-[0.12em] uppercase text-[#9a8870] mb-0.5">Exhibits</div>
+                    <div className="font-garamond text-[0.95rem] text-[#3a3028]">{featuredDocket.exhibits?.length || 0} documents</div>
+                  </div>
+                </div>
+
+                <Link href={`/dockets/${featuredDocket._id}`} className="inline-flex items-center gap-2 bg-[#1e2d4a] text-[#f5f0e8] font-mono-dm text-[0.62rem] tracking-[0.13em] uppercase px-5 py-2.5 hover:bg-[#2a3f6a] transition-colors">
+                  View Full Record
+                </Link>
               </div>
 
-              <Link href="/dockets/JS-2026-006" className="inline-flex items-center gap-2 bg-[#1e2d4a] text-[#f5f0e8] font-mono-dm text-[0.62rem] tracking-[0.13em] uppercase px-5 py-2.5 hover:bg-[#2a3f6a] transition-colors">
-                View Full Record
-              </Link>
+              <div className="hidden md:block min-h-[280px] overflow-hidden">
+                <img
+                  src="https://images.unsplash.com/photo-1555848962-6e79363ec58f?w=700&q=80"
+                  alt="Courthouse"
+                  className="w-full h-full object-cover sepia-[0.2] brightness-90"
+                />
+              </div>
             </div>
-
-            <div className="hidden md:block min-h-[280px] overflow-hidden">
-              <img
-                src="https://images.unsplash.com/photo-1555848962-6e79363ec58f?w=700&q=80"
-                alt="Courthouse"
-                className="w-full h-full object-cover sepia-[0.2] brightness-90"
-              />
+          ) : (
+            <div className="border border-[#d4c8b4] bg-[#faf6ee] p-8 text-center">
+              <p className="font-garamond text-[#9a8870]">No dockets available yet.</p>
             </div>
-          </div>
+          )}
         </div>
       </section>
 
@@ -834,7 +961,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Latest Updates */}
+      {/* Latest Updates - Connected to API */}
       <section className="bg-[#f5f0e8] py-12 px-6">
         <div className="max-w-6xl mx-auto">
           <div className="border-t-2 border-[#1e2d4a] pt-2.5 mb-5 flex justify-between items-baseline">
@@ -844,20 +971,33 @@ export default function Home() {
             </Link>
           </div>
 
-          {UPDATES.map((u) => (
-            <Link
-              key={u.id}
-              href={u.href}
-              className="flex items-baseline gap-3.5 py-3.5 border-b border-[#d4c8b4] hover:bg-[#ede8dc] transition-colors no-underline group"
-            >
-              <span className="font-mono-dm text-[0.55rem] tracking-[0.1em] uppercase border border-[#c4b89a] px-1.5 py-0.5 text-[#7a6e5e] whitespace-nowrap flex-shrink-0">
-                {u.type}
-              </span>
-              <span className="font-mono-dm text-[0.65rem] text-[#b8974a] whitespace-nowrap flex-shrink-0">{u.id}</span>
-              <span className="font-garamond text-[0.95rem] text-[#2a2018] flex-1 group-hover:underline">{u.title}</span>
-              <span className="font-mono-dm text-[0.6rem] text-[#9a8870] whitespace-nowrap flex-shrink-0">{u.date}</span>
-            </Link>
-          ))}
+          {loading ? (
+            <>
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="flex items-baseline gap-3.5 py-3.5 border-b border-[#d4c8b4]">
+                  <div className="h-5 w-20 bg-[#d4c8b4] animate-pulse rounded"></div>
+                  <div className="h-5 w-16 bg-[#d4c8b4] animate-pulse rounded"></div>
+                  <div className="h-5 flex-1 bg-[#d4c8b4] animate-pulse rounded"></div>
+                  <div className="h-5 w-24 bg-[#d4c8b4] animate-pulse rounded"></div>
+                </div>
+              ))}
+            </>
+          ) : (
+            latestUpdates.map((u) => (
+              <Link
+                key={u.id}
+                href={u.href}
+                className="flex items-baseline gap-3.5 py-3.5 border-b border-[#d4c8b4] hover:bg-[#ede8dc] transition-colors no-underline group"
+              >
+                <span className="font-mono-dm text-[0.55rem] tracking-[0.1em] uppercase border border-[#c4b89a] px-1.5 py-0.5 text-[#7a6e5e] whitespace-nowrap flex-shrink-0">
+                  {u.type}
+                </span>
+                <span className="font-mono-dm text-[0.65rem] text-[#b8974a] whitespace-nowrap flex-shrink-0">{u.id}</span>
+                <span className="font-garamond text-[0.95rem] text-[#2a2018] flex-1 group-hover:underline">{u.title}</span>
+                <span className="font-mono-dm text-[0.6rem] text-[#9a8870] whitespace-nowrap flex-shrink-0">{formatDate(u.date)}</span>
+              </Link>
+            ))
+          )}
         </div>
       </section>
 
@@ -870,12 +1010,12 @@ export default function Home() {
           <div className="flex flex-wrap gap-0">
             {POLICIES.map((p, i) => (
               <span key={p.href}>
-                <a
+                <Link
                   href={p.href}
                   className="font-mono-dm text-[0.58rem] tracking-[0.1em] uppercase text-[#6a5e4e] hover:text-[#1e2d4a] transition-colors no-underline"
                 >
                   {p.name}
-                </a>
+                </Link>
                 {i < POLICIES.length - 1 && <span className="text-[#c8b89a] px-3 font-serif">·</span>}
               </span>
             ))}
@@ -887,210 +1027,3 @@ export default function Home() {
     </div>
   );
 }
-// "use client";
-
-// import { useState } from "react";
-// import { FiArrowRight, FiMenu, FiX } from "react-icons/fi";
-
-// // 7 Cards
-// const cards = [
-//   {
-//     id: 1,
-//     img: "https://images.unsplash.com/photo-1611432579698-9f4f6c6e6f0e",
-//     bg: "#2a2a2a",
-//   },
-//   {
-//     id: 2,
-//     img: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d",
-//     bg: "#4a3f35",
-//   },
-//   {
-//     id: 3,
-//     img: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d",
-//     bg: "#1f1f1f",
-//   },
-//   {
-//     id: 4,
-//     img: "https://images.unsplash.com/photo-1581065178026-390bc4e78dad",
-//     bg: "#d4c2b0",
-//   },
-//   {
-//     id: 5,
-//     img: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e",
-//     bg: "#a8c4c0",
-//   },
-//   {
-//     id: 6,
-//     img: "https://images.unsplash.com/photo-1567532939604-e320e59cf0e8",
-//     bg: "#c8b0d0",
-//   },
-//   {
-//     id: 7,
-//     img: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d",
-//     bg: "#e8d5c0",
-//   },
-// ];
-
-// // Updated layout as per your request (asymmetric center)
-// const layout = [
-//   { widthPx: 100, heightPx: 220, yOffset: 72, clipLeft: true },    // 1
-//   { widthPx: 125, heightPx: 258, yOffset: 46, clipLeft: false },   // 2
-//   { widthPx: 150, heightPx: 292, yOffset: 24, clipLeft: false },   // 3
-//   { widthPx: 172, heightPx: 328, yOffset: 8,  clipLeft: false },   // 4 - Largest (center left)
-//   { widthPx: 150, heightPx: 292, yOffset: 24, clipLeft: false },   // 5
-//   { widthPx: 125, heightPx: 258, yOffset: 46, clipLeft: false },   // 6
-//   { widthPx: 100, heightPx: 220, yOffset: 72, clipRight: true },   // 7 - right outer
-// ];
-
-// const GAP = 10;
-
-// export default function Home() {
-//   const [menuOpen, setMenuOpen] = useState(false);
-
-//   const maxHeight = Math.max(...layout.map((l) => l.heightPx));
-
-//   return (
-//     <div className="flex flex-col min-h-screen bg-[#f0ebe2]" style={{ fontFamily: "'Georgia', serif" }}>
-
-//       {/* HEADER */}
-//       <header className="w-full bg-[#f0ebe2] px-6 md:px-10 py-3 flex items-center justify-between relative border-b border-[#e0d8cc]">
-//         <nav className="hidden md:flex items-center gap-6 text-sm text-gray-600" style={{ fontFamily: "Arial, sans-serif" }}>
-//           {["Services", "Features", "Blog"].map((item) => (
-//             <a key={item} href="#" className="hover:text-black transition-colors">{item}</a>
-//           ))}
-//         </nav>
-
-//         <div className="hidden md:block absolute left-1/2 -translate-x-1/2 text-3xl font-bold tracking-tight text-gray-900" style={{ fontFamily: "Arial, sans-serif" }}>
-//           Journalism Society
-//         </div>
-
-//         <nav className="hidden md:flex items-center gap-6 text-sm text-gray-600" style={{ fontFamily: "Arial, sans-serif" }}>
-//           {["About", "Pricing", "Contact"].map((item) => (
-//             <a key={item} href="#" className="hover:text-black transition-colors">{item}</a>
-//           ))}
-//           <a href="#" className="flex items-center gap-2 rounded-full bg-gray-900 px-4 py-1.5 text-sm font-medium text-white hover:bg-gray-700 transition-colors">
-//             Get started
-//             <span className="flex h-5 w-5 items-center justify-center rounded-full bg-gray-600">
-//               <FiArrowRight size={12} />
-//             </span>
-//           </a>
-//         </nav>
-
-//         <button className="md:hidden z-10 text-gray-800" onClick={() => setMenuOpen(!menuOpen)}>
-//           {menuOpen ? <FiX size={22} /> : <FiMenu size={22} />}
-//         </button>
-
-//         <div className="md:hidden absolute left-1/2 -translate-x-1/2 text-base font-bold text-gray-900 whitespace-nowrap" style={{ fontFamily: "Arial, sans-serif" }}>
-//           Journalism Society
-//         </div>
-
-//         <a href="#" className="md:hidden flex items-center gap-1.5 rounded-full bg-gray-900 px-3 py-1.5 text-xs font-medium text-white z-10" style={{ fontFamily: "Arial, sans-serif" }}>
-//           Get started <span className="flex h-4 w-4 items-center justify-center rounded-full bg-gray-600"><FiArrowRight size={10} /></span>
-//         </a>
-//       </header>
-
-//       {menuOpen && (
-//         <div className="md:hidden bg-[#f0ebe2] border-b border-gray-200 px-6 py-4 flex flex-col gap-3" style={{ fontFamily: "Arial, sans-serif" }}>
-//           <p className="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-1">Menu</p>
-//           {["Services", "Features", "Blog", "About", "Pricing", "Contact"].map((item, i, arr) => (
-//             <a 
-//               key={i} 
-//               href="#" 
-//               className={`text-sm text-gray-700 hover:text-black py-1 ${i < arr.length - 1 ? "border-b border-gray-200" : ""}`}
-//             >
-//               {item}
-//             </a>
-//           ))}
-//         </div>
-//       )}
-
-//       {/* HERO SECTION */}
-//       <section className="flex flex-col items-center pt-12 pb-0 overflow-hidden">
-
-//         <div className="text-center px-4 mb-12">
-//           <h1 className="text-4xl md:text-5xl leading-tight text-gray-900">
-//             <span className="font-normal italic block">Streamline Your Team,</span>
-//             <span className="font-extrabold block">Supercharge Your Workflow</span>
-//           </h1>
-//           <p className="mt-4 text-gray-500 text-base leading-relaxed" style={{ fontFamily: "Arial, sans-serif" }}>
-//             All-in-one platform to plan, collaborate,<br />
-//             and deliver — faster and smarter.
-//           </p>
-//           <a
-//             href="#"
-//             className="inline-flex items-center gap-3 mt-6 rounded-full bg-gray-900 text-white px-7 py-3 text-sm font-semibold hover:bg-gray-700 transition-colors"
-//             style={{ fontFamily: "Arial, sans-serif" }}
-//           >
-//             Get started for Free
-//             <span className="flex h-6 w-6 items-center justify-center rounded-full bg-white text-gray-900">
-//               <FiArrowRight size={14} />
-//             </span>
-//           </a>
-//         </div>
-
-//         {/* ARC CARDS - 7 ITEMS with your custom layout */}
-//         <div
-//           className="relative flex items-end justify-center w-full"
-//           style={{ height: `${maxHeight + 30}px`, overflow: "hidden" }}
-//         >
-//           <div className="flex items-end" style={{ gap: `${GAP}px` }}>
-//             {cards.map((card, i) => {
-//               const l = layout[i];
-//               return (
-//                 <div
-//                   key={card.id}
-//                   style={{
-//                     width: `${l.widthPx}px`,
-//                     height: `${l.heightPx}px`,
-//                     marginBottom: `${l.yOffset}px`,
-//                     flexShrink: 0,
-//                     overflow: "hidden",
-//                     marginLeft: l.clipLeft ? `-${l.widthPx / 2.2}px` : "0",
-//                     marginRight: l.clipRight ? `-${l.widthPx / 2.2}px` : "0",
-//                   }}
-//                 >
-//                   <div
-//                     className="w-full h-full rounded-3xl overflow-hidden shadow-2xl"
-//                     style={{ backgroundColor: card.bg }}
-//                   >
-//                     <img
-//                       src={card.img}
-//                       alt={`Team member ${i + 1}`}
-//                       className="w-full h-full object-cover"
-//                     />
-//                   </div>
-//                 </div>
-//               );
-//             })}
-//           </div>
-//         </div>
-//       </section>
-
-//       {/* FEATURES SECTION */}
-//       <section className="bg-[#f0ebe2] pt-12 pb-20 px-6">
-//         <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-10 text-center">
-//           {[
-//             {
-//               title: "Real-Time Collaboration",
-//               desc: "Communicate seamlessly and keep everyone in sync with built-in messaging, file sharing, and live updates.",
-//             },
-//             {
-//               title: "Task & Project Tracking",
-//               desc: "Assign tasks, set deadlines, and visualize progress with boards, lists, and timelines tailored to your team's style.",
-//             },
-//             {
-//               title: "Performance Insights",
-//               desc: "Make smarter decisions with analytics that show productivity trends, bottlenecks, and team workload balance.",
-//             },
-//           ].map((f) => (
-//             <div key={f.title} className="flex flex-col items-center gap-3">
-//               <h3 className="text-base font-bold text-gray-900" style={{ fontFamily: "Arial, sans-serif" }}>{f.title}</h3>
-//               <p className="text-sm text-gray-500 leading-relaxed max-w-xs" style={{ fontFamily: "Arial, sans-serif" }}>{f.desc}</p>
-//             </div>
-//           ))}
-//         </div>
-//       </section>
-//     </div>
-//   );
-// }
-

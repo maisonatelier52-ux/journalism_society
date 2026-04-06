@@ -76,7 +76,7 @@ export default function AdminLogin() {
           </div>
 
           <button type="submit" disabled={loading}
-            className="w-full bg-[#1e2d4a] text-[#f5f0e8] py-3 font-mono-dm text-xs uppercase tracking-wider hover:bg-[#2a3f6a] transition-colors disabled:opacity-50 flex items-center justify-center gap-2">
+            className="w-full bg-[#1e2d4a] text-[#f5f0e8] py-3 font-mono-dm text-xs uppercase tracking-wider hover:bg-[#2a3f6a] transition-colors disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer">
             <FiLogIn size={14} />
             {loading ? "Logging in..." : "Login to Admin"}
           </button>
