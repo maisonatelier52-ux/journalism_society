@@ -512,7 +512,7 @@ export default function DocketsPage() {
                 style={{ color: "#1e2d4a" }}
               />
               {search && (
-                <button onClick={() => setSearch("")} className="text-[#9a8870] hover:text-[#1e2d4a] text-lg leading-none">×</button>
+                <button onClick={() => setSearch("")} className="text-[#9a8870] hover:text-[#1e2d4a] text-lg leading-none cursor-pointer">×</button>
               )}
             </div>
 
@@ -525,7 +525,7 @@ export default function DocketsPage() {
                 <button
                   key={s}
                   onClick={() => setStatus(s)}
-                  className="font-mono-dm text-xs tracking-wider uppercase px-3 py-1 border transition-all cursor-pointer"
+                  className="font-mono-dm text-[7px] md:text-xs tracking-wider uppercase px-3 py-1 border transition-all cursor-pointer"
                   style={statusFilter === s
                     ? { background: "#1e2d4a", color: "#f5f0e8", borderColor: "#1e2d4a" }
                     : { background: "transparent", color: "#7a6e5e", borderColor: "#c4b89a" }
@@ -626,28 +626,28 @@ export default function DocketsPage() {
                 <Link
                   key={d._id}
                   href={`/dockets/${d._id}`}
-                  className="row-hover grid gap-x-6 py-4 border-b cursor-pointer transition-colors no-underline block"
+                  className="row-hover grid gap-x-2 md:gap-x-6 py-4 border-b cursor-pointer transition-colors no-underline block"
                   style={{ gridTemplateColumns: "110px 1fr 90px", borderColor: "#d4c8b4", textDecoration: "none", color: "inherit" }}
                 >
                   <div className="flex flex-col gap-2 pt-0.5">
-                    <span className="font-mono-dm text-xs font-medium tracking-wider" style={{ color: "#1e2d4a" }}>{d.docketId}</span>
-                    <span className={`inline-flex items-center gap-1.5 font-mono-dm text-xs tracking-wider uppercase px-2 py-0.5 border self-start ${st.text} ${st.bg} ${st.border}`}>
+                    <span className="font-mono-dm text-[10px] md:text-xs font-medium tracking-wider" style={{ color: "#1e2d4a" }}>{d.docketId}</span>
+                    <span className={`inline-flex items-center gap-1.5 font-mono-dm text-[10px] md:text-xs tracking-wider uppercase px-2 py-0.5 border self-start ${st.text} ${st.bg} ${st.border}`}>
                       <span className={`w-1.5 h-1.5 rounded-full ${st.dot}`} />
                       {d.status}
                     </span>
                   </div>
 
                   <div>
-                    <div className="font-playfair font-bold text-base leading-snug mb-1.5" style={{ color: "#1e2d4a" }}>{displayTitle}</div>
+                    <div className="font-playfair font-bold text-[10px] md:text-base leading-snug mb-1.5" style={{ color: "#1e2d4a" }}>{displayTitle}</div>
                     <div className="flex items-center gap-3 flex-wrap">
                       <span className="font-garamond italic text-sm" style={{ color: "#7a6e5e" }}>{respondentName}</span>
-                      <span className="font-mono-dm text-xs tracking-wider uppercase px-2 py-0.5 border" style={{ color: "#9a8870", borderColor: "#c4b89a" }}>{docketType}</span>
-                      <span className="font-mono-dm text-xs" style={{ color: "#b8b0a0" }}>{exhibitCount} exhibits</span>
+                      <span className="font-mono-dm text-[8px] md:text-xs tracking-wider uppercase px-2 py-0.5 border" style={{ color: "#9a8870", borderColor: "#c4b89a" }}>{docketType}</span>
+                      <span className="font-mono-dm text-[10px] md:text-xs" style={{ color: "#b8b0a0" }}>{exhibitCount} exhibits</span>
                     </div>
                   </div>
 
                   <div className="text-right pt-0.5 flex flex-col items-end gap-2">
-                    <span className="font-mono-dm text-xs" style={{ color: "#9a8870" }}>{fmtDate(filedDate)}</span>
+                    <span className="font-mono-dm text-[10px] md:text-xs" style={{ color: "#9a8870" }}>{fmtDate(filedDate)}</span>
                     <span className="arrow-icon font-mono-dm text-sm" style={{ color: "#b8974a" }}>→</span>
                   </div>
                 </Link>

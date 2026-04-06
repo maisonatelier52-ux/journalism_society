@@ -193,7 +193,6 @@
 //   );
 // }
 
-
 // components/Header.jsx
 "use client";
 
@@ -236,7 +235,7 @@ export default function Header() {
     }
   }, [searchOpen]);
 
-  // Close on Escape
+  // Close on Escape (desktop) and handle body scroll
   useEffect(() => {
     const handleKey = (e) => {
       if (e.key === "Escape") {
@@ -244,8 +243,19 @@ export default function Header() {
       }
     };
     window.addEventListener("keydown", handleKey);
-    return () => window.removeEventListener("keydown", handleKey);
-  }, []);
+    
+    // Prevent body scroll when search is open (mobile)
+    if (searchOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    
+    return () => {
+      window.removeEventListener("keydown", handleKey);
+      document.body.style.overflow = "";
+    };
+  }, [searchOpen]);
 
   // Debounced live search
   useEffect(() => {
@@ -331,10 +341,22 @@ export default function Header() {
           onClick={closeSearch}
         >
           <div className="w-full max-w-2xl" onClick={(e) => e.stopPropagation()}>
+            {/* Header with Close Button - Mobile/Tablet */}
+            <div className="flex items-center justify-between mb-4">
+              <p className="font-mono-dm text-[0.6rem] tracking-[0.15em] text-white/40 uppercase">
+                Search dockets, documents, media, and press releases
+              </p>
+              {/* Close Button - Visible on mobile/tablet, hidden on desktop */}
+              <button
+                onClick={closeSearch}
+                className="md:hidden text-white/60 hover:text-white bg-white/10 hover:bg-white/20 rounded-full p-2 transition-all duration-200"
+                aria-label="Close search"
+              >
+                <FiX size={20} />
+              </button>
+            </div>
+
             {/* Search input */}
-            <p className="font-mono-dm text-[0.6rem] tracking-[0.15em] text-white/40 uppercase mb-3">
-              Search dockets, documents, media, and press releases
-            </p>
             <div className="relative">
               <FiSearch className="absolute left-0 top-1/2 -translate-y-1/2 text-white/40" size={20} />
               <input
@@ -350,6 +372,7 @@ export default function Header() {
                 <button
                   onClick={() => { setSearchQuery(""); setResults([]); searchRef.current?.focus(); }}
                   className="absolute right-0 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/80 transition-colors"
+                  aria-label="Clear search"
                 >
                   <FiX size={18} />
                 </button>
@@ -358,7 +381,8 @@ export default function Header() {
 
             <div className="flex justify-between items-center mt-2">
               <p className="font-mono-dm text-[0.56rem] text-white/25 tracking-[0.1em]">
-                ↑↓ navigate · Enter to go · Esc to close
+                <span className="hidden md:inline">↑↓ navigate · Enter to go · Esc to close</span>
+                <span className="md:hidden">↑↓ navigate · Enter to go</span>
               </p>
               {loading && (
                 <div className="flex items-center gap-2">
@@ -384,7 +408,7 @@ export default function Header() {
                     <button
                       key={`${result.type}-${result._id}`}
                       onClick={() => handleResultClick(result.href)}
-                      className="w-full text-left flex items-center gap-4 px-5 py-3.5 border-b border-[#e4ddd0] last:border-0 transition-colors"
+                      className="w-full text-left flex items-center gap-4 px-5 py-3.5 border-b border-[#e4ddd0] last:border-0 transition-colors cursor-pointer"
                       style={{ background: isSelected ? "#ede8dc" : "transparent" }}
                       onMouseEnter={() => setSelectedIdx(idx)}
                     >
@@ -448,7 +472,7 @@ export default function Header() {
                     router.push(`/search?q=${encodeURIComponent(searchQuery)}`);
                     closeSearch();
                   }}
-                  className="w-full px-5 py-3 bg-[#1e2d4a] text-[#f5f0e8] font-mono-dm text-[0.58rem] tracking-[0.12em] uppercase text-center hover:bg-[#2a3f6a] transition-colors"
+                  className="w-full px-5 py-3 bg-[#1e2d4a] text-[#f5f0e8] font-mono-dm text-[0.58rem] tracking-[0.12em] uppercase text-center hover:bg-[#2a3f6a] transition-colors cursor-pointer"
                 >
                   View all results for "{searchQuery}" →
                 </button>

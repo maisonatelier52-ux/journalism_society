@@ -932,12 +932,12 @@ function SearchContent() {
                 <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
                   {searchInput && (
                     <button type="button" onClick={() => { setSearchInput(""); setLiveResults([]); setShowDropdown(false); inputRef.current?.focus(); }}
-                      className="text-[#9a8870] hover:text-[#1e2d4a] transition-colors">
+                      className="text-[#9a8870] hover:text-[#1e2d4a] transition-colors cursor-pointer">
                       <FiX size={16} />
                     </button>
                   )}
                   <button type="submit"
-                    className="bg-[#b8974a] text-[#f5f0e8] font-mono-dm text-xs uppercase tracking-wider px-3 py-1.5 hover:opacity-90 transition-opacity">
+                    className="bg-[#b8974a] text-[#f5f0e8] font-mono-dm text-xs uppercase tracking-wider px-3 py-1.5 hover:opacity-90 transition-opacity cursor-pointer">
                     Search
                   </button>
                 </div>
@@ -954,7 +954,7 @@ function SearchContent() {
                   return (
                     <button key={`${result.type}-${result._id}-${idx}`}
                       onMouseDown={() => handleResultClick(result.href)}
-                      className="w-full text-left flex items-center gap-3 px-4 py-3 border-b border-[#e4ddd0] last:border-0 hover:bg-[#ede8dc] transition-colors">
+                      className="w-full text-left flex items-center gap-3 px-4 py-3 border-b border-[#e4ddd0] last:border-0 hover:bg-[#ede8dc] transition-colors cursor-pointer">
                       <div className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0"
                         style={{ background: config.bg }}>
                         <Icon size={13} style={{ color: config.color }} />
@@ -979,7 +979,7 @@ function SearchContent() {
                   );
                 })}
                 <button onMouseDown={handleSubmit}
-                  className="w-full px-4 py-2.5 bg-[#1e2d4a] text-[#f5f0e8] font-mono-dm text-[0.58rem] tracking-[0.12em] uppercase text-center hover:bg-[#2a3f6a] transition-colors">
+                  className="w-full px-4 py-2.5 bg-[#1e2d4a] text-[#f5f0e8] font-mono-dm text-[0.58rem] tracking-[0.12em] uppercase text-center hover:bg-[#2a3f6a] transition-colors cursor-pointer">
                   View all results for "{searchInput}" →
                 </button>
               </div>
@@ -1036,7 +1036,7 @@ function SearchContent() {
                     return (
                       <button key={tab.key} onClick={() => setActiveCategory(tab.key)}
                         className={`flex items-center gap-2 px-3 py-1.5 font-mono-dm text-xs tracking-wider uppercase transition-all ${
-                          isActive ? "bg-[#1e2d4a] text-[#f5f0e8]" : "bg-transparent text-[#7a6e5e] hover:bg-[#ede8dc]"
+                          isActive ? "bg-[#1e2d4a] text-[#f5f0e8]" : "bg-transparent text-[#7a6e5e] hover:bg-[#ede8dc] cursor-pointer"
                         }`}>
                         <Icon size={13} />
                         {tab.label}
