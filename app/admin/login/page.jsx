@@ -30,6 +30,8 @@ export default function AdminLogin() {
         localStorage.setItem("adminToken", response.token);
         localStorage.setItem("adminEmail", email);
         router.push("/admin/dashboard");
+        setEmail("");
+        setPassword("");
       } else {
         setError(response.message);
       }
