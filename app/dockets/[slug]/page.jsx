@@ -1495,6 +1495,15 @@ function ActionsPanel({ docket, displayTitle, respondentName, filedDate, claimDa
     }
   };
 
+  function formatFileSize(bytes) {
+  if (!bytes) return "0 B";
+
+  const sizes = ["B", "KB", "MB", "GB", "TB"];
+  const i = Math.floor(Math.log(bytes) / Math.log(1024));
+
+  return (bytes / Math.pow(1024, i)).toFixed(2) + " " + sizes[i];
+}
+
   const handleDownload = () => {
     const printContent = `
       <!DOCTYPE html>
@@ -1573,9 +1582,9 @@ function ActionsPanel({ docket, displayTitle, respondentName, filedDate, claimDa
         ${docket.exhibits?.length ? `
         <h2>Exhibits (${exhibitsCount})</h2>
         <table>
-          <thead><tr><th>ID</th><th>Title</th><th>Category</th><th>Pages</th></tr></thead>
+          <thead><tr><th>ID</th><th>Title</th><th>Category</th><th>Size</th></tr></thead>
           <tbody>
-            ${docket.exhibits.map((ex) => `<tr><td>${ex.exhibitId}</td><td>${ex.title}</td><td>${ex.category}</td><td>${ex.pages || "N/A"}</td></tr>`).join("")}
+            ${docket.exhibits.map((ex) => `<tr><td>${ex.exhibitId}</td><td>${ex.title}</td><td>${ex.category}</td><td>${formatFileSize(ex.fileSize)}</td></tr>`).join("")}
           </tbody>
         </table>
         ` : ""}

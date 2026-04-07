@@ -509,9 +509,9 @@ export default function Header() {
             Free Public Record Platform
           </span>
           <div className="flex-1" />
-          <Link href="#" className="font-mono-dm text-[0.58rem] tracking-[0.12em] text-[#c8bfa8] uppercase hover:text-white transition-colors hidden md:block">
+          {/* <Link href="#" className="font-mono-dm text-[0.58rem] tracking-[0.12em] text-[#c8bfa8] uppercase hover:text-white transition-colors hidden md:block">
             Join / Log In
-          </Link>
+          </Link> */}
           <Link href="/submit" className="font-mono-dm bg-[#b8974a] text-[#f5f0e8] px-3 py-1.5 text-[0.58rem] tracking-[0.1em] uppercase hover:opacity-90 transition-opacity whitespace-nowrap">
             Submit a Reply
           </Link>
