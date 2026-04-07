@@ -355,6 +355,9 @@
 // }
 
 
+
+
+
 // app/document-room/page.jsx
 "use client";
 
@@ -381,6 +384,22 @@ const FontStyle = () => (
     }
     input[type="text"]::placeholder { color: #9a8870; font-style: italic; }
     input[type="text"]:focus { outline: none; }
+    
+    /* Custom scrollbar for table container */
+    .table-container::-webkit-scrollbar {
+      height: 6px;
+    }
+    .table-container::-webkit-scrollbar-track {
+      background: #e4ddd0;
+      border-radius: 3px;
+    }
+    .table-container::-webkit-scrollbar-thumb {
+      background: #b8974a;
+      border-radius: 3px;
+    }
+    .table-container::-webkit-scrollbar-thumb:hover {
+      background: #1e2d4a;
+    }
   `}</style>
 );
 
@@ -452,27 +471,17 @@ export default function DocumentRoomPage() {
     setDownloading(doc._id || doc.id);
 
     try {
-      // Construct full file URL
       let fileUrl = doc.fileUrl;
-      
-      // If fileUrl is relative, prepend API base URL
       if (fileUrl.startsWith('/')) {
         fileUrl = `${API_BASE_URL}${fileUrl}`;
       }
       
-      console.log("Downloading from:", fileUrl);
-      
-      // Fetch the file
       const response = await fetch(fileUrl);
-      
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
       
-      // Get the blob
       const blob = await response.blob();
-      
-      // Create download link
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
@@ -544,68 +553,70 @@ export default function DocumentRoomPage() {
 
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
 
-      <main className="max-w-6xl mx-auto px-6 pb-20">
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 pb-20">
         {/* Page Header */}
-        <div className="pt-10 pb-8">
-          <p className="font-mono-dm text-xs tracking-widest uppercase mb-4" style={{ color: "#9a8870" }}>
+        <div className="pt-8 sm:pt-10 pb-6 sm:pb-8">
+          <p className="font-mono-dm text-xs tracking-widest uppercase mb-3 sm:mb-4" style={{ color: "#9a8870" }}>
             Public Record <span className="mx-2 opacity-40">/</span> Document Room
           </p>
-          <div className="flex items-end justify-between flex-wrap gap-4 mb-8">
+          <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4 mb-6 sm:mb-8">
             <h1 className="font-playfair leading-none">
-              <span className="block font-black text-5xl md:text-6xl" style={{ color: "#1e2d4a" }}>Document</span>
-              <span className="block font-normal italic text-5xl md:text-6xl" style={{ color: "#b8974a" }}>Room</span>
+              <span className="block font-black text-4xl sm:text-5xl md:text-6xl" style={{ color: "#1e2d4a" }}>Document</span>
+              <span className="block font-normal italic text-4xl sm:text-5xl md:text-6xl" style={{ color: "#b8974a" }}>Room</span>
             </h1>
-            <p className="font-garamond italic text-base max-w-xs leading-relaxed" style={{ color: "#7a6e5e" }}>
+            <p className="font-garamond italic text-sm sm:text-base max-w-xs leading-relaxed" style={{ color: "#7a6e5e" }}>
               Full public records, exhibits, and supporting documents from every docket.
             </p>
           </div>
 
-          {/* Stat Strip */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-0 border-b border-[#d4c8b4]">
+          {/* Stat Strip - Responsive */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-0 border-b border-[#d4c8b4] pb-4 sm:pb-6">
             {[
               { label: "Total Documents", val: counts.total, accent: "#1e2d4a" },
               { label: "Response Dockets", val: counts.byType["Response Docket"] || 0, accent: "#2d6a4f" },
               { label: "Regulatory Docs", val: (counts.byType["Regulatory Document"] || 0) + (counts.byType["Benchmark"] || 0), accent: "#b8974a" },
               { label: "Evidence & Records", val: (counts.byType["Evidence"] || 0) + (counts.byType["Institutional Record"] || 0) + (counts.byType["Public Record"] || 0), accent: "#7a6e5e" },
             ].map(s => (
-              <div key={s.label} className="pr-8 pb-6">
-                <div className="mb-3 h-0.5" style={{ background: s.accent }} />
-                <div className="font-playfair font-black text-5xl leading-none" style={{ color: s.accent }}>{s.val}</div>
-                <div className="font-mono-dm text-xs tracking-widest uppercase mt-2" style={{ color: "#9a8870" }}>{s.label}</div>
+              <div key={s.label} className="pr-4 sm:pr-8 pb-2 sm:pb-0">
+                <div className="mb-2 sm:mb-3 h-0.5" style={{ background: s.accent }} />
+                <div className="font-playfair font-black text-3xl sm:text-4xl md:text-5xl leading-none" style={{ color: s.accent }}>{s.val}</div>
+                <div className="font-mono-dm text-[0.55rem] sm:text-xs tracking-widest uppercase mt-1 sm:mt-2" style={{ color: "#9a8870" }}>{s.label}</div>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Filter / Search Bar */}
-        <div className="mb-2" style={{ background: "#ede8dc", border: "1px solid #d4c8b4", padding: "14px 20px" }}>
-          <div className="flex items-center gap-4 flex-wrap">
+        {/* Filter / Search Bar - Responsive */}
+        <div className="mb-4" style={{ background: "#ede8dc", border: "1px solid #d4c8b4", padding: "12px 16px" }}>
+          <div className="flex flex-col md:flex-row items-stretch md:items-center gap-3 md:gap-4">
             {/* Search input */}
-            <div className="flex items-center gap-2 flex-1 min-w-52" style={{ borderBottom: "1.5px solid #1e2d4a" }}>
-              <FiSearch size={13} className="text-[#9a8870] flex-shrink-0" />
-              <input
-                type="text"
-                value={search}
-                onChange={e => setSearch(e.target.value)}
-                placeholder="Search by title, document ID, or docket ID…"
-                className="bg-transparent w-full py-1.5 font-garamond text-sm"
-                style={{ color: "#1e2d4a" }}
-              />
-              {search && (
-                <button onClick={() => setSearch("")} className="text-[#9a8870] hover:text-[#1e2d4a] text-lg leading-none">×</button>
-              )}
+            <div className="flex-1 min-w-[200px] relative">
+              <div className="flex items-center gap-2 pb-1" style={{ borderBottom: "1.5px solid #1e2d4a" }}>
+                <FiSearch size={14} className="text-[#9a8870] flex-shrink-0" />
+                <input
+                  type="text"
+                  value={search}
+                  onChange={e => setSearch(e.target.value)}
+                  placeholder="Search by title, document ID, or docket ID…"
+                  className="bg-transparent w-full py-1.5 font-garamond text-sm"
+                  style={{ color: "#1e2d4a" }}
+                />
+                {search && (
+                  <button onClick={() => setSearch("")} className="text-[#9a8870] hover:text-[#1e2d4a] text-lg leading-none flex-shrink-0">×</button>
+                )}
+              </div>
             </div>
 
             <div className="hidden md:block w-px h-6 bg-[#c4b89a]" />
 
-            {/* Type filter chips */}
-            <div className="flex items-center gap-1 flex-wrap">
-              <span className="font-mono-dm text-xs tracking-widest uppercase mr-1" style={{ color: "#9a8870" }}>Type</span>
+            {/* Type filter chips - scrollable on mobile */}
+            <div className="flex items-center gap-1 flex-nowrap overflow-x-auto pb-1 md:pb-0" style={{ scrollbarWidth: "thin" }}>
+              <span className="font-mono-dm text-xs tracking-widest uppercase mr-1 flex-shrink-0" style={{ color: "#9a8870" }}>Type</span>
               {typeList.map(t => (
                 <button
                   key={t}
                   onClick={() => setType(t)}
-                  className="font-mono-dm text-xs tracking-wider uppercase px-3 py-1 border transition-all cursor-pointer"
+                  className="font-mono-dm text-[0.6rem] sm:text-xs tracking-wider uppercase px-2 sm:px-3 py-1 border transition-all cursor-pointer whitespace-nowrap flex-shrink-0"
                   style={typeFilter === t
                     ? { background: "#1e2d4a", color: "#f5f0e8", borderColor: "#1e2d4a" }
                     : { background: "transparent", color: "#7a6e5e", borderColor: "#c4b89a" }
@@ -619,103 +630,117 @@ export default function DocumentRoomPage() {
             <div className="hidden md:block w-px h-6 bg-[#c4b89a]" />
 
             {/* Sort order + reset */}
-            <div className="flex items-center gap-3 ml-auto">
-              <div className="flex items-center gap-1 font-mono-dm text-xs uppercase tracking-wider" style={{ color: "#9a8870" }}>
-                <span>Sort:</span>
-                <button onClick={() => setSort("newest")} className={`px-1.5 transition-colors ${sortBy === "newest" ? "text-[#1e2d4a] font-medium" : "hover:text-[#1e2d4a] cursor-pointer"}`}>Latest</button>
-                <span className="opacity-30">·</span>
-                <button onClick={() => setSort("oldest")} className={`px-1.5 transition-colors ${sortBy === "oldest" ? "text-[#1e2d4a] font-medium" : "hover:text-[#1e2d4a] cursor-pointer"}`}>Oldest</button>
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2">
+                <span className="font-mono-dm text-xs uppercase tracking-wider flex-shrink-0" style={{ color: "#9a8870" }}>Sort:</span>
+                <div className="flex gap-1">
+                  <button onClick={() => setSort("newest")} className={`px-1.5 py-0.5 transition-colors text-xs ${sortBy === "newest" ? "text-[#1e2d4a] font-medium" : "text-[#9a8870] hover:text-[#1e2d4a]"}`}>Latest</button>
+                  <span className="text-[#9a8870]">·</span>
+                  <button onClick={() => setSort("oldest")} className={`px-1.5 py-0.5 transition-colors text-xs ${sortBy === "oldest" ? "text-[#1e2d4a] font-medium" : "text-[#9a8870] hover:text-[#1e2d4a]"}`}>Oldest</button>
+                </div>
               </div>
               {(search || typeFilter !== "All") && (
                 <button
                   onClick={clearAll}
-                  className="font-mono-dm text-xs tracking-wider uppercase px-3 py-1 border border-dashed transition-colors cursor-pointer"
+                  className="font-mono-dm text-xs tracking-wider uppercase px-2 py-1 border border-dashed transition-colors"
                   style={{ color: "#b8974a", borderColor: "#b8974a" }}
                 >
                   Reset
                 </button>
               )}
-              <span className="font-mono-dm text-xs uppercase tracking-wider" style={{ color: "#9a8870" }}>
+              <span className="font-mono-dm text-xs uppercase tracking-wider hidden sm:inline" style={{ color: "#9a8870" }}>
                 {filtered.length} of {documents.length}
               </span>
             </div>
           </div>
         </div>
 
-        {/* Document List */}
+        {/* Document List - With Horizontal Scroll on Mobile */}
         {filtered.length === 0 ? (
-          <div className="text-center py-20 border border-[#d4c8b4]">
-            <p className="font-playfair italic text-2xl mb-2" style={{ color: "#c4b89a" }}>No documents found</p>
-            <p className="font-garamond text-base" style={{ color: "#9a8870" }}>Try adjusting your filters.</p>
+          <div className="text-center py-16 sm:py-20 border border-[#d4c8b4]">
+            <p className="font-playfair italic text-xl sm:text-2xl mb-2" style={{ color: "#c4b89a" }}>No documents found</p>
+            <p className="font-garamond text-sm sm:text-base" style={{ color: "#9a8870" }}>Try adjusting your filters.</p>
           </div>
         ) : (
           <div className="mt-4">
-            {/* Header */}
-            <div className="grid grid-cols-12 gap-4 pb-3 border-b-2 mb-0" style={{ borderColor: "#1e2d4a" }}>
-              <span className="col-span-5 font-mono-dm text-xs tracking-widest uppercase" style={{ color: "#9a8870" }}>Document Title</span>
-              <span className="col-span-2 font-mono-dm text-xs tracking-widest uppercase" style={{ color: "#9a8870" }}>Type</span>
-              <span className="col-span-2 font-mono-dm text-xs tracking-widest uppercase" style={{ color: "#9a8870" }}>Docket</span>
-              <span className="col-span-2 font-mono-dm text-xs tracking-widest uppercase" style={{ color: "#9a8870" }}>Date</span>
-              <span className="col-span-1 font-mono-dm text-xs tracking-widest uppercase text-right" style={{ color: "#9a8870" }}>Action</span>
+            {/* Responsive Table Container with Horizontal Scroll */}
+            <div className="table-container overflow-x-auto overflow-y-visible" style={{ WebkitOverflowScrolling: "touch" }}>
+              {/* Minimum width ensures proper layout on mobile */}
+              <div style={{ minWidth: "800px" }}>
+                {/* Header */}
+                <div className="grid grid-cols-12 gap-3 sm:gap-4 pb-3 border-b-2 mb-0" style={{ borderColor: "#1e2d4a" }}>
+                  <span className="col-span-5 font-mono-dm text-xs tracking-widest uppercase" style={{ color: "#9a8870" }}>Document Title</span>
+                  <span className="col-span-2 font-mono-dm text-xs tracking-widest uppercase" style={{ color: "#9a8870" }}>Type</span>
+                  <span className="col-span-2 font-mono-dm text-xs tracking-widest uppercase" style={{ color: "#9a8870" }}>Docket</span>
+                  <span className="col-span-2 font-mono-dm text-xs tracking-widest uppercase" style={{ color: "#9a8870" }}>Date</span>
+                  <span className="col-span-1 font-mono-dm text-xs tracking-widest uppercase text-right" style={{ color: "#9a8870" }}>Action</span>
+                </div>
+
+                {filtered.map(doc => (
+                  <div
+                    key={doc._id || doc.id}
+                    className="document-row grid grid-cols-12 gap-3 sm:gap-4 py-3 sm:py-4 border-b cursor-pointer transition-colors"
+                    style={{ borderColor: "#d4c8b4" }}
+                    onClick={() => window.location.href = `/document-room/${doc._id || doc.id}`}
+                  >
+                    {/* Title */}
+                    <div className="col-span-5">
+                      <div className="font-playfair font-bold text-sm sm:text-base leading-snug" style={{ color: "#1e2d4a" }}>{doc.title}</div>
+                      <div className="font-mono-dm text-[0.65rem] sm:text-xs mt-0.5 sm:mt-1" style={{ color: "#9a8870" }}>{doc.documentId || doc.id}</div>
+                    </div>
+                    {/* Type badge */}
+                    <div className="col-span-2 flex items-center">
+                      <span className="font-mono-dm text-[0.6rem] sm:text-xs tracking-wider uppercase px-1.5 sm:px-2 py-0.5 border whitespace-nowrap" style={{ color: "#7a6e5e", borderColor: "#c4b89a" }}>
+                        {doc.type}
+                      </span>
+                    </div>
+                    {/* Docket ID */}
+                    <div className="col-span-2 flex items-center">
+                      <span className="font-mono-dm text-xs text-[#b8974a] truncate">{doc.sourceDocketNumber || "—"}</span>
+                    </div>
+                    {/* Date */}
+                    <div className="col-span-2 flex items-center">
+                      <span className="font-mono-dm text-xs whitespace-nowrap" style={{ color: "#9a8870" }}>{fmtDate(doc.createdAt || doc.publishedDate)}</span>
+                    </div>
+                    {/* Download */}
+                    <div className="col-span-1 flex items-center justify-end">
+                      <button
+                        onClick={(e) => handleDownload(doc, e)}
+                        disabled={downloading === (doc._id || doc.id)}
+                        className="download-arrow cursor-pointer flex items-center gap-1 pe-2"
+                        style={{ color: "#b8974a", background: "none", border: "none" }}
+                      >
+                        {downloading === (doc._id || doc.id) ? (
+                          <div className="animate-spin rounded-full h-4 w-4 border-2 border-[#b8974a] border-t-transparent"></div>
+                        ) : (
+                          <>
+                            <FiDownload size={14} />
+                            <span className="font-mono-dm text-xs hidden sm:inline">Download</span>
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
 
-            {filtered.map(doc => (
-              <div
-                key={doc._id || doc.id}
-                className="document-row grid grid-cols-12 gap-4 py-4 border-b cursor-pointer transition-colors"
-                style={{ borderColor: "#d4c8b4" }}
-                onClick={() => window.location.href = `/document-room/${doc._id || doc.id}`}
-              >
-                {/* Title */}
-                <div className="col-span-5">
-                  <div className="font-playfair font-bold text-sm md:text-base leading-snug" style={{ color: "#1e2d4a" }}>{doc.title}</div>
-                  <div className="font-mono-dm text-xs mt-1" style={{ color: "#9a8870" }}>{doc.documentId || doc.id}</div>
-                </div>
-                {/* Type badge */}
-                <div className="col-span-2 flex items-center">
-                  <span className="font-mono-dm text-xs tracking-wider uppercase px-2 py-0.5 border" style={{ color: "#7a6e5e", borderColor: "#c4b89a" }}>
-                    {doc.type}
-                  </span>
-                </div>
-                {/* Docket ID */}
-                <div className="col-span-2 flex items-center">
-                  <span className="font-mono-dm text-xs text-[#b8974a]">{doc.sourceDocketNumber || "—"}</span>
-                </div>
-                {/* Date */}
-                <div className="col-span-2 flex items-center">
-                  <span className="font-mono-dm text-xs" style={{ color: "#9a8870" }}>{fmtDate(doc.createdAt || doc.publishedDate)}</span>
-                </div>
-                {/* Download */}
-                <div className="col-span-1 flex items-center justify-end gap-3">
-                  <button
-                    onClick={(e) => handleDownload(doc, e)}
-                    disabled={downloading === (doc._id || doc.id)}
-                    className="download-arrow cursor-pointer"
-                    style={{ color: "#b8974a", background: "none", border: "none" }}
-                  >
-                    {downloading === (doc._id || doc.id) ? (
-                      <div className="animate-spin rounded-full h-4 w-4 border-2 border-[#b8974a] border-t-transparent"></div>
-                    ) : (
-                      // <FiDownload size={16} />
-                       <div className="flex items-center gap-1 pe-2">
-                        <FiDownload size={14} />
-                        <span className="font-mono-dm text-xs">Download</span>
-                      </div>
-                    )}
-                  </button>
-                </div>
-              </div>
-            ))}
+            {/* Mobile result count */}
+            <div className="mt-3 text-center sm:hidden">
+              <span className="font-mono-dm text-xs text-[#9a8870]">
+                {filtered.length} of {documents.length} documents
+              </span>
+            </div>
           </div>
         )}
 
-        {/* Bottom CTA */}
-        <div className="mt-16 pt-8 flex items-center justify-between flex-wrap gap-5 border-t-2" style={{ borderColor: "#1e2d4a" }}>
-          <div>
-            <div className="font-playfair font-bold text-xl mb-1" style={{ color: "#1e2d4a" }}>Missing a document?</div>
-            <p className="font-garamond italic text-base" style={{ color: "#9a8870" }}>Submit a Right of Reply and we'll add all exhibits to the Document Room.</p>
+        {/* Bottom CTA - Responsive */}
+        <div className="mt-12 sm:mt-16 pt-6 sm:pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 border-t-2" style={{ borderColor: "#1e2d4a" }}>
+          <div className="text-center sm:text-left">
+            <div className="font-playfair font-bold text-lg sm:text-xl mb-1" style={{ color: "#1e2d4a" }}>Missing a document?</div>
+            <p className="font-garamond italic text-sm sm:text-base" style={{ color: "#9a8870" }}>Submit a Right of Reply and we'll add all exhibits to the Document Room.</p>
           </div>
-          <Link href="/submit" className="font-mono-dm text-xs tracking-widest uppercase px-6 py-3.5 flex items-center gap-2.5 text-[#f5f0e8] hover:opacity-90 transition-opacity" style={{ background: "#1e2d4a" }}>
+          <Link href="/submit" className="font-mono-dm text-xs tracking-widest uppercase px-5 sm:px-6 py-3 sm:py-3.5 flex items-center gap-2 text-[#f5f0e8] hover:opacity-90 transition-opacity whitespace-nowrap" style={{ background: "#1e2d4a" }}>
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 5v14M5 12h14"/></svg>
             Submit a Reply
           </Link>

@@ -52,7 +52,7 @@ export default function Footer() {
                 <a
                   key={social.label}
                   href={social.href}
-                  className="w-[34px] h-[34px] border border-white/20 rounded-full flex items-center justify-center text-[#c8bfa8] hover:border-[#f5f0e8] hover:text-[#f5f0e8] transition-all"
+                  className="w-[34px] h-[34px] border border-white/20 rounded-full flex items-center justify-center text-[#b7bcc7] hover:border-[#f5f0e8] hover:text-[#f5f0e8] transition-all"
                   aria-label={social.label}
                 >
                   <social.icon size={14} />
@@ -64,14 +64,14 @@ export default function Footer() {
           {/* Nav columns */}
           {sections.map((section) => (
             <div key={section.heading} className="flex-1 min-w-[140px]">
-              <p className="font-mono-dm text-[0.6rem] tracking-[0.14em] uppercase text-[#8a9bb8] mb-4">
+              <p className="font-mono-dm text-[0.6rem] tracking-[0.14em] uppercase text-[#b7bcc7] mb-4">
                 {section.heading}
               </p>
               {section.links.map((link) => (
                 <Link
                   key={link.name}
                   href={link.href}
-                  className="block font-garamond text-[0.95rem] text-[#6a7a94] hover:text-[#c8bfa8] transition-colors mb-2 no-underline"
+                  className="block font-garamond text-[0.95rem] text-[#b7bcc7] hover:text-[#c8bfa8] transition-colors mb-2 no-underline"
                 >
                   {link.name}
                 </Link>
@@ -82,10 +82,10 @@ export default function Footer() {
 
         {/* Bottom bar */}
         <div className="border-t border-white/10 pt-6 flex flex-wrap justify-between gap-2.5">
-          <p className="font-mono-dm text-[0.55rem] tracking-[0.1em] uppercase text-[#4a5a74]">
+          <p className="font-mono-dm text-[0.55rem] tracking-[0.1em] uppercase text-[#b7bcc7]">
             © 2026 Journalism Society. All rights reserved.
           </p>
-          <p className="font-mono-dm text-[0.55rem] tracking-[0.1em] uppercase text-[#3a4a64]">
+          <p className="font-mono-dm text-[0.55rem] tracking-[0.1em] uppercase text-[#b7bcc7]">
             Independent · Non-Partisan · Public Record
           </p>
         </div>

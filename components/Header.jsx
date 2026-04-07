@@ -501,11 +501,11 @@ export default function Header() {
       {/* ── Top Bar ── */}
       <header className="bg-[#1e2d4a] border-b border-white/10">
         <div className="max-w-6xl mx-auto px-6 h-11 flex items-center gap-5">
-          <span className="font-mono-dm text-[0.58rem] tracking-[0.12em] text-[#8a9bb8] uppercase whitespace-nowrap">
+          <span className="font-mono-dm text-[0.58rem] tracking-[0.12em] text-[#cad1e0] uppercase whitespace-nowrap">
             {getCurrentDate()}
           </span>
           <div className="w-px h-5 bg-white/20 hidden md:block" />
-          <span className="font-mono-dm text-[0.58rem] tracking-[0.1em] text-[#8a9bb8] uppercase hidden md:block">
+          <span className="font-mono-dm text-[0.58rem] tracking-[0.1em] text-[#cad1e0] uppercase hidden md:block">
             Free Public Record Platform
           </span>
           <div className="flex-1" />
