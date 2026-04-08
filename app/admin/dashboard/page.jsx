@@ -453,14 +453,14 @@ export default function AdminDashboard() {
       <p className="font-garamond text-[#7a6e5e] mb-8">Welcome back to your admin panel</p>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4 md:gap-6 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mb-8">
         {cards.map((card) => {
           const Icon = card.icon;
           return (
             <Link
               key={card.title}
               href={card.link}
-              className="block border border-[#d4c8b4] bg-white p-4 md:p-6 hover:shadow-md transition-shadow group"
+              className="block border border-[#d4c8b4] bg-white p-4 md:p-6 hover:shadow-md transition-shadow group rounded-lg hover:border-black"
             >
               <div className="flex items-center justify-between mb-4">
                 <div
