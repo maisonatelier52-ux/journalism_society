@@ -19,10 +19,21 @@ const mediaAPI = {
     return response.data;
   },
 
-  // User submissions go to /media POST → MediaSubmission model → pending
+  // // User submissions go to /media POST → MediaSubmission model → pending
+  // submitCitation: async (data) => {
+  //   const response = await api.post("/media", data);
+  //   return response.data;
+  // },
+
+   // User submissions go to /media POST → MediaSubmission model → pending
   submitCitation: async (data) => {
-    const response = await api.post("/media", data);
-    return response.data;
+    try {
+      const response = await api.post("/media", data);
+      return response.data;
+    } catch (error) {
+      // Pass the error response to the caller for proper error handling
+      throw error;
+    }
   },
   
 };

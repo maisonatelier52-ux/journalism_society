@@ -1398,6 +1398,7 @@ function MediaCitationModal({ docketId, docketTitle, onClose, onSubmit }) {
   const handleChange = (field, value) => {
     setForm({ ...form, [field]: value });
     if (errors[field]) setErrors({ ...errors, [field]: "" });
+    if (errors.submit) setErrors({ ...errors, submit: "" });
   };
 
   const validate = () => {
@@ -1414,13 +1415,18 @@ function MediaCitationModal({ docketId, docketTitle, onClose, onSubmit }) {
     const newErrors = validate();
     if (Object.keys(newErrors).length > 0) { setErrors(newErrors); return; }
     setLoading(true);
+    setErrors({});
     try {
       await mediaAPI.submitCitation({ ...form, docketId });
       setSubmitted(true);
       setTimeout(() => { onClose(); if (onSubmit) onSubmit(); }, 2000);
     } catch (error) {
       console.error("Error submitting citation:", error);
-      alert("Failed to submit. Please try again.");
+      if (error.response?.status === 409) {
+        setErrors({ submit: error.response?.data?.message || "This media entry already exists for this docket." });
+      } else {
+        setErrors({ submit: error.response?.data?.message || "Failed to submit. Please try again." });
+      }
     } finally {
       setLoading(false);
     }
@@ -1447,23 +1453,28 @@ function MediaCitationModal({ docketId, docketTitle, onClose, onSubmit }) {
             <p className="font-garamond text-[0.95rem] leading-relaxed text-[#6a5e4e] mb-5">
               Thank you. <strong>{form.outlet}</strong>'s coverage has been flagged for editorial review.
             </p>
-            <button onClick={onClose} className="font-mono-dm bg-[#1e2d4a] text-[#f5f0e8] px-6 py-2.5 text-[0.6rem] tracking-[0.12em] uppercase">Close</button>
+            <button onClick={onClose} className="font-mono-dm bg-[#1e2d4a] text-[#f5f0e8] px-6 py-2.5 text-[0.6rem] tracking-[0.12em] uppercase cursor-pointer">Close</button>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="p-6">
             <p className="font-garamond text-[0.92rem] italic text-[#7a6e5e] leading-relaxed mb-5 border-l-3 border-[#b8974a] pl-3">
               Help improve this record by submitting additional media coverage we may have missed.
             </p>
+
+            
+
             <div className="mb-4">
               <label className="font-mono-dm text-[0.52rem] tracking-[0.14em] uppercase text-[#9a8870] block mb-1.5">Publication Name *</label>
               <input type="text" value={form.outlet} onChange={(e) => handleChange("outlet", e.target.value)} className="w-full bg-[#faf6ee] border border-[#d4c8b4] p-2.5 font-garamond text-[0.97rem] text-[#1e2d4a] focus:outline-none focus:border-[#1e2d4a]" placeholder="e.g., The Hindu, BBC News"/>
               {errors.outlet && <p className="font-mono-dm text-[0.54rem] text-[#b8190c] mt-1">{errors.outlet}</p>}
             </div>
+
             <div className="mb-4">
               <label className="font-mono-dm text-[0.52rem] tracking-[0.14em] uppercase text-[#9a8870] block mb-1.5">Headline *</label>
               <input type="text" value={form.headline} onChange={(e) => handleChange("headline", e.target.value)} className="w-full bg-[#faf6ee] border border-[#d4c8b4] p-2.5 font-garamond text-[0.97rem] text-[#1e2d4a] focus:outline-none focus:border-[#1e2d4a]" placeholder="Full article title"/>
               {errors.headline && <p className="font-mono-dm text-[0.54rem] text-[#b8190c] mt-1">{errors.headline}</p>}
             </div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
               <div>
                 <label className="font-mono-dm text-[0.52rem] tracking-[0.14em] uppercase text-[#9a8870] block mb-1.5">URL *</label>
@@ -1476,20 +1487,34 @@ function MediaCitationModal({ docketId, docketTitle, onClose, onSubmit }) {
                 {errors.date && <p className="font-mono-dm text-[0.54rem] text-[#b8190c] mt-1">{errors.date}</p>}
               </div>
             </div>
+
             <div className="mb-4">
               <label className="font-mono-dm text-[0.52rem] tracking-[0.14em] uppercase text-[#9a8870] block mb-1.5">Type</label>
               <select value={form.type} onChange={(e) => handleChange("type", e.target.value)} className="w-full bg-[#faf6ee] border border-[#d4c8b4] p-2.5 font-garamond text-[0.97rem] text-[#1e2d4a] focus:outline-none focus:border-[#1e2d4a] cursor-pointer">
                 {["Original Report", "Follow-up", "Opinion", "Fact-Check", "News", "Regional", "Other"].map((t) => <option key={t}>{t}</option>)}
               </select>
             </div>
+
             <div className="mb-5">
               <label className="font-mono-dm text-[0.52rem] tracking-[0.14em] uppercase text-[#9a8870] block mb-1.5">Note (Optional)</label>
               <textarea value={form.note} onChange={(e) => handleChange("note", e.target.value)} className="w-full bg-[#faf6ee] border border-[#d4c8b4] p-2.5 font-garamond text-[0.97rem] text-[#1e2d4a] focus:outline-none focus:border-[#1e2d4a] resize-y min-h-[64px]" rows={2} placeholder="Brief summary or key points from the coverage..."/>
             </div>
-            <div className="bg-[#ede8dc] border border-[#d4c8b4] p-2.5 mb-5 flex gap-2">
+
+            {/* Duplicate Error Display */}
+            {errors.submit ? (
+              <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded flex items-start gap-2">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#b8190c" strokeWidth="2" style={{ flexShrink: 0, marginTop: 2 }}>
+                  <circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/>
+                </svg>
+                <p className="font-garamond text-sm text-red-600">{errors.submit}</p>
+              </div>
+            ) : (
+               <div className="bg-[#ede8dc] border border-[#d4c8b4] p-2.5 mb-5 flex gap-2">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#9a8870" strokeWidth="2" style={{ flexShrink: 0, marginTop: 2 }}><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
               <p className="font-garamond text-[0.86rem] italic text-[#7a6e5e]">Submissions are reviewed by our editorial team before appearing in the public record.</p>
             </div>
+            )}
+
             <div className="flex gap-2.5 justify-end">
               <button type="button" onClick={onClose} className="font-mono-dm bg-transparent border border-[#c4b89a] text-[#7a6e5e] px-5 py-2 text-[0.58rem] tracking-[0.1em] uppercase cursor-pointer hover:bg-[#ede8dc] transition-colors">Cancel</button>
               <button type="submit" disabled={loading} className="font-mono-dm bg-[#1e2d4a] text-[#f5f0e8] px-5 py-2 text-[0.58rem] tracking-[0.1em] uppercase cursor-pointer hover:bg-[#2a3f6a] transition-colors disabled:opacity-50">

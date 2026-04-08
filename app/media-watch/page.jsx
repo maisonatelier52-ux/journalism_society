@@ -1036,6 +1036,7 @@ function SkeletonCard() {
 }
 
 /* ── SUBMIT CITATION MODAL ── */
+/* ── SUBMIT CITATION MODAL ── */
 function SubmitCitationModal({ onClose, onSuccess, dockets }) {
   const [form, setForm] = useState({
     publication: "",
@@ -1094,6 +1095,8 @@ function SubmitCitationModal({ onClose, onSuccess, dockets }) {
     if (Object.keys(e).length) { setErrors(e); return; }
 
     setIsSubmitting(true);
+    setErrors({});
+    
     try {
       const result = await mediaAPI.submitCitation({
         outlet: form.publication,
@@ -1110,7 +1113,11 @@ function SubmitCitationModal({ onClose, onSuccess, dockets }) {
       setTimeout(() => onClose(), 2000);
     } catch (error) {
       console.error("Error submitting citation:", error);
-      setErrors({ submit: "Failed to submit. Please try again." });
+      if (error.response?.status === 409) {
+        setErrors({ submit: error.response?.data?.message || "This media entry already exists for this docket." });
+      } else {
+        setErrors({ submit: error.response?.data?.message || "Failed to submit. Please try again." });
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -1157,6 +1164,16 @@ function SubmitCitationModal({ onClose, onSuccess, dockets }) {
             <p className="font-garamond text-sm sm:text-[0.92rem] italic text-[#7a6e5e] leading-relaxed mb-4 sm:mb-5 border-l-2 border-[#b8974a] pl-3">
               Know of coverage that isn't listed? Submit it for editorial review.
             </p>
+
+            {/* Duplicate Error Display */}
+            {errors.submit && (
+              <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded flex items-start gap-2">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#b8190c" strokeWidth="2" style={{ flexShrink: 0, marginTop: 2 }}>
+                  <circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/>
+                </svg>
+                <p className="font-garamond text-sm text-red-600">{errors.submit}</p>
+              </div>
+            )}
 
             <div className="mb-4 docket-search-container">
               <label className="font-mono-dm text-[0.5rem] sm:text-[0.52rem] tracking-[0.14em] uppercase text-[#9a8870] block mb-1.5">
@@ -1299,12 +1316,6 @@ function SubmitCitationModal({ onClose, onSuccess, dockets }) {
                 placeholder="Brief summary of the article or key points from the coverage..."
               />
             </div>
-
-            {errors.submit && (
-              <div className="bg-[#fee2e2] border border-[#fecaca] p-2.5 mb-5">
-                <p className="font-garamond text-sm text-[#b8190c]">{errors.submit}</p>
-              </div>
-            )}
 
             <div className="bg-[#ede8dc] border border-[#d4c8b4] p-2.5 mb-5 flex gap-2">
               <FiAlertCircle size={13} className="text-[#9a8870] flex-shrink-0 mt-0.5" />
