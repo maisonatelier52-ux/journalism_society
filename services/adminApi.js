@@ -477,6 +477,70 @@ export const adminAPI = {
     const response = await api.delete("/admin/activity-log");
     return response.data;
   },
+
+    // ── Flags ─────────────────────────────────────────────────
+  /**
+   * Get all flag reports with optional filters.
+   * @param {Object} opts - { status, docketId, page, limit }
+   */
+  getFlags: async ({ status, docketId, page = 1, limit = 20 } = {}) => {
+    const params = new URLSearchParams();
+    if (status && status !== "all") params.append("status", status);
+    if (docketId) params.append("docketId", docketId);
+    params.append("page", page);
+    params.append("limit", limit);
+    const response = await api.get(`/flags/admin?${params.toString()}`);
+    return response.data;
+  },
+ 
+  /** Get a single flag by ID */
+  getFlag: async (id) => {
+    const response = await api.get(`/flags/admin/${id}`);
+    return response.data;
+  },
+ 
+  /**
+   * Update the status of a flag.
+   * @param {string} id
+   * @param {string} status - "pending" | "reviewing" | "resolved" | "dismissed"
+   * @param {string} [adminNotes]
+   * @param {string} [resolution]
+   */
+  updateFlagStatus: async (id, status, adminNotes = "", resolution = "") => {
+    const response = await api.patch(`/flags/admin/${id}/status`, {
+      status,
+      adminNotes,
+      resolution,
+    });
+    return response.data;
+  },
+ 
+  /** Update admin notes / resolution without changing status */
+  updateFlagNotes: async (id, { adminNotes, resolution }) => {
+    const response = await api.patch(`/flags/admin/${id}`, { adminNotes, resolution });
+    return response.data;
+  },
+ 
+  /** Delete a single flag */
+  deleteFlag: async (id) => {
+    const response = await api.delete(`/flags/admin/${id}`);
+    return response.data;
+  },
+ 
+  /** Delete ALL flags (or all flags for a specific docket) */
+  deleteAllFlags: async (docketId = null) => {
+    const url = docketId
+      ? `/flags/admin?docketId=${docketId}`
+      : "/flags/admin";
+    const response = await api.delete(url);
+    return response.data;
+  },
+ 
+  /** Get flag stats only */
+  getFlagStats: async () => {
+    const response = await api.get("/flags/admin/stats");
+    return response.data;
+  },
 };
 
 export default adminAPI;
