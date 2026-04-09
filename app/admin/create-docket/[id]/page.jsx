@@ -1,3 +1,5 @@
+
+// app/admin/create-docket/[id]/page.jsx
 "use client";
 
 import { useState, useEffect, useRef } from "react";
@@ -25,13 +27,36 @@ const formatDate = (date) => {
   return new Date(date).toLocaleDateString("en-GB", { day: "2-digit", month: "long", year: "numeric" });
 };
 
+/**
+ * Resolves the correct fileUrl for an exhibit coming from a submission.
+ * Handles:
+ *   1. New submissions: file.fileUrl is already set correctly
+ *   2. Old submissions: only file.filename exists (no fileUrl stored)
+ *   3. Very old submissions: filename starts with "file-" instead of "submission-"
+ */
+const resolveFileUrl = (file) => {
+  // Priority 1: use stored fileUrl if it exists and looks valid
+  if (file.fileUrl && file.fileUrl.startsWith("/uploads/")) {
+    return file.fileUrl;
+  }
+  // Priority 2: construct from filename
+  if (file.filename) {
+    return `/uploads/submissions/${file.filename}`;
+  }
+  // Priority 3: try filePath (strip everything before /uploads/)
+  if (file.filePath) {
+    const match = file.filePath.match(/(\/uploads\/.+)$/);
+    if (match) return match[1];
+  }
+  return "";
+};
+
 export default function CreateDocketPage() {
   const params = useParams();
   const router = useRouter();
   const [submission, setSubmission] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef(null);
   const [duplicateError, setDuplicateError] = useState(null);
   
@@ -43,6 +68,8 @@ export default function CreateDocketPage() {
     exhibits: [],
     status: "Open",
   });
+
+  const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
   useEffect(() => {
     fetchSubmission();
@@ -74,18 +101,22 @@ export default function CreateDocketPage() {
           type: sub.responseType || "" 
         },
         timeline: formattedTimeline,
-        exhibits: (sub.files || []).map((file, i) => ({
-          id: Date.now() + Math.random(),
-          exhibitId: `EX-${String(i + 1).padStart(2, "0")}`,
-          title: file.originalName,
-          description: "",
-          fileUrl: `/uploads/submissions/${file.filename}`,
-          fileType: file.fileType,
-          fileSize: file.fileSize,
-          category: "Evidence",
-          pages: null,
-          isNew: false,
-        })),
+        exhibits: (sub.files || []).map((file, i) => {
+          // ← KEY FIX: use resolveFileUrl to handle all cases
+          const fileUrl = resolveFileUrl(file);
+          return {
+            id: Date.now() + Math.random() + i,
+            exhibitId: file.exhibitId || `EX-${String(i + 1).padStart(2, "0")}`,
+            title: file.originalName || file.filename || `Exhibit ${i + 1}`,
+            description: "",
+            fileUrl,
+            fileType: file.fileType || "",
+            fileSize: file.fileSize || 0,
+            category: "Evidence",
+            pages: null,
+            isNew: false,
+          };
+        }),
         status: "Open",
       });
     } catch (error) {
@@ -97,26 +128,26 @@ export default function CreateDocketPage() {
 
   // Add new timeline entry
   const addTimelineEntry = () => {
-    setDocket({
-      ...docket,
+    setDocket(prev => ({
+      ...prev,
       timeline: [
-        ...docket.timeline,
+        ...prev.timeline,
         { date: "", event: "", description: "", type: "response" }
       ]
-    });
+    }));
   };
 
-  // Update timeline entry
   const updateTimelineEntry = (index, field, value) => {
     const updated = [...docket.timeline];
     updated[index] = { ...updated[index], [field]: value };
     setDocket({ ...docket, timeline: updated });
   };
 
-  // Remove timeline entry
   const removeTimelineEntry = (index) => {
-    const updated = docket.timeline.filter((_, i) => i !== index);
-    setDocket({ ...docket, timeline: updated });
+    setDocket(prev => ({
+      ...prev,
+      timeline: prev.timeline.filter((_, i) => i !== index)
+    }));
   };
 
   // Add new exhibit
@@ -134,13 +165,9 @@ export default function CreateDocketPage() {
       isNew: true,
       isUploading: false,
     };
-    setDocket({
-      ...docket,
-      exhibits: [...docket.exhibits, newExhibit]
-    });
+    setDocket(prev => ({ ...prev, exhibits: [...prev.exhibits, newExhibit] }));
   };
 
-  // Remove exhibit
   const removeExhibit = (index) => {
     const updated = docket.exhibits.filter((_, i) => i !== index);
     const renumbered = updated.map((ex, i) => ({
@@ -150,14 +177,12 @@ export default function CreateDocketPage() {
     setDocket({ ...docket, exhibits: renumbered });
   };
 
-  // Update exhibit
   const updateExhibit = (index, field, value) => {
     const updated = [...docket.exhibits];
     updated[index] = { ...updated[index], [field]: value };
     setDocket({ ...docket, exhibits: updated });
   };
 
-  // Handle file upload for exhibit
   const handleFileUpload = async (index, file) => {
     if (!file) return;
     
@@ -232,7 +257,7 @@ export default function CreateDocketPage() {
         }
       };
       
-      const result = await adminAPI.createDocket(submissionData);
+      await adminAPI.createDocket(submissionData);
       alert("✅ Docket created and published successfully!");
       router.push("/admin/dockets");
     } catch (error) {
@@ -497,8 +522,10 @@ export default function CreateDocketPage() {
               <div className="space-y-4">
                 {docket.exhibits.map((ex, i) => {
                   const categoryStyle = getCategoryStyle(ex.category);
+                  // ← Build the full URL for viewing, handling missing fileUrl gracefully
+                  const viewUrl = ex.fileUrl ? `${API_BASE}${ex.fileUrl}` : null;
                   return (
-                    <div key={ex.id} className="border border-[#e4ddd0] p-4 bg-[#faf6ee] rounded relative">
+                    <div key={ex.id || i} className="border border-[#e4ddd0] p-4 bg-[#faf6ee] rounded relative">
                       <button
                         onClick={() => removeExhibit(i)}
                         className="absolute top-3 right-3 text-red-400 hover:text-red-600 transition-colors cursor-pointer"
@@ -562,18 +589,25 @@ export default function CreateDocketPage() {
                             <div className="flex items-center gap-2 overflow-hidden">
                               <FiFileText size={14} className="text-[#b8974a] flex-shrink-0" />
                               <span className="font-garamond text-sm text-[#1e2d4a] truncate">{ex.title}</span>
-                              <span className="font-mono-dm text-xs text-[#9a8870] flex-shrink-0">
-                                ({(ex.fileSize / 1024).toFixed(1)} KB)
-                              </span>
+                              {ex.fileSize > 0 && (
+                                <span className="font-mono-dm text-xs text-[#9a8870] flex-shrink-0">
+                                  ({(ex.fileSize / 1024).toFixed(1)} KB)
+                                </span>
+                              )}
                             </div>
                             <div className="flex gap-2 flex-shrink-0">
-                              <a 
-                                href={`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}${ex.fileUrl}`}
-                                target="_blank" 
-                                className="text-[#b8974a] text-xs hover:underline cursor-pointer"
-                              >
-                                View
-                              </a>
+                              {viewUrl ? (
+                                <a 
+                                  href={viewUrl}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-[#b8974a] text-xs hover:underline cursor-pointer"
+                                >
+                                  View
+                                </a>
+                              ) : (
+                                <span className="text-[#c4b89a] text-xs">No URL</span>
+                              )}
                               <button
                                 onClick={() => {
                                   const fileInput = document.createElement('input');
@@ -589,6 +623,13 @@ export default function CreateDocketPage() {
                           </div>
                         ) : (
                           <div>
+                            {/* Show warning for missing file URL */}
+                            <div className="mb-2 p-2 bg-yellow-50 border border-yellow-200 rounded flex items-center gap-2">
+                              <FiAlertCircle size={12} className="text-yellow-600 flex-shrink-0" />
+                              <p className="font-mono-dm text-xs text-yellow-700">
+                                File URL not found. The original file may have been uploaded with an older format. Upload a replacement.
+                              </p>
+                            </div>
                             <input
                               type="file"
                               onChange={(e) => handleFileUpload(i, e.target.files[0])}

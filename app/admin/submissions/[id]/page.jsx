@@ -1,3 +1,4 @@
+// app/admin/submissions/[id]/page.jsx
 "use client";
 
 import { useState, useEffect } from "react";
