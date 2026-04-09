@@ -1003,7 +1003,7 @@
 //   );
 // }
 
-
+// app/admin/dockets/[id]/edit/page.jsx
 "use client";
 
 import { useState, useEffect, useRef } from "react";
@@ -1177,38 +1177,39 @@ export default function AdminEditDocketPage() {
   };
 
   // Exhibit functions
-  const addExhibit = () => {
-    const newExhibit = {
-      id: Date.now() + Math.random(),
-      exhibitId: `EX-${String(docket.exhibits.length + 1).padStart(2, "0")}`,
-      title: "",
-      description: "",
-      fileUrl: "",
-      fileType: "",
-      fileSize: 0,
-      category: "Evidence",
-      pages: null,
-      isNew: true,
-      isUploading: false,
-    };
-    setDocket({
-      ...docket,
-      exhibits: [...docket.exhibits, newExhibit]
-    });
+const addExhibit = () => {
+  const newExhibit = {
+    id: Date.now() + Math.random(),
+    exhibitId: `EX-${String(docket.exhibits.length + 1).padStart(2, "0")}`,
+    title: "",
+    description: "",
+    fileUrl: "",
+    fileType: "",
+    fileSize: 0,
+    category: "Evidence",
+    pages: null,
+    isNew: true,
+    isUploading: false,
   };
+  setDocket({
+    ...docket,
+    exhibits: [...docket.exhibits, newExhibit]
+  });
+};
 
-  const removeExhibit = (index) => {
-    const exhibit = docket.exhibits[index];
-    if (exhibit._id) {
-      setDeletedExhibits([...deletedExhibits, exhibit._id]);
-    }
-    const updated = docket.exhibits.filter((_, i) => i !== index);
-    const renumbered = updated.map((ex, i) => ({
-      ...ex,
-      exhibitId: `EX-${String(i + 1).padStart(2, "0")}`
-    }));
-    setDocket({ ...docket, exhibits: renumbered });
-  };
+ const removeExhibit = (index) => {
+  const exhibit = docket.exhibits[index];
+  // Store the exhibitId to delete from Document model
+  if (exhibit.exhibitId) {
+    setDeletedExhibits([...deletedExhibits, exhibit.exhibitId]);
+  }
+  const updated = docket.exhibits.filter((_, i) => i !== index);
+  const renumbered = updated.map((ex, i) => ({
+    ...ex,
+    exhibitId: `EX-${String(i + 1).padStart(2, "0")}`
+  }));
+  setDocket({ ...docket, exhibits: renumbered });
+};
 
   const updateExhibit = (index, field, value) => {
     const updated = [...docket.exhibits];
