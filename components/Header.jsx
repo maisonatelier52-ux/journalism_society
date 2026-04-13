@@ -1,5 +1,382 @@
 
-// components/Header.jsx
+// // components/Header.jsx
+// "use client";
+
+// import Link from "next/link";
+// import { useState, useEffect, useRef, useCallback } from "react";
+// import { FiSearch, FiMenu, FiX, FiFileText, FiFolder, FiMic, FiBookOpen } from "react-icons/fi";
+// import { useRouter } from "next/navigation";
+// import { searchAPI } from "@/services/api";
+
+// const TYPE_CONFIG = {
+//   docket:        { icon: FiFileText,  color: "#2d6a4f", bg: "#f0fdf4", label: "Docket" },
+//   document:      { icon: FiFolder,    color: "#b8974a", bg: "#fffbeb", label: "Document" },
+//   media:         { icon: FiMic,       color: "#1d4ed8", bg: "#eff6ff", label: "Media" },
+//   press_release: { icon: FiBookOpen,  color: "#7e22ce", bg: "#faf5ff", label: "Press Release" },
+// };
+
+// const STANCE_COLORS = {
+//   adversarial: "#b8190c",
+//   neutral:     "#6a7a94",
+//   supportive:  "#2d6a4f",
+// };
+
+// export default function Header() {
+//   const [menuOpen, setMenuOpen]         = useState(false);
+//   const [searchOpen, setSearchOpen]     = useState(false);
+//   const [searchQuery, setSearchQuery]   = useState("");
+//   const [results, setResults]           = useState([]);
+//   const [loading, setLoading]           = useState(false);
+//   const [selectedIdx, setSelectedIdx]   = useState(-1);
+  
+//   const searchRef    = useRef(null);
+//   const dropdownRef  = useRef(null);
+//   const debounceRef  = useRef(null);
+//   const router       = useRouter();
+
+//   // Focus input when overlay opens
+//   useEffect(() => {
+//     if (searchOpen && searchRef.current) {
+//       searchRef.current.focus();
+//     }
+//   }, [searchOpen]);
+
+//   // Close on Escape (desktop) and handle body scroll
+//   useEffect(() => {
+//     const handleKey = (e) => {
+//       if (e.key === "Escape") {
+//         closeSearch();
+//       }
+//     };
+//     window.addEventListener("keydown", handleKey);
+    
+//     // Prevent body scroll when search is open (mobile)
+//     if (searchOpen) {
+//       document.body.style.overflow = "hidden";
+//     } else {
+//       document.body.style.overflow = "";
+//     }
+    
+//     return () => {
+//       window.removeEventListener("keydown", handleKey);
+//       document.body.style.overflow = "";
+//     };
+//   }, [searchOpen]);
+
+//   // Debounced live search
+//   useEffect(() => {
+//     if (!searchQuery.trim()) {
+//       setResults([]);
+//       setLoading(false);
+//       setSelectedIdx(-1);
+//       return;
+//     }
+
+//     if (searchQuery.trim().length < 2) return;
+
+//     setLoading(true);
+//     clearTimeout(debounceRef.current);
+//     debounceRef.current = setTimeout(async () => {
+//       try {
+//         const data = await searchAPI.search(searchQuery);
+//         setResults(data.results || []);
+//         setSelectedIdx(-1);
+//       } catch (err) {
+//         console.error("Search error:", err);
+//         setResults([]);
+//       } finally {
+//         setLoading(false);
+//       }
+//     }, 280);
+
+//     return () => clearTimeout(debounceRef.current);
+//   }, [searchQuery]);
+
+//   const closeSearch = useCallback(() => {
+//     setSearchOpen(false);
+//     setSearchQuery("");
+//     setResults([]);
+//     setSelectedIdx(-1);
+//   }, []);
+
+//   const handleKeyDown = (e) => {
+//     if (e.key === "ArrowDown") {
+//       e.preventDefault();
+//       setSelectedIdx(i => Math.min(i + 1, results.length - 1));
+//     } else if (e.key === "ArrowUp") {
+//       e.preventDefault();
+//       setSelectedIdx(i => Math.max(i - 1, -1));
+//     } else if (e.key === "Enter") {
+//       if (selectedIdx >= 0 && results[selectedIdx]) {
+//         router.push(results[selectedIdx].href);
+//         closeSearch();
+//       } else if (searchQuery.trim()) {
+//         router.push(`/search?q=${encodeURIComponent(searchQuery)}`);
+//         closeSearch();
+//       }
+//     }
+//   };
+
+//   const handleResultClick = (href) => {
+//     router.push(href);
+//     closeSearch();
+//   };
+
+//   const getCurrentDate = () => {
+//     return new Date().toLocaleDateString("en-GB", {
+//       weekday: "long", day: "numeric",
+//       month: "long", year: "numeric",
+//     });
+//   };
+
+//   const navLinks = [
+//     { name: "Dockets",       href: "/dockets" },
+//     { name: "Document Room", href: "/document-room" },
+//     { name: "Press Releases",href: "/press-releases" },
+//     { name: "Media Watch",   href: "/media-watch" },
+//     { name: "About",         href: "/about" },
+//     { name: "Standards",     href: "/editorial-standards" },
+//   ];
+
+//   return (
+//     <>
+//       {/* ── Search Overlay ── */}
+//       {searchOpen && (
+//         <div
+//           className="fixed inset-0 z-[300] bg-[#0a0f1e]/92 flex flex-col items-center pt-[80px] px-4"
+//           onClick={closeSearch}
+//         >
+//           <div className="w-full max-w-2xl" onClick={(e) => e.stopPropagation()}>
+//             {/* Header with Close Button - Mobile/Tablet */}
+//             <div className="flex items-center justify-between mb-4">
+//               <p className="font-mono-dm text-[0.6rem] tracking-[0.15em] text-white/40 uppercase">
+//                 Search dockets, documents, media, and press releases
+//               </p>
+//               {/* Close Button - Visible on mobile/tablet, hidden on desktop */}
+//               <button
+//                 onClick={closeSearch}
+//                 className="md:hidden text-white/60 hover:text-white bg-white/10 hover:bg-white/20 rounded-full p-2 transition-all duration-200"
+//                 aria-label="Close search"
+//               >
+//                 <FiX size={20} />
+//               </button>
+//             </div>
+
+//             {/* Search input */}
+//             <div className="relative">
+//               <FiSearch className="absolute left-0 top-1/2 -translate-y-1/2 text-white/40" size={20} />
+//               <input
+//                 ref={searchRef}
+//                 type="text"
+//                 value={searchQuery}
+//                 onChange={(e) => setSearchQuery(e.target.value)}
+//                 onKeyDown={handleKeyDown}
+//                 className="w-full bg-transparent border-none border-b-2 border-white/40 font-playfair text-2xl md:text-3xl italic text-[#f5f0e8] py-3 pl-8 pr-10 outline-none placeholder:text-white/25 focus:border-white/70 transition-colors"
+//                 placeholder="Keyword, docket ID, or entity…"
+//               />
+//               {searchQuery && (
+//                 <button
+//                   onClick={() => { setSearchQuery(""); setResults([]); searchRef.current?.focus(); }}
+//                   className="absolute right-0 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/80 transition-colors"
+//                   aria-label="Clear search"
+//                 >
+//                   <FiX size={18} />
+//                 </button>
+//               )}
+//             </div>
+
+//             <div className="flex justify-between items-center mt-2">
+//               <p className="font-mono-dm text-[0.56rem] text-white/25 tracking-[0.1em]">
+//                 <span className="hidden md:inline">↑↓ navigate · Enter to go · Esc to close</span>
+//                 <span className="md:hidden">↑↓ navigate · Enter to go</span>
+//               </p>
+//               {loading && (
+//                 <div className="flex items-center gap-2">
+//                   <div className="w-3 h-3 rounded-full border border-white/30 border-t-white/70 animate-spin" />
+//                   <span className="font-mono-dm text-[0.54rem] text-white/40 uppercase tracking-wider">Searching…</span>
+//                 </div>
+//               )}
+//             </div>
+
+//             {/* ── Live Results Dropdown ── */}
+//             {results.length > 0 && (
+//               <div
+//                 ref={dropdownRef}
+//                 className="mt-3 bg-[#f5f0e8] overflow-hidden shadow-2xl max-h-[60vh] overflow-y-auto"
+//                 style={{ borderTop: "3px solid #b8974a" }}
+//               >
+//                 {results.map((result, idx) => {
+//                   const config = TYPE_CONFIG[result.type] || TYPE_CONFIG.docket;
+//                   const Icon = config.icon;
+//                   const isSelected = idx === selectedIdx;
+
+//                   return (
+//                     <button
+//                       key={`${result.type}-${result._id}`}
+//                       onClick={() => handleResultClick(result.href)}
+//                       className="w-full text-left flex items-center gap-4 px-5 py-3.5 border-b border-[#e4ddd0] last:border-0 transition-colors cursor-pointer"
+//                       style={{ background: isSelected ? "#ede8dc" : "transparent" }}
+//                       onMouseEnter={() => setSelectedIdx(idx)}
+//                     >
+//                       {/* Icon */}
+//                       <div
+//                         className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
+//                         style={{ background: config.bg }}
+//                       >
+//                         <Icon size={15} style={{ color: config.color }} />
+//                       </div>
+
+//                       {/* Text */}
+//                       <div className="flex-1 min-w-0">
+//                         <div className="flex items-center gap-2 mb-0.5 flex-wrap">
+//                           <span
+//                             className="font-mono-dm text-[0.5rem] tracking-[0.1em] uppercase px-1.5 py-0.5"
+//                             style={{ background: config.bg, color: config.color }}
+//                           >
+//                             {config.label}
+//                           </span>
+//                           {result.id && (
+//                             <span className="font-mono-dm text-[0.52rem] text-[#9a8870] tracking-wider">
+//                               {result.id}
+//                             </span>
+//                           )}
+//                           {result.stance && (
+//                             <span
+//                               className="font-mono-dm text-[0.5rem] uppercase tracking-wider"
+//                               style={{ color: STANCE_COLORS[result.stance] }}
+//                             >
+//                               {result.stance}
+//                             </span>
+//                           )}
+//                           {result.status && (
+//                             <span className="font-mono-dm text-[0.5rem] text-[#9a8870] uppercase tracking-wider ml-auto">
+//                               {result.status}
+//                             </span>
+//                           )}
+//                         </div>
+//                         <p className="font-playfair font-bold text-sm text-[#1e2d4a] truncate">
+//                           {result.title}
+//                         </p>
+//                         {result.subtitle && (
+//                           <p className="font-garamond text-xs text-[#7a6e5e] italic truncate">
+//                             {result.subtitle}
+//                           </p>
+//                         )}
+//                       </div>
+
+//                       {/* Arrow */}
+//                       <span className="font-mono-dm text-[#b8974a] text-sm flex-shrink-0 opacity-0 group-hover:opacity-100" style={{ opacity: isSelected ? 1 : 0 }}>
+//                         →
+//                       </span>
+//                     </button>
+//                   );
+//                 })}
+
+//                 {/* "View all results" footer */}
+//                 <button
+//                   onClick={() => {
+//                     router.push(`/search?q=${encodeURIComponent(searchQuery)}`);
+//                     closeSearch();
+//                   }}
+//                   className="w-full px-5 py-3 bg-[#1e2d4a] text-[#f5f0e8] font-mono-dm text-[0.58rem] tracking-[0.12em] uppercase text-center hover:bg-[#2a3f6a] transition-colors cursor-pointer"
+//                 >
+//                   View all results for "{searchQuery}" →
+//                 </button>
+//               </div>
+//             )}
+
+//             {/* No results state */}
+//             {!loading && searchQuery.trim().length >= 2 && results.length === 0 && (
+//               <div className="mt-3 bg-[#f5f0e8] px-5 py-6 text-center" style={{ borderTop: "3px solid #b8974a" }}>
+//                 <p className="font-playfair italic text-lg text-[#c4b89a] mb-1">No results found</p>
+//                 <p className="font-garamond text-sm text-[#9a8870]">
+//                   Try a different keyword, or{" "}
+//                   <button
+//                     onClick={() => { router.push(`/search?q=${encodeURIComponent(searchQuery)}`); closeSearch(); }}
+//                     className="text-[#b8974a] underline"
+//                   >
+//                     search the full record
+//                   </button>
+//                 </p>
+//               </div>
+//             )}
+//           </div>
+//         </div>
+//       )}
+
+//       {/* ── Top Bar ── */}
+//       <header className="bg-[#1e2d4a] border-b border-white/10">
+//         <div className="max-w-6xl mx-auto px-6 h-11 flex items-center gap-5">
+//           <span className="font-mono-dm text-[0.58rem] tracking-[0.12em] text-[#cad1e0] uppercase whitespace-nowrap">
+//             {getCurrentDate()}
+//           </span>
+//           <div className="w-px h-5 bg-white/20 hidden md:block" />
+//           <span className="font-mono-dm text-[0.58rem] tracking-[0.1em] text-[#cad1e0] uppercase hidden md:block">
+//             Free Public Record Platform
+//           </span>
+//           <div className="flex-1" />
+//           {/* <Link href="#" className="font-mono-dm text-[0.58rem] tracking-[0.12em] text-[#c8bfa8] uppercase hover:text-white transition-colors hidden md:block">
+//             Join / Log In
+//           </Link> */}
+//           <Link href="/submit" className="font-mono-dm bg-[#b8974a] text-[#f5f0e8] px-3 py-1.5 text-[0.58rem] tracking-[0.1em] uppercase hover:opacity-90 transition-opacity whitespace-nowrap">
+//             Submit a Reply
+//           </Link>
+//           <button
+//             onClick={() => setSearchOpen(true)}
+//             className="bg-transparent border-none cursor-pointer text-[#c8bfa8] p-1 flex items-center hover:text-white transition-colors"
+//             aria-label="Search"
+//           >
+//             <FiSearch size={15} />
+//           </button>
+//         </div>
+//       </header>
+
+//       {/* ── Main Navigation ── */}
+//       <nav className="bg-[#f5f0e8] border-b-2 border-[#1e2d4a] sticky top-0 z-50">
+//         <div className="max-w-6xl mx-auto px-6 h-13 flex items-center gap-8">
+//           <Link href="/" className="font-playfair font-bold text-[1.15rem] text-[#1e2d4a] no-underline tracking-[-0.01em] whitespace-nowrap">
+//             Journalism Society
+//           </Link>
+//           <div className="flex-1" />
+//           <div className="hidden md:flex gap-7 items-center">
+//             {navLinks.map((link) => (
+//               <Link key={link.name} href={link.href}
+//                 className="font-mono-dm text-[0.6rem] tracking-[0.1em] uppercase text-[#4a5568] hover:text-[#1e2d4a] transition-colors no-underline">
+//                 {link.name}
+//               </Link>
+//             ))}
+//           </div>
+//           <button onClick={() => setMenuOpen(!menuOpen)}
+//             className="md:hidden bg-transparent border-none cursor-pointer p-1" aria-label="Menu">
+//             {menuOpen ? <FiX size={20} stroke="#1e2d4a" /> : <FiMenu size={20} stroke="#1e2d4a" />}
+//           </button>
+//         </div>
+
+//         {menuOpen && (
+//           <div className="md:hidden bg-[#f5f0e8] border-t border-[#d4c8b4] px-6 py-4">
+//             {navLinks.map((link) => (
+//               <Link key={link.name} href={link.href}
+//                 className="block font-mono-dm text-[0.65rem] tracking-[0.1em] uppercase text-[#1e2d4a] py-2.5 border-b border-[#e4ddd0] no-underline"
+//                 onClick={() => setMenuOpen(false)}>
+//                 {link.name}
+//               </Link>
+//             ))}
+//             <button
+//               onClick={() => { setMenuOpen(false); setSearchOpen(true); }}
+//               className="w-full text-left font-mono-dm text-[0.65rem] tracking-[0.1em] uppercase text-[#1e2d4a] py-2.5 flex items-center gap-2">
+//               <FiSearch size={14} />
+//               Search
+//             </button>
+//           </div>
+//         )}
+//       </nav>
+//     </>
+//   );
+// }
+
+
+// components/Header.jsx — SEO ENHANCED
+// Changes: Added title="" to every <Link> and <a> tag
 "use client";
 
 import Link from "next/link";
@@ -34,46 +411,33 @@ export default function Header() {
   const debounceRef  = useRef(null);
   const router       = useRouter();
 
-  // Focus input when overlay opens
   useEffect(() => {
     if (searchOpen && searchRef.current) {
       searchRef.current.focus();
     }
   }, [searchOpen]);
 
-  // Close on Escape (desktop) and handle body scroll
   useEffect(() => {
     const handleKey = (e) => {
-      if (e.key === "Escape") {
-        closeSearch();
-      }
+      if (e.key === "Escape") { closeSearch(); }
     };
     window.addEventListener("keydown", handleKey);
-    
-    // Prevent body scroll when search is open (mobile)
     if (searchOpen) {
       document.body.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "";
     }
-    
     return () => {
       window.removeEventListener("keydown", handleKey);
       document.body.style.overflow = "";
     };
   }, [searchOpen]);
 
-  // Debounced live search
   useEffect(() => {
     if (!searchQuery.trim()) {
-      setResults([]);
-      setLoading(false);
-      setSelectedIdx(-1);
-      return;
+      setResults([]); setLoading(false); setSelectedIdx(-1); return;
     }
-
     if (searchQuery.trim().length < 2) return;
-
     setLoading(true);
     clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(async () => {
@@ -88,7 +452,6 @@ export default function Header() {
         setLoading(false);
       }
     }, 280);
-
     return () => clearTimeout(debounceRef.current);
   }, [searchQuery]);
 
@@ -130,12 +493,12 @@ export default function Header() {
   };
 
   const navLinks = [
-    { name: "Dockets",       href: "/dockets" },
-    { name: "Document Room", href: "/document-room" },
-    { name: "Press Releases",href: "/press-releases" },
-    { name: "Media Watch",   href: "/media-watch" },
-    { name: "About",         href: "/about" },
-    { name: "Standards",     href: "/editorial-standards" },
+    { name: "Dockets",        href: "/dockets",            title: "Browse all Right of Reply dockets in the public record" },
+    { name: "Document Room",  href: "/document-room",      title: "Access legal documents, exhibits, and public records" },
+    { name: "Press Releases", href: "/press-releases",     title: "Read official statements and press releases" },
+    { name: "Media Watch",    href: "/media-watch",        title: "Track media coverage across all dockets" },
+    { name: "About",          href: "/about",              title: "About Journalism Society and our mission" },
+    { name: "Standards",      href: "/editorial-standards",title: "Read our editorial standards and review process" },
   ];
 
   return (
@@ -147,24 +510,22 @@ export default function Header() {
           onClick={closeSearch}
         >
           <div className="w-full max-w-2xl" onClick={(e) => e.stopPropagation()}>
-            {/* Header with Close Button - Mobile/Tablet */}
             <div className="flex items-center justify-between mb-4">
               <p className="font-mono-dm text-[0.6rem] tracking-[0.15em] text-white/40 uppercase">
                 Search dockets, documents, media, and press releases
               </p>
-              {/* Close Button - Visible on mobile/tablet, hidden on desktop */}
               <button
                 onClick={closeSearch}
                 className="md:hidden text-white/60 hover:text-white bg-white/10 hover:bg-white/20 rounded-full p-2 transition-all duration-200"
                 aria-label="Close search"
+                title="Close search"
               >
                 <FiX size={20} />
               </button>
             </div>
 
-            {/* Search input */}
             <div className="relative">
-              <FiSearch className="absolute left-0 top-1/2 -translate-y-1/2 text-white/40" size={20} />
+              <FiSearch className="absolute left-0 top-1/2 -translate-y-1/2 text-white/40" size={20} aria-hidden="true" />
               <input
                 ref={searchRef}
                 type="text"
@@ -173,12 +534,14 @@ export default function Header() {
                 onKeyDown={handleKeyDown}
                 className="w-full bg-transparent border-none border-b-2 border-white/40 font-playfair text-2xl md:text-3xl italic text-[#f5f0e8] py-3 pl-8 pr-10 outline-none placeholder:text-white/25 focus:border-white/70 transition-colors"
                 placeholder="Keyword, docket ID, or entity…"
+                aria-label="Search the public record"
               />
               {searchQuery && (
                 <button
                   onClick={() => { setSearchQuery(""); setResults([]); searchRef.current?.focus(); }}
                   className="absolute right-0 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/80 transition-colors"
-                  aria-label="Clear search"
+                  aria-label="Clear search query"
+                  title="Clear search"
                 >
                   <FiX size={18} />
                 </button>
@@ -198,7 +561,7 @@ export default function Header() {
               )}
             </div>
 
-            {/* ── Live Results Dropdown ── */}
+            {/* Live Results */}
             {results.length > 0 && (
               <div
                 ref={dropdownRef}
@@ -209,83 +572,42 @@ export default function Header() {
                   const config = TYPE_CONFIG[result.type] || TYPE_CONFIG.docket;
                   const Icon = config.icon;
                   const isSelected = idx === selectedIdx;
-
                   return (
                     <button
                       key={`${result.type}-${result._id}`}
                       onClick={() => handleResultClick(result.href)}
+                      title={`View ${config.label}: ${result.title}`}
                       className="w-full text-left flex items-center gap-4 px-5 py-3.5 border-b border-[#e4ddd0] last:border-0 transition-colors cursor-pointer"
                       style={{ background: isSelected ? "#ede8dc" : "transparent" }}
                       onMouseEnter={() => setSelectedIdx(idx)}
                     >
-                      {/* Icon */}
-                      <div
-                        className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
-                        style={{ background: config.bg }}
-                      >
-                        <Icon size={15} style={{ color: config.color }} />
+                      <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: config.bg }}>
+                        <Icon size={15} style={{ color: config.color }} aria-hidden="true" />
                       </div>
-
-                      {/* Text */}
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-0.5 flex-wrap">
-                          <span
-                            className="font-mono-dm text-[0.5rem] tracking-[0.1em] uppercase px-1.5 py-0.5"
-                            style={{ background: config.bg, color: config.color }}
-                          >
-                            {config.label}
-                          </span>
-                          {result.id && (
-                            <span className="font-mono-dm text-[0.52rem] text-[#9a8870] tracking-wider">
-                              {result.id}
-                            </span>
-                          )}
-                          {result.stance && (
-                            <span
-                              className="font-mono-dm text-[0.5rem] uppercase tracking-wider"
-                              style={{ color: STANCE_COLORS[result.stance] }}
-                            >
-                              {result.stance}
-                            </span>
-                          )}
-                          {result.status && (
-                            <span className="font-mono-dm text-[0.5rem] text-[#9a8870] uppercase tracking-wider ml-auto">
-                              {result.status}
-                            </span>
-                          )}
+                          <span className="font-mono-dm text-[0.5rem] tracking-[0.1em] uppercase px-1.5 py-0.5" style={{ background: config.bg, color: config.color }}>{config.label}</span>
+                          {result.id && <span className="font-mono-dm text-[0.52rem] text-[#9a8870] tracking-wider">{result.id}</span>}
+                          {result.stance && <span className="font-mono-dm text-[0.5rem] uppercase tracking-wider" style={{ color: STANCE_COLORS[result.stance] }}>{result.stance}</span>}
+                          {result.status && <span className="font-mono-dm text-[0.5rem] text-[#9a8870] uppercase tracking-wider ml-auto">{result.status}</span>}
                         </div>
-                        <p className="font-playfair font-bold text-sm text-[#1e2d4a] truncate">
-                          {result.title}
-                        </p>
-                        {result.subtitle && (
-                          <p className="font-garamond text-xs text-[#7a6e5e] italic truncate">
-                            {result.subtitle}
-                          </p>
-                        )}
+                        <p className="font-playfair font-bold text-sm text-[#1e2d4a] truncate">{result.title}</p>
+                        {result.subtitle && <p className="font-garamond text-xs text-[#7a6e5e] italic truncate">{result.subtitle}</p>}
                       </div>
-
-                      {/* Arrow */}
-                      <span className="font-mono-dm text-[#b8974a] text-sm flex-shrink-0 opacity-0 group-hover:opacity-100" style={{ opacity: isSelected ? 1 : 0 }}>
-                        →
-                      </span>
+                      <span className="font-mono-dm text-[#b8974a] text-sm flex-shrink-0" style={{ opacity: isSelected ? 1 : 0 }}>→</span>
                     </button>
                   );
                 })}
-
-                {/* "View all results" footer */}
                 <button
-                  onClick={() => {
-                    router.push(`/search?q=${encodeURIComponent(searchQuery)}`);
-                    closeSearch();
-                  }}
+                  onClick={() => { router.push(`/search?q=${encodeURIComponent(searchQuery)}`); closeSearch(); }}
+                  title={`View all search results for "${searchQuery}"`}
                   className="w-full px-5 py-3 bg-[#1e2d4a] text-[#f5f0e8] font-mono-dm text-[0.58rem] tracking-[0.12em] uppercase text-center hover:bg-[#2a3f6a] transition-colors cursor-pointer"
                 >
-                  View all results for "{searchQuery}" →
+                  View all results for &quot;{searchQuery}&quot; →
                 </button>
               </div>
             )}
 
-            {/* No results state */}
             {!loading && searchQuery.trim().length >= 2 && results.length === 0 && (
               <div className="mt-3 bg-[#f5f0e8] px-5 py-6 text-center" style={{ borderTop: "3px solid #b8974a" }}>
                 <p className="font-playfair italic text-lg text-[#c4b89a] mb-1">No results found</p>
@@ -293,6 +615,7 @@ export default function Header() {
                   Try a different keyword, or{" "}
                   <button
                     onClick={() => { router.push(`/search?q=${encodeURIComponent(searchQuery)}`); closeSearch(); }}
+                    title="Search the full public record"
                     className="text-[#b8974a] underline"
                   >
                     search the full record
@@ -310,61 +633,81 @@ export default function Header() {
           <span className="font-mono-dm text-[0.58rem] tracking-[0.12em] text-[#cad1e0] uppercase whitespace-nowrap">
             {getCurrentDate()}
           </span>
-          <div className="w-px h-5 bg-white/20 hidden md:block" />
+          <div className="w-px h-5 bg-white/20 hidden md:block" aria-hidden="true" />
           <span className="font-mono-dm text-[0.58rem] tracking-[0.1em] text-[#cad1e0] uppercase hidden md:block">
             Free Public Record Platform
           </span>
           <div className="flex-1" />
-          {/* <Link href="#" className="font-mono-dm text-[0.58rem] tracking-[0.12em] text-[#c8bfa8] uppercase hover:text-white transition-colors hidden md:block">
-            Join / Log In
-          </Link> */}
-          <Link href="/submit" className="font-mono-dm bg-[#b8974a] text-[#f5f0e8] px-3 py-1.5 text-[0.58rem] tracking-[0.1em] uppercase hover:opacity-90 transition-opacity whitespace-nowrap">
+          <Link
+            href="/submit"
+            title="Submit your Right of Reply to be published in the public record"
+            className="font-mono-dm bg-[#b8974a] text-[#f5f0e8] px-3 py-1.5 text-[0.58rem] tracking-[0.1em] uppercase hover:opacity-90 transition-opacity whitespace-nowrap"
+          >
             Submit a Reply
           </Link>
           <button
             onClick={() => setSearchOpen(true)}
             className="bg-transparent border-none cursor-pointer text-[#c8bfa8] p-1 flex items-center hover:text-white transition-colors"
-            aria-label="Search"
+            aria-label="Search the public record"
+            title="Search dockets, documents, media, and press releases"
           >
-            <FiSearch size={15} />
+            <FiSearch size={15} aria-hidden="true" />
           </button>
         </div>
       </header>
 
       {/* ── Main Navigation ── */}
-      <nav className="bg-[#f5f0e8] border-b-2 border-[#1e2d4a] sticky top-0 z-50">
+      <nav className="bg-[#f5f0e8] border-b-2 border-[#1e2d4a] sticky top-0 z-50" aria-label="Main navigation">
         <div className="max-w-6xl mx-auto px-6 h-13 flex items-center gap-8">
-          <Link href="/" className="font-playfair font-bold text-[1.15rem] text-[#1e2d4a] no-underline tracking-[-0.01em] whitespace-nowrap">
+          <Link
+            href="/"
+            title="Journalism Society — Right of Reply. In Full."
+            className="font-playfair font-bold text-[1.15rem] text-[#1e2d4a] no-underline tracking-[-0.01em] whitespace-nowrap"
+          >
             Journalism Society
           </Link>
           <div className="flex-1" />
           <div className="hidden md:flex gap-7 items-center">
             {navLinks.map((link) => (
-              <Link key={link.name} href={link.href}
-                className="font-mono-dm text-[0.6rem] tracking-[0.1em] uppercase text-[#4a5568] hover:text-[#1e2d4a] transition-colors no-underline">
+              <Link
+                key={link.name}
+                href={link.href}
+                title={link.title}
+                className="font-mono-dm text-[0.6rem] tracking-[0.1em] uppercase text-[#4a5568] hover:text-[#1e2d4a] transition-colors no-underline"
+              >
                 {link.name}
               </Link>
             ))}
           </div>
-          <button onClick={() => setMenuOpen(!menuOpen)}
-            className="md:hidden bg-transparent border-none cursor-pointer p-1" aria-label="Menu">
-            {menuOpen ? <FiX size={20} stroke="#1e2d4a" /> : <FiMenu size={20} stroke="#1e2d4a" />}
+          <button
+            onClick={() => setMenuOpen(!menuOpen)}
+            className="md:hidden bg-transparent border-none cursor-pointer p-1"
+            aria-label={menuOpen ? "Close navigation menu" : "Open navigation menu"}
+            title={menuOpen ? "Close menu" : "Open menu"}
+          >
+            {menuOpen ? <FiX size={20} stroke="#1e2d4a" aria-hidden="true" /> : <FiMenu size={20} stroke="#1e2d4a" aria-hidden="true" />}
           </button>
         </div>
 
         {menuOpen && (
           <div className="md:hidden bg-[#f5f0e8] border-t border-[#d4c8b4] px-6 py-4">
             {navLinks.map((link) => (
-              <Link key={link.name} href={link.href}
+              <Link
+                key={link.name}
+                href={link.href}
+                title={link.title}
                 className="block font-mono-dm text-[0.65rem] tracking-[0.1em] uppercase text-[#1e2d4a] py-2.5 border-b border-[#e4ddd0] no-underline"
-                onClick={() => setMenuOpen(false)}>
+                onClick={() => setMenuOpen(false)}
+              >
                 {link.name}
               </Link>
             ))}
             <button
               onClick={() => { setMenuOpen(false); setSearchOpen(true); }}
-              className="w-full text-left font-mono-dm text-[0.65rem] tracking-[0.1em] uppercase text-[#1e2d4a] py-2.5 flex items-center gap-2">
-              <FiSearch size={14} />
+              title="Search the public record"
+              className="w-full text-left font-mono-dm text-[0.65rem] tracking-[0.1em] uppercase text-[#1e2d4a] py-2.5 flex items-center gap-2"
+            >
+              <FiSearch size={14} aria-hidden="true" />
               Search
             </button>
           </div>
