@@ -1051,7 +1051,7 @@ export default function SingleDocketPage() {
                 { key: "media", label: `Media Watch (${mediaItems.length})` },
               ].map((tab) => (
                 <button key={tab.key} onClick={() => setActiveTab(tab.key)} className="tab-btn"
-                  style={mono({ fontSize: "0.6rem", letterSpacing: "0.12em", textTransform: "uppercase", padding: "10px 14px", border: "none", cursor: "pointer", whiteSpace: "nowrap", background: activeTab === tab.key ? "#1e2d4a" : "transparent", color: activeTab === tab.key ? "#f5f0e8" : "#9a8870", marginBottom: -2, flexShrink: 0 })}>
+                  style={mono({ fontSize: "0.6rem", letterSpacing: "0.12em", textTransform: "uppercase", padding: "10px 14px", border: "none", cursor: "pointer", whiteSpace: "nowrap", background: activeTab === tab.key ? "#1e2d4a" : "transparent", color: activeTab === tab.key ? "#f5f0e8" : "#643f0f", marginBottom: -2, flexShrink: 0 })}>
                   {tab.label}
                 </button>
               ))}
