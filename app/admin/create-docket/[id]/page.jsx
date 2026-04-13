@@ -10,6 +10,7 @@
 //   FiExternalLink, FiUser, FiCalendar, FiMail, FiAlertCircle
 // } from "react-icons/fi";
 // import adminAPI from "@/services/adminApi";
+// import resolveFileUrl from "@/utils/fileUrl";
 
 // // Category options for exhibits
 // const EXHIBIT_CATEGORIES = [
@@ -34,22 +35,23 @@
 //  *   2. Old submissions: only file.filename exists (no fileUrl stored)
 //  *   3. Very old submissions: filename starts with "file-" instead of "submission-"
 //  */
-// const resolveFileUrl = (file) => {
-//   // Priority 1: use stored fileUrl if it exists and looks valid
-//   if (file.fileUrl && file.fileUrl.startsWith("/uploads/")) {
-//     return file.fileUrl;
-//   }
-//   // Priority 2: construct from filename
-//   if (file.filename) {
-//     return `/uploads/submissions/${file.filename}`;
-//   }
-//   // Priority 3: try filePath (strip everything before /uploads/)
-//   if (file.filePath) {
-//     const match = file.filePath.match(/(\/uploads\/.+)$/);
-//     if (match) return match[1];
-//   }
-//   return "";
-// };
+// // const resolveFileUrl = (file) => {
+  
+// //   if (file.fileUrl && file.fileUrl.startsWith("/uploads/")) {
+// //     return file.fileUrl;
+// //   }
+
+// //   if (file.filename) {
+// //     return `/uploads/submissions/${file.filename}`;
+// //   }
+
+// //   if (file.filePath) {
+// //     const match = file.filePath.match(/(\/uploads\/.+)$/);
+// //     if (match) return match[1];
+// //   }
+// //   return "";
+// // };
+
 
 // export default function CreateDocketPage() {
 //   const params = useParams();
@@ -103,7 +105,10 @@
 //         timeline: formattedTimeline,
 //         exhibits: (sub.files || []).map((file, i) => {
 //           // ← KEY FIX: use resolveFileUrl to handle all cases
-//           const fileUrl = resolveFileUrl(file);
+//           // const fileUrl = resolveFileUrl(file);
+//           const fileUrl = resolveFileUrl(
+//             file.fileUrl || file.url || file.path || `/uploads/submissions/${file.filename}`
+//           );
 //           return {
 //             id: Date.now() + Math.random() + i,
 //             exhibitId: file.exhibitId || `EX-${String(i + 1).padStart(2, "0")}`,
@@ -523,7 +528,10 @@
 //                 {docket.exhibits.map((ex, i) => {
 //                   const categoryStyle = getCategoryStyle(ex.category);
 //                   // ← Build the full URL for viewing, handling missing fileUrl gracefully
-//                   const viewUrl = ex.fileUrl ? `${API_BASE}${ex.fileUrl}` : null;
+//                   // const viewUrl = ex.fileUrl ? `${API_BASE}${ex.fileUrl}` : null;
+//                   const viewUrl = ex.fileUrl ? resolveFileUrl(ex.fileUrl) : null;
+//                   console.log("viewurl:",viewUrl);
+                  
 //                   return (
 //                     <div key={ex.id || i} className="border border-[#e4ddd0] p-4 bg-[#faf6ee] rounded relative">
 //                       <button
@@ -670,8 +678,6 @@
 //   );
 // }
 
-
-
 // app/admin/create-docket/[id]/page.jsx
 "use client";
 
@@ -685,7 +691,6 @@ import {
 import adminAPI from "@/services/adminApi";
 import resolveFileUrl from "@/utils/fileUrl";
 
-// Category options for exhibits
 const EXHIBIT_CATEGORIES = [
   { value: "Evidence", label: "Evidence", color: "#15803d", bg: "#f0fdf4" },
   { value: "Claim", label: "Claim", color: "#b91c1c", bg: "#fef2f2" },
@@ -696,35 +701,28 @@ const EXHIBIT_CATEGORIES = [
   { value: "Institutional", label: "Institutional", color: "#475569", bg: "#f8fafc" },
 ];
 
+const ALLOWED_FILE_TYPES = [
+  "application/pdf",
+  "application/msword",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  "image/jpeg",
+  "image/jpg",
+  "image/png",
+  "application/vnd.ms-excel",
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  "text/csv",
+];
+const MAX_FILE_SIZE_MB = 25;
+const MAX_FILES = 10;
+
 const formatDate = (date) => {
   if (!date) return "N/A";
   return new Date(date).toLocaleDateString("en-GB", { day: "2-digit", month: "long", year: "numeric" });
 };
 
-/**
- * Resolves the correct fileUrl for an exhibit coming from a submission.
- * Handles:
- *   1. New submissions: file.fileUrl is already set correctly
- *   2. Old submissions: only file.filename exists (no fileUrl stored)
- *   3. Very old submissions: filename starts with "file-" instead of "submission-"
- */
-// const resolveFileUrl = (file) => {
-  
-//   if (file.fileUrl && file.fileUrl.startsWith("/uploads/")) {
-//     return file.fileUrl;
-//   }
-
-//   if (file.filename) {
-//     return `/uploads/submissions/${file.filename}`;
-//   }
-
-//   if (file.filePath) {
-//     const match = file.filePath.match(/(\/uploads\/.+)$/);
-//     if (match) return match[1];
-//   }
-//   return "";
-// };
-
+// Inline field error component
+const FieldError = ({ message }) =>
+  message ? <p className="mt-1 text-xs text-red-500 font-mono-dm">{message}</p> : null;
 
 export default function CreateDocketPage() {
   const params = useParams();
@@ -732,9 +730,9 @@ export default function CreateDocketPage() {
   const [submission, setSubmission] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const fileInputRef = useRef(null);
   const [duplicateError, setDuplicateError] = useState(null);
-  
+  const [errors, setErrors] = useState({});
+
   const [docket, setDocket] = useState({
     title: "",
     summary: { claim: "", context: "", whyMatters: "" },
@@ -743,8 +741,6 @@ export default function CreateDocketPage() {
     exhibits: [],
     status: "Open",
   });
-
-  const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
   useEffect(() => {
     fetchSubmission();
@@ -755,15 +751,14 @@ export default function CreateDocketPage() {
       const response = await adminAPI.getSubmission(params.id);
       const sub = response.submission;
       setSubmission(sub);
-      
-      // Convert timeline from submission format to docket format
+
       const formattedTimeline = (sub.timeline || []).map(entry => ({
         date: entry.date || "",
         event: entry.event || "",
         description: entry.detail || "",
         type: "response"
       }));
-      
+
       setDocket({
         title: sub.responseTitle || "",
         summary: { 
@@ -777,8 +772,6 @@ export default function CreateDocketPage() {
         },
         timeline: formattedTimeline,
         exhibits: (sub.files || []).map((file, i) => {
-          // ← KEY FIX: use resolveFileUrl to handle all cases
-          // const fileUrl = resolveFileUrl(file);
           const fileUrl = resolveFileUrl(
             file.fileUrl || file.url || file.path || `/uploads/submissions/${file.filename}`
           );
@@ -804,14 +797,24 @@ export default function CreateDocketPage() {
     }
   };
 
-  // Add new timeline entry
+  // ── File validation helper ──────────────────────────────────────────────────
+  const validateFile = (file) => {
+    if (!ALLOWED_FILE_TYPES.includes(file.type)) {
+      alert(`File "${file.name}" has an unsupported format. Allowed: PDF, Word, Excel, CSV, JPEG, PNG.`);
+      return false;
+    }
+    if (file.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
+      alert(`File "${file.name}" exceeds the ${MAX_FILE_SIZE_MB} MB size limit.`);
+      return false;
+    }
+    return true;
+  };
+
+  // ── Timeline ───────────────────────────────────────────────────────────────
   const addTimelineEntry = () => {
     setDocket(prev => ({
       ...prev,
-      timeline: [
-        ...prev.timeline,
-        { date: "", event: "", description: "", type: "response" }
-      ]
+      timeline: [...prev.timeline, { date: "", event: "", description: "", type: "response" }]
     }));
   };
 
@@ -822,36 +825,39 @@ export default function CreateDocketPage() {
   };
 
   const removeTimelineEntry = (index) => {
-    setDocket(prev => ({
-      ...prev,
-      timeline: prev.timeline.filter((_, i) => i !== index)
-    }));
+    setDocket(prev => ({ ...prev, timeline: prev.timeline.filter((_, i) => i !== index) }));
   };
 
-  // Add new exhibit
+  // ── Exhibits ───────────────────────────────────────────────────────────────
   const addExhibit = () => {
-    const newExhibit = {
-      id: Date.now() + Math.random(),
-      exhibitId: `EX-${String(docket.exhibits.length + 1).padStart(2, "0")}`,
-      title: "New Exhibit",
-      description: "",
-      fileUrl: "",
-      fileType: "",
-      fileSize: 0,
-      category: "Evidence",
-      pages: null,
-      isNew: true,
-      isUploading: false,
-    };
-    setDocket(prev => ({ ...prev, exhibits: [...prev.exhibits, newExhibit] }));
+    if (docket.exhibits.length >= MAX_FILES) {
+      alert(`Maximum ${MAX_FILES} exhibits are allowed.`);
+      return;
+    }
+    setDocket(prev => ({
+      ...prev,
+      exhibits: [
+        ...prev.exhibits,
+        {
+          id: Date.now() + Math.random(),
+          exhibitId: `EX-${String(prev.exhibits.length + 1).padStart(2, "0")}`,
+          title: "New Exhibit",
+          description: "",
+          fileUrl: "",
+          fileType: "",
+          fileSize: 0,
+          category: "Evidence",
+          pages: null,
+          isNew: true,
+          isUploading: false,
+        }
+      ]
+    }));
   };
 
   const removeExhibit = (index) => {
     const updated = docket.exhibits.filter((_, i) => i !== index);
-    const renumbered = updated.map((ex, i) => ({
-      ...ex,
-      exhibitId: `EX-${String(i + 1).padStart(2, "0")}`
-    }));
+    const renumbered = updated.map((ex, i) => ({ ...ex, exhibitId: `EX-${String(i + 1).padStart(2, "0")}` }));
     setDocket({ ...docket, exhibits: renumbered });
   };
 
@@ -863,14 +869,14 @@ export default function CreateDocketPage() {
 
   const handleFileUpload = async (index, file) => {
     if (!file) return;
-    
+    if (!validateFile(file)) return;
+
     const updated = [...docket.exhibits];
     updated[index] = { ...updated[index], isUploading: true };
     setDocket({ ...docket, exhibits: updated });
-    
+
     try {
       const result = await adminAPI.uploadExhibit(file);
-      
       if (result.success) {
         const updatedExhibit = [...docket.exhibits];
         updatedExhibit[index] = {
@@ -888,34 +894,52 @@ export default function CreateDocketPage() {
     } catch (error) {
       console.error("Error uploading file:", error);
       alert("Failed to upload file. Please try again.");
-      
       const resetUpload = [...docket.exhibits];
       resetUpload[index] = { ...resetUpload[index], isUploading: false };
       setDocket({ ...docket, exhibits: resetUpload });
     }
   };
 
+  // ── Validation ──────────────────────────────────────────────────────────────
+  const validate = () => {
+    const newErrors = {};
+
+    if (!docket.title.trim()) newErrors.title = "Docket title is required.";
+    if (!docket.summary.claim.trim()) newErrors.summarylaim = "Claim summary is required.";
+    if (!docket.response.body.trim()) newErrors.responseBody = "Response body is required.";
+    if (!docket.response.type) newErrors.responseType = "Response type is required.";
+
+    // Exhibit validations
+    const exhibitErrs = {};
+    docket.exhibits.forEach((ex, i) => {
+      const errs = {};
+      if (!ex.title.trim()) errs.title = "Title is required.";
+      if (!ex.fileUrl) errs.fileUrl = "File is required.";
+      if (Object.keys(errs).length) exhibitErrs[i] = errs;
+    });
+    if (Object.keys(exhibitErrs).length) newErrors.exhibits = exhibitErrs;
+
+    setErrors(newErrors);
+    // Return true only if no top-level errors (excluding nested exhibit errors — those show inline)
+    const topLevelErrors = Object.keys(newErrors).filter(k => k !== "exhibits");
+    return topLevelErrors.length === 0 && Object.keys(exhibitErrs).length === 0;
+  };
+
+  // ── Save ───────────────────────────────────────────────────────────────────
   const handleSave = async () => {
-    if (!docket.title.trim()) { 
-      alert("Please add a title"); 
-      return; 
-    }
-    if (!docket.summary.claim.trim()) { 
-      alert("Please add a claim summary"); 
-      return; 
-    }
-    
+    if (!validate()) return;
+
     if (docket.exhibits.some(ex => ex.isUploading)) {
       alert("Please wait for all files to finish uploading.");
       return;
     }
-    
+
     setSaving(true);
     setDuplicateError(null);
-    
+
     try {
       const validExhibits = docket.exhibits.filter(ex => ex.fileUrl);
-      
+
       const submissionData = {
         submissionId: submission._id,
         docketData: {
@@ -934,7 +958,7 @@ export default function CreateDocketPage() {
           status: docket.status,
         }
       };
-      
+
       await adminAPI.createDocket(submissionData);
       alert("✅ Docket created and published successfully!");
       router.push("/admin/dockets");
@@ -1021,22 +1045,25 @@ export default function CreateDocketPage() {
       )}
 
       <div className="grid lg:grid-cols-2 gap-6">
-        {/* Left Column */}
+        {/* ── Left Column ── */}
         <div className="space-y-6">
-          {/* Title and Status Section */}
+          {/* Title and Status */}
           <div className="border border-[#d4c8b4] bg-white p-4 md:p-6 rounded-lg shadow-sm">
-            <label className="font-mono-dm text-xs uppercase text-[#9a8870] block mb-2">Docket Title *</label>
-            <input 
-              type="text" 
-              value={docket.title} 
-              onChange={(e) => setDocket({ ...docket, title: e.target.value })}
-              className="w-full border border-[#d4c8b4] p-3 font-garamond text-lg focus:outline-none focus:border-[#1e2d4a] mb-4 text-[#1e2d4a] bg-white rounded"
+            <label className="font-mono-dm text-xs uppercase text-[#9a8870] block mb-2">
+              Docket Title <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              value={docket.title}
+              onChange={(e) => { setDocket({ ...docket, title: e.target.value }); setErrors(p => ({ ...p, title: "" })); }}
+              className={`w-full border p-3 font-garamond text-lg focus:outline-none mb-1 text-[#1e2d4a] bg-white rounded ${errors.title ? "border-red-400" : "border-[#d4c8b4] focus:border-[#1e2d4a]"}`}
               placeholder="Enter docket title..."
             />
+            <FieldError message={errors.title} />
 
-            <label className="font-mono-dm text-xs uppercase text-[#9a8870] block mb-2">Status</label>
-            <select 
-              value={docket.status} 
+            <label className="font-mono-dm text-xs uppercase text-[#9a8870] block mb-2 mt-4">Status</label>
+            <select
+              value={docket.status}
               onChange={(e) => setDocket({ ...docket, status: e.target.value })}
               className="w-full border border-[#d4c8b4] p-2 font-garamond focus:outline-none focus:border-[#1e2d4a] text-[#1e2d4a] bg-white cursor-pointer rounded"
             >
@@ -1046,53 +1073,58 @@ export default function CreateDocketPage() {
             </select>
           </div>
 
-          {/* Claim Summary Section */}
+          {/* Claim Summary */}
           <div className="border border-[#d4c8b4] bg-white p-4 md:p-6 rounded-lg shadow-sm">
             <h2 className="font-playfair font-bold text-lg text-[#1e2d4a] mb-4">
               Claim Summary <span className="text-xs text-[#9a8870]">(from submission)</span>
             </h2>
             <div className="space-y-4">
               <div>
-                <label className="font-mono-dm text-xs uppercase text-[#9a8870] block mb-2">The Claim *</label>
-                <textarea 
-                  value={docket.summary.claim} 
-                  onChange={(e) => setDocket({ ...docket, summary: { ...docket.summary, claim: e.target.value } })}
-                  className="w-full border border-[#d4c8b4] p-3 font-garamond focus:outline-none focus:border-[#1e2d4a] text-[#1e2d4a] bg-white rounded"
-                  rows={3} 
+                <label className="font-mono-dm text-xs uppercase text-[#9a8870] block mb-2">
+                  The Claim <span className="text-red-500">*</span>
+                </label>
+                <textarea
+                  value={docket.summary.claim}
+                  onChange={(e) => { setDocket({ ...docket, summary: { ...docket.summary, claim: e.target.value } }); setErrors(p => ({ ...p, summarylaim: "" })); }}
+                  className={`w-full border p-3 font-garamond focus:outline-none text-[#1e2d4a] bg-white rounded ${errors.summarylaim ? "border-red-400" : "border-[#d4c8b4] focus:border-[#1e2d4a]"}`}
+                  rows={3}
                 />
+                <FieldError message={errors.summarylaim} />
               </div>
               <div>
-                <label className="font-mono-dm text-xs uppercase text-[#9a8870] block mb-2">Context</label>
-                <textarea 
-                  value={docket.summary.context} 
+                <label className="font-mono-dm text-xs uppercase text-[#9a8870] block mb-2">Context <span className="font-normal normal-case text-[#9a8870]">(optional)</span></label>
+                <textarea
+                  value={docket.summary.context}
                   onChange={(e) => setDocket({ ...docket, summary: { ...docket.summary, context: e.target.value } })}
                   className="w-full border border-[#d4c8b4] p-3 font-garamond focus:outline-none focus:border-[#1e2d4a] text-[#1e2d4a] bg-white rounded"
-                  rows={3} 
+                  rows={3}
                   placeholder="Add context about the claim..."
                 />
               </div>
               <div>
-                <label className="font-mono-dm text-xs uppercase text-[#9a8870] block mb-2">Why It Matters</label>
-                <textarea 
-                  value={docket.summary.whyMatters} 
+                <label className="font-mono-dm text-xs uppercase text-[#9a8870] block mb-2">Why It Matters <span className="font-normal normal-case text-[#9a8870]">(optional)</span></label>
+                <textarea
+                  value={docket.summary.whyMatters}
                   onChange={(e) => setDocket({ ...docket, summary: { ...docket.summary, whyMatters: e.target.value } })}
                   className="w-full border border-[#d4c8b4] p-3 font-garamond focus:outline-none focus:border-[#1e2d4a] text-[#1e2d4a] bg-white rounded"
-                  rows={3} 
+                  rows={3}
                   placeholder="Explain why this matters..."
                 />
               </div>
             </div>
           </div>
 
-          {/* Response Section */}
+          {/* Response */}
           <div className="border border-[#d4c8b4] bg-white p-4 md:p-6 rounded-lg shadow-sm">
             <h2 className="font-playfair font-bold text-lg text-[#1e2d4a] mb-4">Response (From User)</h2>
             <div>
-              <label className="font-mono-dm text-xs uppercase text-[#9a8870] block mb-2">Response Type</label>
+              <label className="font-mono-dm text-xs uppercase text-[#9a8870] block mb-2">
+                Response Type <span className="text-red-500">*</span>
+              </label>
               <select
                 value={docket.response.type}
-                onChange={(e) => setDocket({ ...docket, response: { ...docket.response, type: e.target.value } })}
-                className="w-full border border-[#d4c8b4] p-2 font-garamond focus:outline-none focus:border-[#1e2d4a] text-[#1e2d4a] bg-white mb-4 cursor-pointer rounded"
+                onChange={(e) => { setDocket({ ...docket, response: { ...docket.response, type: e.target.value } }); setErrors(p => ({ ...p, responseType: "" })); }}
+                className={`w-full border p-2 font-garamond focus:outline-none text-[#1e2d4a] bg-white mb-1 cursor-pointer rounded ${errors.responseType ? "border-red-400" : "border-[#d4c8b4] focus:border-[#1e2d4a]"}`}
               >
                 <option value="">Select type...</option>
                 <option value="Full Rebuttal">Full Rebuttal</option>
@@ -1101,23 +1133,30 @@ export default function CreateDocketPage() {
                 <option value="Context and Background">Context and Background</option>
                 <option value="Legal Response">Legal Response</option>
               </select>
+              <FieldError message={errors.responseType} />
             </div>
-            <textarea 
-              value={docket.response.body} 
-              onChange={(e) => setDocket({ ...docket, response: { ...docket.response, body: e.target.value } })}
-              className="w-full border border-[#d4c8b4] p-3 font-garamond focus:outline-none focus:border-[#1e2d4a] text-[#1e2d4a] bg-white rounded"
-              rows={10} 
-            />
+            <div className="mt-4">
+              <label className="font-mono-dm text-xs uppercase text-[#9a8870] block mb-2">
+                Response Body <span className="text-red-500">*</span>
+              </label>
+              <textarea
+                value={docket.response.body}
+                onChange={(e) => { setDocket({ ...docket, response: { ...docket.response, body: e.target.value } }); setErrors(p => ({ ...p, responseBody: "" })); }}
+                className={`w-full border p-3 font-garamond focus:outline-none text-[#1e2d4a] bg-white rounded ${errors.responseBody ? "border-red-400" : "border-[#d4c8b4] focus:border-[#1e2d4a]"}`}
+                rows={10}
+              />
+              <FieldError message={errors.responseBody} />
+            </div>
           </div>
         </div>
 
-        {/* Right Column */}
+        {/* ── Right Column ── */}
         <div className="space-y-6">
-          {/* Timeline Section */}
+          {/* Timeline */}
           <div className="border border-[#d4c8b4] bg-white p-4 md:p-6 rounded-lg shadow-sm">
             <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
-              <h2 className="font-playfair font-bold text-lg text-[#1e2d4a]">Timeline</h2>
-              <button 
+              <h2 className="font-playfair font-bold text-lg text-[#1e2d4a]">Timeline <span className="text-xs text-[#9a8870] font-normal normal-case">(optional)</span></h2>
+              <button
                 onClick={addTimelineEntry}
                 className="flex items-center gap-1 bg-[#1e2d4a] text-white px-3 py-1.5 text-xs font-mono-dm uppercase tracking-wider hover:bg-[#2a3f6a] transition-colors cursor-pointer rounded"
               >
@@ -1125,41 +1164,23 @@ export default function CreateDocketPage() {
               </button>
             </div>
             {docket.timeline.length === 0 ? (
-              <p className="text-center text-[#9a8870] py-4">No timeline events added yet. Click "Add Event" to create one.</p>
+              <p className="text-center text-[#9a8870] py-4 font-garamond text-sm">No timeline events added yet.</p>
             ) : (
               docket.timeline.map((entry, i) => (
                 <div key={i} className="border-l-2 border-[#b8974a] pl-4 relative mb-6">
-                  <button 
-                    onClick={() => removeTimelineEntry(i)}
-                    className="absolute -right-5 top-0 text-red-400 hover:text-red-600 transition-colors cursor-pointer"
-                  >
+                  <button onClick={() => removeTimelineEntry(i)} className="absolute -right-5 top-0 text-red-400 hover:text-red-600 transition-colors cursor-pointer">
                     <FiTrash2 size={14} />
                   </button>
-                  <input 
-                    type="date" 
-                    value={entry.date} 
-                    onChange={(e) => updateTimelineEntry(i, "date", e.target.value)}
-                    className="w-full border border-[#d4c8b4] p-2 mb-2 font-garamond focus:outline-none focus:border-[#1e2d4a] text-[#1e2d4a] bg-white cursor-pointer rounded"
-                  />
-                  <input 
-                    type="text" 
-                    value={entry.event} 
-                    onChange={(e) => updateTimelineEntry(i, "event", e.target.value)}
-                    placeholder="Event title" 
-                    className="w-full border border-[#d4c8b4] p-2 mb-2 font-garamond focus:outline-none focus:border-[#1e2d4a] text-[#1e2d4a] bg-white rounded"
-                  />
-                  <textarea 
-                    value={entry.description} 
-                    onChange={(e) => updateTimelineEntry(i, "description", e.target.value)}
-                    placeholder="Description" 
-                    className="w-full border border-[#d4c8b4] p-2 font-garamond focus:outline-none focus:border-[#1e2d4a] text-[#1e2d4a] bg-white rounded"
-                    rows={2}
-                  />
-                  <select
-                    value={entry.type}
-                    onChange={(e) => updateTimelineEntry(i, "type", e.target.value)}
-                    className="w-full border border-[#d4c8b4] p-2 mt-2 font-garamond focus:outline-none focus:border-[#1e2d4a] text-[#1e2d4a] bg-white cursor-pointer rounded"
-                  >
+                  <input type="date" value={entry.date} onChange={(e) => updateTimelineEntry(i, "date", e.target.value)}
+                    className="w-full border border-[#d4c8b4] p-2 mb-2 font-garamond focus:outline-none focus:border-[#1e2d4a] text-[#1e2d4a] bg-white cursor-pointer rounded" />
+                  <input type="text" value={entry.event} onChange={(e) => updateTimelineEntry(i, "event", e.target.value)}
+                    placeholder="Event title"
+                    className="w-full border border-[#d4c8b4] p-2 mb-2 font-garamond focus:outline-none focus:border-[#1e2d4a] text-[#1e2d4a] bg-white rounded" />
+                  <textarea value={entry.description} onChange={(e) => updateTimelineEntry(i, "description", e.target.value)}
+                    placeholder="Description"
+                    className="w-full border border-[#d4c8b4] p-2 font-garamond focus:outline-none focus:border-[#1e2d4a] text-[#1e2d4a] bg-white rounded" rows={2} />
+                  <select value={entry.type} onChange={(e) => updateTimelineEntry(i, "type", e.target.value)}
+                    className="w-full border border-[#d4c8b4] p-2 mt-2 font-garamond focus:outline-none focus:border-[#1e2d4a] text-[#1e2d4a] bg-white cursor-pointer rounded">
                     <option value="claim">Claim Published</option>
                     <option value="response">Response Issued</option>
                     <option value="third_party">Third Party Action</option>
@@ -1170,29 +1191,25 @@ export default function CreateDocketPage() {
             )}
           </div>
 
-          {/* Exhibits Section */}
+          {/* Exhibits */}
           <div className="border border-[#d4c8b4] bg-white p-4 md:p-6 rounded-lg shadow-sm">
-            <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
+            <div className="flex items-center justify-between mb-1 flex-wrap gap-2">
               <div>
-                <h2 className="font-playfair font-bold text-lg text-[#1e2d4a]">Exhibits</h2>
-                <p className="font-mono-dm text-xs text-[#9a8870] mt-1">{docket.exhibits.length} exhibit(s)</p>
+                <h2 className="font-playfair font-bold text-lg text-[#1e2d4a]">Exhibits <span className="text-xs text-[#9a8870] font-normal normal-case">(optional)</span></h2>
+                <p className="font-mono-dm text-xs text-[#9a8870] mt-1">{docket.exhibits.length} / {MAX_FILES} exhibit(s)</p>
               </div>
-              <button 
-                onClick={addExhibit}
-                className="flex items-center gap-1 bg-[#1e2d4a] text-white px-3 py-1.5 text-xs font-mono-dm uppercase tracking-wider hover:bg-[#2a3f6a] transition-colors cursor-pointer rounded"
-              >
+              <button onClick={addExhibit}
+                className="flex items-center gap-1 bg-[#1e2d4a] text-white px-3 py-1.5 text-xs font-mono-dm uppercase tracking-wider hover:bg-[#2a3f6a] transition-colors cursor-pointer rounded">
                 <FiPlus size={12} /> Add Exhibit
               </button>
             </div>
-            
+            <p className="font-mono-dm text-xs text-[#9a8870] mb-4">Max {MAX_FILES} files · Max {MAX_FILE_SIZE_MB} MB each · PDF, Word, Excel, CSV, JPEG, PNG</p>
+
             {docket.exhibits.length === 0 ? (
               <div className="text-center py-12 border-2 border-dashed border-[#d4c8b4] bg-[#faf6ee] rounded">
                 <FiFolder size={48} className="mx-auto text-[#c4b89a] mb-3" />
                 <p className="font-garamond text-[#9a8870] mb-2">No exhibits added yet</p>
-                <button 
-                  onClick={addExhibit}
-                  className="font-mono-dm text-xs text-[#b8974a] hover:text-[#1e2d4a] transition-colors cursor-pointer"
-                >
+                <button onClick={addExhibit} className="font-mono-dm text-xs text-[#b8974a] hover:text-[#1e2d4a] transition-colors cursor-pointer">
                   + Add your first exhibit
                 </button>
               </div>
@@ -1200,71 +1217,56 @@ export default function CreateDocketPage() {
               <div className="space-y-4">
                 {docket.exhibits.map((ex, i) => {
                   const categoryStyle = getCategoryStyle(ex.category);
-                  // ← Build the full URL for viewing, handling missing fileUrl gracefully
-                  // const viewUrl = ex.fileUrl ? `${API_BASE}${ex.fileUrl}` : null;
                   const viewUrl = ex.fileUrl ? resolveFileUrl(ex.fileUrl) : null;
-                  console.log("viewurl:",viewUrl);
-                  
+                  const exErrors = errors.exhibits?.[i] || {};
+
                   return (
                     <div key={ex.id || i} className="border border-[#e4ddd0] p-4 bg-[#faf6ee] rounded relative">
-                      <button
-                        onClick={() => removeExhibit(i)}
-                        className="absolute top-3 right-3 text-red-400 hover:text-red-600 transition-colors cursor-pointer"
-                        title="Remove exhibit"
-                      >
+                      <button onClick={() => removeExhibit(i)} className="absolute top-3 right-3 text-red-400 hover:text-red-600 transition-colors cursor-pointer" title="Remove exhibit">
                         <FiTrash2 size={16} />
                       </button>
-                      
+
                       <div className="flex items-start justify-between mb-3 pr-6">
                         <div className="flex items-center gap-2">
                           <FiFileText className="text-[#b8974a]" size={18} />
                           <span className="font-mono-dm text-sm font-semibold text-[#b8974a]">{ex.exhibitId}</span>
                         </div>
-                        <span 
-                          className="px-2 py-1 text-xs font-mono-dm uppercase rounded"
-                          style={{ background: categoryStyle.bg, color: categoryStyle.color, border: categoryStyle.border }}
-                        >
+                        <span className="px-2 py-1 text-xs font-mono-dm uppercase rounded"
+                          style={{ background: categoryStyle.bg, color: categoryStyle.color, border: categoryStyle.border }}>
                           {ex.category}
                         </span>
                       </div>
-                      
+
+                      {/* Title */}
                       <div className="mb-3">
-                        <label className="font-mono-dm text-xs uppercase text-[#9a8870] block mb-1">Title</label>
-                        <input
-                          type="text"
-                          value={ex.title}
-                          onChange={(e) => updateExhibit(i, "title", e.target.value)}
-                          className="w-full border border-[#d4c8b4] p-2 font-garamond text-sm focus:outline-none focus:border-[#1e2d4a] text-[#1e2d4a] bg-white rounded"
-                          placeholder="Enter exhibit title..."
-                        />
+                        <label className="font-mono-dm text-xs uppercase text-[#9a8870] block mb-1">Title <span className="text-red-500">*</span></label>
+                        <input type="text" value={ex.title}
+                          onChange={(e) => { updateExhibit(i, "title", e.target.value); setErrors(p => { const ne = { ...p }; if (ne.exhibits?.[i]) { ne.exhibits[i] = { ...ne.exhibits[i], title: "" }; } return ne; }); }}
+                          className={`w-full border p-2 font-garamond text-sm focus:outline-none text-[#1e2d4a] bg-white rounded ${exErrors.title ? "border-red-400" : "border-[#d4c8b4] focus:border-[#1e2d4a]"}`}
+                          placeholder="Enter exhibit title..." />
+                        <FieldError message={exErrors.title} />
                       </div>
-                      
+
+                      {/* Description (optional) */}
                       <div className="mb-3">
-                        <label className="font-mono-dm text-xs uppercase text-[#9a8870] block mb-1">Description (Optional)</label>
-                        <textarea
-                          value={ex.description || ""}
-                          onChange={(e) => updateExhibit(i, "description", e.target.value)}
+                        <label className="font-mono-dm text-xs uppercase text-[#9a8870] block mb-1">Description <span className="font-normal normal-case text-[#9a8870]">(optional)</span></label>
+                        <textarea value={ex.description || ""} onChange={(e) => updateExhibit(i, "description", e.target.value)}
                           className="w-full border border-[#d4c8b4] p-2 font-garamond text-sm focus:outline-none focus:border-[#1e2d4a] text-[#1e2d4a] bg-white rounded"
-                          rows={2}
-                          placeholder="Brief description of this exhibit..."
-                        />
+                          rows={2} placeholder="Brief description of this exhibit..." />
                       </div>
-                      
+
+                      {/* Category */}
                       <div className="mb-3">
                         <label className="font-mono-dm text-xs uppercase text-[#9a8870] block mb-1">Category</label>
-                        <select
-                          value={ex.category}
-                          onChange={(e) => updateExhibit(i, "category", e.target.value)}
-                          className="w-full border border-[#d4c8b4] p-2 font-garamond text-sm focus:outline-none focus:border-[#1e2d4a] text-[#1e2d4a] bg-white cursor-pointer rounded"
-                        >
-                          {EXHIBIT_CATEGORIES.map(cat => (
-                            <option key={cat.value} value={cat.value}>{cat.label}</option>
-                          ))}
+                        <select value={ex.category} onChange={(e) => updateExhibit(i, "category", e.target.value)}
+                          className="w-full border border-[#d4c8b4] p-2 font-garamond text-sm focus:outline-none focus:border-[#1e2d4a] text-[#1e2d4a] bg-white cursor-pointer rounded">
+                          {EXHIBIT_CATEGORIES.map(cat => <option key={cat.value} value={cat.value}>{cat.label}</option>)}
                         </select>
                       </div>
-                      
+
+                      {/* File */}
                       <div className="mt-3">
-                        <label className="font-mono-dm text-xs uppercase text-[#9a8870] block mb-1">File</label>
+                        <label className="font-mono-dm text-xs uppercase text-[#9a8870] block mb-1">File <span className="text-red-500">*</span></label>
                         {ex.fileUrl ? (
                           <div className="flex items-center justify-between p-2 bg-[#ede8dc] rounded">
                             <div className="flex items-center gap-2 overflow-hidden">
@@ -1278,23 +1280,17 @@ export default function CreateDocketPage() {
                             </div>
                             <div className="flex gap-2 flex-shrink-0">
                               {viewUrl ? (
-                                <a 
-                                  href={viewUrl}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="text-[#b8974a] text-xs hover:underline cursor-pointer"
-                                >
-                                  View
-                                </a>
+                                <a href={viewUrl} target="_blank" rel="noopener noreferrer" className="text-[#b8974a] text-xs hover:underline cursor-pointer">View</a>
                               ) : (
                                 <span className="text-[#c4b89a] text-xs">No URL</span>
                               )}
                               <button
                                 onClick={() => {
-                                  const fileInput = document.createElement('input');
-                                  fileInput.type = 'file';
-                                  fileInput.onchange = (e) => handleFileUpload(i, e.target.files[0]);
-                                  fileInput.click();
+                                  const fi = document.createElement("input");
+                                  fi.type = "file";
+                                  fi.accept = ALLOWED_FILE_TYPES.join(",");
+                                  fi.onchange = (e) => handleFileUpload(i, e.target.files[0]);
+                                  fi.click();
                                 }}
                                 className="text-[#1e2d4a] text-xs hover:text-[#b8974a] cursor-pointer"
                               >
@@ -1304,25 +1300,23 @@ export default function CreateDocketPage() {
                           </div>
                         ) : (
                           <div>
-                            {/* Show warning for missing file URL */}
                             <div className="mb-2 p-2 bg-yellow-50 border border-yellow-200 rounded flex items-center gap-2">
                               <FiAlertCircle size={12} className="text-yellow-600 flex-shrink-0" />
                               <p className="font-mono-dm text-xs text-yellow-700">
-                                File URL not found. The original file may have been uploaded with an older format. Upload a replacement.
+                                File URL not found. Upload a replacement.
                               </p>
                             </div>
-                            <input
-                              type="file"
+                            <input type="file"
                               onChange={(e) => handleFileUpload(i, e.target.files[0])}
                               className="w-full border border-[#d4c8b4] p-2 font-garamond text-sm bg-white cursor-pointer rounded"
-                              accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.xlsx,.csv"
-                            />
+                              accept={ALLOWED_FILE_TYPES.join(",")} />
                             {ex.isUploading && (
                               <div className="flex items-center gap-2 mt-2">
                                 <div className="animate-spin rounded-full h-3 w-3 border-2 border-[#b8974a] border-t-transparent"></div>
                                 <span className="font-mono-dm text-xs text-[#9a8870]">Uploading...</span>
                               </div>
                             )}
+                            <FieldError message={exErrors.fileUrl} />
                           </div>
                         )}
                       </div>
@@ -1331,7 +1325,7 @@ export default function CreateDocketPage() {
                 })}
               </div>
             )}
-            
+
             <div className="mt-4 pt-3 border-t border-[#e4ddd0] text-center">
               <p className="font-mono-dm text-xs text-[#9a8870]">
                 Each exhibit will be assigned a unique ID. You can edit titles, add descriptions, and select categories.

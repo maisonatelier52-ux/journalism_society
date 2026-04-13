@@ -1,3 +1,4 @@
+
 // // app/admin/submissions/[id]/page.jsx
 // "use client";
 
@@ -6,6 +7,7 @@
 // import Link from "next/link";
 // import { FiArrowLeft, FiFileText, FiDownload, FiCheckCircle, FiXCircle, FiMail, FiCalendar, FiUser, FiExternalLink } from "react-icons/fi";
 // import adminAPI from "@/services/adminApi";
+// import resolveFileUrl from "../../../../utils/fileUrl";
 
 // const statusColors = {
 //   pending: { bg: "#fffbeb", text: "#b45309", border: "#fde68a" },
@@ -285,9 +287,18 @@
 //                       <FiFileText size={14} className="text-[#b8974a] flex-shrink-0" />
 //                       <span className="font-garamond text-sm text-[#1e2d4a] truncate">{file.originalName}</span>
 //                     </div>
-//                     <a 
+//                     {/* <a 
 //                       href={`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/uploads/submissions/${file.filename}`} 
 //                       download 
+//                       className="text-[#b8974a] hover:text-[#1e2d4a] transition-colors p-1 cursor-pointer"
+//                       title="Download"
+//                     >
+//                       <FiDownload size={14} />
+//                     </a> */}
+
+//                     <a 
+//                       href={resolveFileUrl(file.fileUrl || file.url || file.path)}
+//                       download
 //                       className="text-[#b8974a] hover:text-[#1e2d4a] transition-colors p-1 cursor-pointer"
 //                       title="Download"
 //                     >
@@ -311,6 +322,7 @@
 //     </div>
 //   );
 // }
+
 
 // app/admin/submissions/[id]/page.jsx
 "use client";
@@ -454,36 +466,38 @@ export default function SubmissionDetailPage() {
       <div className="grid lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
           {/* Response Title & Status */}
-          <div className="border border-[#d4c8b4] bg-white p-4 sm:p-6 rounded-lg shadow-sm">
+          <div className="border border-[#d4c8b4] bg-white p-4 sm:p-6 rounded-lg shadow-sm overflow-hidden">
             <div className="flex flex-wrap items-start justify-between gap-3 mb-4">
-              <h2 className="font-playfair font-bold text-xl text-[#1e2d4a]">{submission.responseTitle}</h2>
-              <span className="inline-block px-3 py-1 text-xs font-mono-dm rounded-full" style={{ background: status.bg, color: status.text, border: `1px solid ${status.border}` }}>
+              <h2 className="font-playfair font-bold text-xl text-[#1e2d4a] break-words min-w-0 flex-1">
+                {submission.responseTitle}
+              </h2>
+              <span className="inline-block px-3 py-1 text-xs font-mono-dm rounded-full flex-shrink-0" style={{ background: status.bg, color: status.text, border: `1px solid ${status.border}` }}>
                 {submission.status.replace("_", " ")}
               </span>
             </div>
-            <div className="font-garamond text-[#5a5040] leading-relaxed whitespace-pre-wrap">
+            <div className="font-garamond text-[#5a5040] leading-relaxed whitespace-pre-wrap break-words overflow-wrap-anywhere word-break-break-word">
               {submission.responseBody}
             </div>
           </div>
 
-          {/* Claim Information - with URL */}
-          <div className="border border-[#d4c8b4] bg-white p-4 sm:p-6 rounded-lg shadow-sm">
+          {/* Claim Information */}
+          <div className="border border-[#d4c8b4] bg-white p-4 sm:p-6 rounded-lg shadow-sm overflow-hidden">
             <h3 className="font-playfair font-bold text-lg text-[#1e2d4a] mb-4 flex items-center gap-2">
               <FiExternalLink size={16} className="text-[#b8974a]" /> Claim Information
             </h3>
             <div className="space-y-3">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
+                <div className="min-w-0">
                   <p className="font-mono-dm text-xs text-[#9a8870] mb-1">Source / Publication</p>
-                  <p className="font-garamond text-base text-[#1e2d4a]">{submission.claimSource}</p>
+                  <p className="font-garamond text-base text-[#1e2d4a] break-words">{submission.claimSource}</p>
                 </div>
-                <div>
+                <div className="min-w-0">
                   <p className="font-mono-dm text-xs text-[#9a8870] mb-1">Claim Date</p>
-                  <p className="font-garamond text-base text-[#1e2d4a]">{submission.claimDate}</p>
+                  <p className="font-garamond text-base text-[#1e2d4a] break-words">{submission.claimDate}</p>
                 </div>
               </div>
               {submission.claimUrl && (
-                <div>
+                <div className="min-w-0">
                   <p className="font-mono-dm text-xs text-[#9a8870] mb-1">Claim URL</p>
                   <a 
                     href={submission.claimUrl} 
@@ -491,14 +505,14 @@ export default function SubmissionDetailPage() {
                     rel="noopener noreferrer"
                     className="font-garamond text-sm text-[#b8974a] hover:underline break-all inline-flex items-center gap-1 cursor-pointer"
                   >
-                    {submission.claimUrl}
-                    <FiExternalLink size={12} />
+                    <span className="break-all">{submission.claimUrl}</span>
+                    <FiExternalLink size={12} className="flex-shrink-0" />
                   </a>
                 </div>
               )}
-              <div>
+              <div className="min-w-0">
                 <p className="font-mono-dm text-xs text-[#9a8870] mb-1">Claim Summary</p>
-                <p className="font-garamond text-sm text-[#5a5040] leading-relaxed">{submission.claimSummary}</p>
+                <p className="font-garamond text-sm text-[#5a5040] leading-relaxed break-words">{submission.claimSummary}</p>
               </div>
               {submission.claimCategory && (
                 <div>
@@ -513,7 +527,7 @@ export default function SubmissionDetailPage() {
 
           {/* Timeline */}
           {submission.timeline && submission.timeline.length > 0 && (
-            <div className="border border-[#d4c8b4] bg-white p-4 sm:p-6 rounded-lg shadow-sm">
+            <div className="border border-[#d4c8b4] bg-white p-4 sm:p-6 rounded-lg shadow-sm overflow-hidden">
               <h3 className="font-playfair font-bold text-lg text-[#1e2d4a] mb-4">Timeline</h3>
               <div className="space-y-4">
                 {submission.timeline.map((item, i) => (
@@ -521,9 +535,9 @@ export default function SubmissionDetailPage() {
                     <div className="flex-shrink-0 sm:w-28">
                       <span className="font-mono-dm text-sm text-[#b8974a]">{item.date}</span>
                     </div>
-                    <div>
-                      <p className="font-playfair font-semibold text-sm text-[#1e2d4a]">{item.event}</p>
-                      <p className="font-garamond text-sm text-[#7a6e5e]">{item.detail}</p>
+                    <div className="min-w-0 flex-1">
+                      <p className="font-playfair font-semibold text-sm text-[#1e2d4a] break-words">{item.event}</p>
+                      <p className="font-garamond text-sm text-[#7a6e5e] break-words">{item.detail}</p>
                     </div>
                   </div>
                 ))}
@@ -534,35 +548,35 @@ export default function SubmissionDetailPage() {
 
         <div className="space-y-6">
           {/* Respondent Information */}
-          <div className="border border-[#d4c8b4] bg-white p-4 sm:p-5 rounded-lg shadow-sm">
+          <div className="border border-[#d4c8b4] bg-white p-4 sm:p-5 rounded-lg shadow-sm overflow-hidden">
             <h3 className="font-playfair font-bold text-lg text-[#1e2d4a] mb-4 flex items-center gap-2">
               <FiUser size={16} className="text-[#b8974a]" /> Respondent
             </h3>
             <div className="space-y-3">
-              <div>
+              <div className="min-w-0">
                 <p className="font-mono-dm text-xs text-[#9a8870]">Name / Organisation</p>
-                <p className="font-garamond text-base text-[#1e2d4a]">{submission.respondentName}</p>
+                <p className="font-garamond text-base text-[#1e2d4a] break-words">{submission.respondentName}</p>
               </div>
-              <div>
+              <div className="min-w-0">
                 <p className="font-mono-dm text-xs text-[#9a8870]">Type</p>
-                <p className="font-garamond text-base text-[#1e2d4a]">{submission.respondentType}</p>
+                <p className="font-garamond text-base text-[#1e2d4a] break-words">{submission.respondentType}</p>
               </div>
               {submission.respondentRole && (
-                <div>
+                <div className="min-w-0">
                   <p className="font-mono-dm text-xs text-[#9a8870]">Role</p>
-                  <p className="font-garamond text-base text-[#1e2d4a]">{submission.respondentRole}</p>
+                  <p className="font-garamond text-base text-[#1e2d4a] break-words">{submission.respondentRole}</p>
                 </div>
               )}
-              <div>
+              <div className="min-w-0">
                 <p className="font-mono-dm text-xs text-[#9a8870] flex items-center gap-1"><FiMail size={10} /> Contact Email</p>
-                <a href={`mailto:${submission.contactEmail}`} className="font-garamond text-base text-[#b8974a] hover:underline cursor-pointer">
+                <a href={`mailto:${submission.contactEmail}`} className="font-garamond text-base text-[#b8974a] hover:underline cursor-pointer break-all">
                   {submission.contactEmail}
                 </a>
               </div>
               {submission.contactPhone && (
-                <div>
+                <div className="min-w-0">
                   <p className="font-mono-dm text-xs text-[#9a8870]">Contact Phone</p>
-                  <p className="font-garamond text-base text-[#1e2d4a]">{submission.contactPhone}</p>
+                  <p className="font-garamond text-base text-[#1e2d4a] break-words">{submission.contactPhone}</p>
                 </div>
               )}
               <div className="pt-2 border-t border-[#e4ddd0]">
@@ -573,46 +587,37 @@ export default function SubmissionDetailPage() {
           </div>
 
           {/* Response Details */}
-          <div className="border border-[#d4c8b4] bg-white p-4 sm:p-5 rounded-lg shadow-sm">
+          <div className="border border-[#d4c8b4] bg-white p-4 sm:p-5 rounded-lg shadow-sm overflow-hidden">
             <h3 className="font-playfair font-bold text-lg text-[#1e2d4a] mb-3">Response Details</h3>
             <div className="space-y-2">
-              <div>
+              <div className="min-w-0">
                 <p className="font-mono-dm text-xs text-[#9a8870]">Response Type</p>
-                <p className="font-garamond text-base text-[#1e2d4a]">{submission.responseType || "Not specified"}</p>
+                <p className="font-garamond text-base text-[#1e2d4a] break-words">{submission.responseType || "Not specified"}</p>
               </div>
-              <div>
+              <div className="min-w-0">
                 <p className="font-mono-dm text-xs text-[#9a8870]">Requested Action</p>
-                <p className="font-garamond text-base text-[#1e2d4a]">{submission.requestedAction || "Not specified"}</p>
+                <p className="font-garamond text-base text-[#1e2d4a] break-words">{submission.requestedAction || "Not specified"}</p>
               </div>
             </div>
           </div>
 
           {/* Attached Files */}
           {submission.files && submission.files.length > 0 && (
-            <div className="border border-[#d4c8b4] bg-white p-4 sm:p-5 rounded-lg shadow-sm">
+            <div className="border border-[#d4c8b4] bg-white p-4 sm:p-5 rounded-lg shadow-sm overflow-hidden">
               <h3 className="font-playfair font-bold text-lg text-[#1e2d4a] mb-3 flex items-center gap-2">
                 <FiFileText size={16} className="text-[#b8974a]" /> Attached Files ({submission.files.length})
               </h3>
               <div className="space-y-2">
                 {submission.files.map((file, i) => (
                   <div key={i} className="flex items-center justify-between p-2 bg-[#ede8dc] rounded hover:bg-[#e4ddd0] transition-colors">
-                    <div className="flex items-center gap-2 overflow-hidden">
+                    <div className="flex items-center gap-2 overflow-hidden min-w-0 flex-1">
                       <FiFileText size={14} className="text-[#b8974a] flex-shrink-0" />
                       <span className="font-garamond text-sm text-[#1e2d4a] truncate">{file.originalName}</span>
                     </div>
-                    {/* <a 
-                      href={`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/uploads/submissions/${file.filename}`} 
-                      download 
-                      className="text-[#b8974a] hover:text-[#1e2d4a] transition-colors p-1 cursor-pointer"
-                      title="Download"
-                    >
-                      <FiDownload size={14} />
-                    </a> */}
-
                     <a 
                       href={resolveFileUrl(file.fileUrl || file.url || file.path)}
                       download
-                      className="text-[#b8974a] hover:text-[#1e2d4a] transition-colors p-1 cursor-pointer"
+                      className="text-[#b8974a] hover:text-[#1e2d4a] transition-colors p-1 cursor-pointer flex-shrink-0"
                       title="Download"
                     >
                       <FiDownload size={14} />
@@ -625,9 +630,9 @@ export default function SubmissionDetailPage() {
 
           {/* Admin Notes */}
           {submission.adminNotes && (
-            <div className="border border-[#d4c8b4] bg-[#fffbeb] p-4 sm:p-5 rounded-lg">
+            <div className="border border-[#d4c8b4] bg-[#fffbeb] p-4 sm:p-5 rounded-lg overflow-hidden">
               <p className="font-mono-dm text-xs text-[#9a8870] mb-1">Admin Notes</p>
-              <p className="font-garamond text-sm text-[#5a5040]">{submission.adminNotes}</p>
+              <p className="font-garamond text-sm text-[#5a5040] break-words">{submission.adminNotes}</p>
             </div>
           )}
         </div>
