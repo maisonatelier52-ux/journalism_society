@@ -906,8 +906,20 @@ export default function CreateDocketPage() {
 
     if (!docket.title.trim()) newErrors.title = "Docket title is required.";
     if (!docket.summary.claim.trim()) newErrors.summarylaim = "Claim summary is required.";
+    if (!docket.summary.context.trim()) newErrors.summarycontext = "The summary context is required.";
+    if (!docket.summary.whyMatters.trim()) newErrors.summarywhymatters = "The summary whyMatters is required.";
     if (!docket.response.body.trim()) newErrors.responseBody = "Response body is required.";
     if (!docket.response.type) newErrors.responseType = "Response type is required.";
+
+     // Timeline – at least one entry
+    if (docket.timeline.length === 0) {
+      newErrors.timeline = "At least one timeline event is required.";
+    }
+    
+    // Exhibits – at least one entry
+    if (docket.exhibits.length === 0) {
+      newErrors.exhibits_count = "At least one exhibit is required.";
+    }
 
     // Exhibit validations
     const exhibitErrs = {};
@@ -1092,7 +1104,7 @@ export default function CreateDocketPage() {
                 <FieldError message={errors.summarylaim} />
               </div>
               <div>
-                <label className="font-mono-dm text-xs uppercase text-[#9a8870] block mb-2">Context <span className="font-normal normal-case text-[#9a8870]">(optional)</span></label>
+                <label className="font-mono-dm text-xs uppercase text-[#9a8870] block mb-2">Context <span className="text-red-500">*</span></label>
                 <textarea
                   value={docket.summary.context}
                   onChange={(e) => setDocket({ ...docket, summary: { ...docket.summary, context: e.target.value } })}
@@ -1100,9 +1112,10 @@ export default function CreateDocketPage() {
                   rows={3}
                   placeholder="Add context about the claim..."
                 />
+                <FieldError message={errors.summarycontext} />
               </div>
               <div>
-                <label className="font-mono-dm text-xs uppercase text-[#9a8870] block mb-2">Why It Matters <span className="font-normal normal-case text-[#9a8870]">(optional)</span></label>
+                <label className="font-mono-dm text-xs uppercase text-[#9a8870] block mb-2">Why It Matters <span className="text-red-500">*</span></label>
                 <textarea
                   value={docket.summary.whyMatters}
                   onChange={(e) => setDocket({ ...docket, summary: { ...docket.summary, whyMatters: e.target.value } })}
@@ -1110,6 +1123,7 @@ export default function CreateDocketPage() {
                   rows={3}
                   placeholder="Explain why this matters..."
                 />
+                <FieldError message={errors.summarywhymatters} />
               </div>
             </div>
           </div>
@@ -1155,7 +1169,7 @@ export default function CreateDocketPage() {
           {/* Timeline */}
           <div className="border border-[#d4c8b4] bg-white p-4 md:p-6 rounded-lg shadow-sm">
             <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
-              <h2 className="font-playfair font-bold text-lg text-[#1e2d4a]">Timeline <span className="text-xs text-[#9a8870] font-normal normal-case">(optional)</span></h2>
+              <h2 className="font-playfair font-bold text-lg text-[#1e2d4a]">Timeline <span className="text-red-500">*</span></h2>
               <button
                 onClick={addTimelineEntry}
                 className="flex items-center gap-1 bg-[#1e2d4a] text-white px-3 py-1.5 text-xs font-mono-dm uppercase tracking-wider hover:bg-[#2a3f6a] transition-colors cursor-pointer rounded"
@@ -1163,6 +1177,7 @@ export default function CreateDocketPage() {
                 <FiPlus size={12} /> Add Event
               </button>
             </div>
+             {errors.timeline && <p className="text-xs text-red-500 font-mono-dm mb-3">{errors.timeline}</p>}
             {docket.timeline.length === 0 ? (
               <p className="text-center text-[#9a8870] py-4 font-garamond text-sm">No timeline events added yet.</p>
             ) : (
@@ -1195,7 +1210,7 @@ export default function CreateDocketPage() {
           <div className="border border-[#d4c8b4] bg-white p-4 md:p-6 rounded-lg shadow-sm">
             <div className="flex items-center justify-between mb-1 flex-wrap gap-2">
               <div>
-                <h2 className="font-playfair font-bold text-lg text-[#1e2d4a]">Exhibits <span className="text-xs text-[#9a8870] font-normal normal-case">(optional)</span></h2>
+                <h2 className="font-playfair font-bold text-lg text-[#1e2d4a]">Exhibits <span className="text-red-500">*</span></h2>
                 <p className="font-mono-dm text-xs text-[#9a8870] mt-1">{docket.exhibits.length} / {MAX_FILES} exhibit(s)</p>
               </div>
               <button onClick={addExhibit}
@@ -1204,7 +1219,7 @@ export default function CreateDocketPage() {
               </button>
             </div>
             <p className="font-mono-dm text-xs text-[#9a8870] mb-4">Max {MAX_FILES} files · Max {MAX_FILE_SIZE_MB} MB each · PDF, Word, Excel, CSV, JPEG, PNG</p>
-
+             {errors.exhibits_count && <p className="text-xs text-red-500 font-mono-dm mb-3">{errors.exhibits_count}</p>}
             {docket.exhibits.length === 0 ? (
               <div className="text-center py-12 border-2 border-dashed border-[#d4c8b4] bg-[#faf6ee] rounded">
                 <FiFolder size={48} className="mx-auto text-[#c4b89a] mb-3" />

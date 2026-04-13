@@ -176,6 +176,15 @@ export default function MediaPage() {
     }
   };
 
+const isValidUrl = (value) => {
+  try {
+    new URL(value);
+    return true;
+  } catch {
+    return false;
+  }
+};
+
   const handleCreateMedia = async () => {
     if (!createData.outlet.trim()) {
       alert("Please enter publication name");
@@ -185,10 +194,15 @@ export default function MediaPage() {
       alert("Please enter headline");
       return;
     }
+
     if (!createData.url.trim()) {
       alert("Please enter URL");
       return;
+    } else if (!isValidUrl(createData.url)) {
+      alert("Please enter a valid URL (e.g. https://example.com).");
+      return;
     }
+      
     if (!createData.date) {
       alert("Please select date");
       return;

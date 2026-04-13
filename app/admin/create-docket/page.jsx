@@ -894,13 +894,18 @@ export default function AdminCreateDocketPage() {
     } else if (!isValidUrl(docket.claim.url)) {
       newErrors.claimUrl = "Please enter a valid URL (e.g. https://example.com).";
     }
+     if (!docket.claim.category) newErrors.claimCategory = "Claim Category is required.";
 
     // Summary
     if (!docket.summary.claim.trim()) newErrors.summarylaim = "The claim summary is required.";
+     if (!docket.summary.context.trim()) newErrors.summarycontext = "The summary context is required.";
+      if (!docket.summary.whyMatters.trim()) newErrors.summarywhymatters = "The summary whyMatters is required.";
 
     // Response
     if (!docket.response.title.trim()) newErrors.responseTitle = "Response title is required.";
     if (!docket.response.body.trim()) newErrors.responseBody = "Response body is required.";
+     if (!docket.response.type.trim()) newErrors.responseType = "Response type is required.";
+      if (!docket.response.requestedAction.trim()) newErrors.responseRequestAction = "Response request action is required.";
 
     // Timeline – at least one entry
     if (docket.timeline.length === 0) {
@@ -1085,7 +1090,7 @@ export default function AdminCreateDocketPage() {
                 <FieldError message={errors.claimUrl} />
               </div>
               <div>
-                <label className="font-mono-dm text-xs uppercase text-[#9a8870] block mb-2">Docket Category <span className="font-normal normal-case text-[#9a8870]">(optional)</span></label>
+                <label className="font-mono-dm text-xs uppercase text-[#9a8870] block mb-2">Docket Category <span className="text-red-500">*</span></label>
                 <select value={docket.claim.category}
                   onChange={(e) => setDocket({ ...docket, claim: { ...docket.claim, category: e.target.value } })}
                   className="w-full border border-[#d4c8b4] p-2 font-garamond focus:outline-none focus:border-[#1e2d4a] text-[#1e2d4a] bg-white cursor-pointer rounded">
@@ -1094,6 +1099,7 @@ export default function AdminCreateDocketPage() {
                     <option key={cat} value={cat}>{cat}</option>
                   ))}
                 </select>
+                 <FieldError message={errors.claimCategory} />
               </div>
             </div>
           </div>
@@ -1113,18 +1119,20 @@ export default function AdminCreateDocketPage() {
                 <FieldError message={errors.summarylaim} />
               </div>
               <div>
-                <label className="font-mono-dm text-xs uppercase text-[#9a8870] block mb-1">Context <span className="font-normal normal-case text-[#9a8870]">(optional)</span></label>
+                <label className="font-mono-dm text-xs uppercase text-[#9a8870] block mb-1">Context <span className="text-red-500">*</span></label>
                 <textarea value={docket.summary.context}
                   onChange={(e) => setDocket({ ...docket, summary: { ...docket.summary, context: e.target.value } })}
                   className="w-full border border-[#d4c8b4] p-3 font-garamond focus:outline-none focus:border-[#1e2d4a] text-[#1e2d4a] bg-white rounded"
                   rows={3} placeholder="Context" />
+                  <FieldError message={errors.summarycontext} />
               </div>
               <div>
-                <label className="font-mono-dm text-xs uppercase text-[#9a8870] block mb-1">Why It Matters <span className="font-normal normal-case text-[#9a8870]">(optional)</span></label>
+                <label className="font-mono-dm text-xs uppercase text-[#9a8870] block mb-1">Why It Matters <span className="text-red-500">*</span></label>
                 <textarea value={docket.summary.whyMatters}
                   onChange={(e) => setDocket({ ...docket, summary: { ...docket.summary, whyMatters: e.target.value } })}
                   className="w-full border border-[#d4c8b4] p-3 font-garamond focus:outline-none focus:border-[#1e2d4a] text-[#1e2d4a] bg-white rounded"
                   rows={3} placeholder="Why It Matters" />
+                  <FieldError message={errors.summarywhymatters} />
               </div>
             </div>
           </div>
@@ -1144,13 +1152,14 @@ export default function AdminCreateDocketPage() {
                 <FieldError message={errors.responseTitle} />
               </div>
               <div>
-                <label className="font-mono-dm text-xs uppercase text-[#9a8870] block mb-2">Response Type <span className="font-normal normal-case text-[#9a8870]">(optional)</span></label>
+                <label className="font-mono-dm text-xs uppercase text-[#9a8870] block mb-2">Response Type <span className="text-red-500">*</span></label>
                 <select value={docket.response.type}
                   onChange={(e) => setDocket({ ...docket, response: { ...docket.response, type: e.target.value } })}
                   className="w-full border border-[#d4c8b4] p-2 font-garamond focus:outline-none focus:border-[#1e2d4a] text-[#1e2d4a] bg-white cursor-pointer rounded">
                   <option value="">Select type...</option>
                   {RESPONSE_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
                 </select>
+                   <FieldError message={errors.responseType} />
               </div>
               <div>
                 <label className="font-mono-dm text-xs uppercase text-[#9a8870] block mb-2">Full Response <span className="text-red-500">*</span></label>
@@ -1161,7 +1170,7 @@ export default function AdminCreateDocketPage() {
                 <FieldError message={errors.responseBody} />
               </div>
               <div>
-                <label className="font-mono-dm text-xs uppercase text-[#9a8870] block mb-2">Requested Action <span className="font-normal normal-case text-[#9a8870]">(optional)</span></label>
+                <label className="font-mono-dm text-xs uppercase text-[#9a8870] block mb-2">Requested Action <span className="text-red-500">*</span></label>
                 <select value={docket.response.requestedAction}
                   onChange={(e) => setDocket({ ...docket, response: { ...docket.response, requestedAction: e.target.value } })}
                   className="w-full border border-[#d4c8b4] p-2 font-garamond focus:outline-none focus:border-[#1e2d4a] text-[#1e2d4a] bg-white cursor-pointer rounded">
@@ -1170,6 +1179,7 @@ export default function AdminCreateDocketPage() {
                     <option key={a} value={a}>{a}</option>
                   ))}
                 </select>
+                   <FieldError message={errors.responseRequestAction} />
               </div>
             </div>
           </div>

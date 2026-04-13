@@ -1384,9 +1384,24 @@ export default function AdminEditDocketPage() {
     } else if (!isValidUrl(docket.claim.url)) {
       newErrors.claimUrl = "Please enter a valid URL (e.g. https://example.com).";
     }
+      if (!docket.claim.category) newErrors.claimCategory = "Claim Category is required.";
     if (!docket.summary.claim.trim()) newErrors.summarylaim = "The claim summary is required.";
+     if (!docket.summary.context.trim()) newErrors.summarycontext = "The summary context is required.";
+      if (!docket.summary.whyMatters.trim()) newErrors.summarywhymatters = "The summary whyMatters is required.";
     if (!docket.response.title.trim()) newErrors.responseTitle = "Response title is required.";
     if (!docket.response.body.trim()) newErrors.responseBody = "Response body is required.";
+     if (!docket.response.type.trim()) newErrors.responseType = "Response type is required.";
+      if (!docket.response.requestedAction.trim()) newErrors.responseRequestAction = "Response request action is required.";
+
+        // Timeline – at least one entry
+    if (docket.timeline.length === 0) {
+      newErrors.timeline = "At least one timeline event is required.";
+    }
+
+    // Exhibits – at least one entry
+    if (docket.exhibits.length === 0) {
+      newErrors.exhibits_count = "At least one exhibit is required.";
+    }
 
     // Per-exhibit
     const exhibitErrs = {};
@@ -1548,7 +1563,7 @@ export default function AdminEditDocketPage() {
                 <FieldError message={errors.claimUrl} />
               </div>
               <div>
-                <label className="font-mono-dm text-xs uppercase text-[#9a8870] block mb-2">Docket Category <span className="font-normal normal-case text-[#9a8870]">(optional)</span></label>
+                <label className="font-mono-dm text-xs uppercase text-[#9a8870] block mb-2">Docket Category <span className="text-red-500">*</span></label>
                 <select value={docket.claim.category}
                   onChange={(e) => setDocket({ ...docket, claim: { ...docket.claim, category: e.target.value } })}
                   className="w-full border border-[#d4c8b4] p-2 font-garamond focus:outline-none focus:border-[#1e2d4a] text-[#1e2d4a] bg-white cursor-pointer rounded">
@@ -1557,6 +1572,7 @@ export default function AdminEditDocketPage() {
                     <option key={c} value={c}>{c}</option>
                   ))}
                 </select>
+                 <FieldError message={errors.claimCategory} />
               </div>
             </div>
           </div>
@@ -1576,18 +1592,20 @@ export default function AdminEditDocketPage() {
                 <FieldError message={errors.summarylaim} />
               </div>
               <div>
-                <label className="font-mono-dm text-xs uppercase text-[#9a8870] block mb-1">Context <span className="font-normal normal-case text-[#9a8870]">(optional)</span></label>
+                <label className="font-mono-dm text-xs uppercase text-[#9a8870] block mb-1">Context <span className="text-red-500">*</span></label>
                 <textarea value={docket.summary.context}
                   onChange={(e) => setDocket({ ...docket, summary: { ...docket.summary, context: e.target.value } })}
                   className="w-full border border-[#d4c8b4] p-3 font-garamond focus:outline-none focus:border-[#1e2d4a] text-[#1e2d4a] bg-white rounded"
                   rows={3} placeholder="Context" />
+                   <FieldError message={errors.summarycontext} />
               </div>
               <div>
-                <label className="font-mono-dm text-xs uppercase text-[#9a8870] block mb-1">Why It Matters <span className="font-normal normal-case text-[#9a8870]">(optional)</span></label>
+                <label className="font-mono-dm text-xs uppercase text-[#9a8870] block mb-1">Why It Matters <span className="text-red-500">*</span></label>
                 <textarea value={docket.summary.whyMatters}
                   onChange={(e) => setDocket({ ...docket, summary: { ...docket.summary, whyMatters: e.target.value } })}
                   className="w-full border border-[#d4c8b4] p-3 font-garamond focus:outline-none focus:border-[#1e2d4a] text-[#1e2d4a] bg-white rounded"
                   rows={3} placeholder="Why It Matters" />
+                   <FieldError message={errors.summarywhymatters} />
               </div>
             </div>
           </div>
@@ -1606,13 +1624,14 @@ export default function AdminEditDocketPage() {
                 <FieldError message={errors.responseTitle} />
               </div>
               <div>
-                <label className="font-mono-dm text-xs uppercase text-[#9a8870] block mb-2">Response Type <span className="font-normal normal-case text-[#9a8870]">(optional)</span></label>
+                <label className="font-mono-dm text-xs uppercase text-[#9a8870] block mb-2">Response Type <span className="text-red-500">*</span></label>
                 <select value={docket.response.type}
                   onChange={(e) => setDocket({ ...docket, response: { ...docket.response, type: e.target.value } })}
                   className="w-full border border-[#d4c8b4] p-2 font-garamond focus:outline-none focus:border-[#1e2d4a] text-[#1e2d4a] bg-white cursor-pointer rounded">
                   <option value="">Select type...</option>
                   {RESPONSE_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
                 </select>
+                <FieldError message={errors.responseType} />
               </div>
               <div>
                 <label className="font-mono-dm text-xs uppercase text-[#9a8870] block mb-2">Full Response <span className="text-red-500">*</span></label>
@@ -1623,7 +1642,7 @@ export default function AdminEditDocketPage() {
                 <FieldError message={errors.responseBody} />
               </div>
               <div>
-                <label className="font-mono-dm text-xs uppercase text-[#9a8870] block mb-2">Requested Action <span className="font-normal normal-case text-[#9a8870]">(optional)</span></label>
+                <label className="font-mono-dm text-xs uppercase text-[#9a8870] block mb-2">Requested Action <span className="text-red-500">*</span></label>
                 <select value={docket.response.requestedAction}
                   onChange={(e) => setDocket({ ...docket, response: { ...docket.response, requestedAction: e.target.value } })}
                   className="w-full border border-[#d4c8b4] p-2 font-garamond focus:outline-none focus:border-[#1e2d4a] text-[#1e2d4a] bg-white cursor-pointer rounded">
@@ -1632,6 +1651,7 @@ export default function AdminEditDocketPage() {
                     <option key={a} value={a}>{a}</option>
                   ))}
                 </select>
+                 <FieldError message={errors.responseRequestAction} />
               </div>
             </div>
           </div>
@@ -1655,7 +1675,7 @@ export default function AdminEditDocketPage() {
           <div className="border border-[#d4c8b4] bg-white p-4 md:p-6 rounded-lg shadow-sm">
             <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
               <div>
-                <h2 className="font-playfair font-bold text-lg text-[#1e2d4a]">Timeline <span className="font-normal text-xs text-[#9a8870]">(optional)</span></h2>
+                <h2 className="font-playfair font-bold text-lg text-[#1e2d4a]">Timeline <span className="text-red-500">*</span></h2>
                 <p className="font-mono-dm text-xs text-[#9a8870]">Add key events in chronological order</p>
               </div>
               <button onClick={addTimelineEntry}
@@ -1663,6 +1683,7 @@ export default function AdminEditDocketPage() {
                 <FiPlus size={12} /> Add Event
               </button>
             </div>
+            {errors.timeline && <p className="text-xs text-red-500 font-mono-dm mb-3">{errors.timeline}</p>}
             {docket.timeline.length === 0 ? (
               <p className="text-center text-[#9a8870] py-8 font-garamond text-sm">No timeline events added.</p>
             ) : (
@@ -1693,7 +1714,7 @@ export default function AdminEditDocketPage() {
           <div className="border border-[#d4c8b4] bg-white p-4 md:p-6 rounded-lg shadow-sm">
             <div className="flex items-center justify-between mb-1 flex-wrap gap-2">
               <div>
-                <h2 className="font-playfair font-bold text-lg text-[#1e2d4a]">Exhibits <span className="font-normal text-xs text-[#9a8870]">(optional)</span></h2>
+                <h2 className="font-playfair font-bold text-lg text-[#1e2d4a]">Exhibits <span className="text-red-500">*</span></h2>
                 <p className="font-mono-dm text-xs text-[#9a8870]">{docket.exhibits.length} / {MAX_FILES} exhibit(s)</p>
               </div>
               <button onClick={addExhibit}
@@ -1702,7 +1723,7 @@ export default function AdminEditDocketPage() {
               </button>
             </div>
             <p className="font-mono-dm text-xs text-[#9a8870] mb-4">Max {MAX_FILES} files · Max {MAX_FILE_SIZE_MB} MB each · PDF, Word, Excel, CSV, JPEG, PNG</p>
-
+              {errors.exhibits_count && <p className="text-xs text-red-500 font-mono-dm mb-3">{errors.exhibits_count}</p>}
             {docket.exhibits.length === 0 ? (
               <div className="text-center py-12 border-2 border-dashed border-[#d4c8b4] bg-[#faf6ee] rounded">
                 <FiFolder size={48} className="mx-auto text-[#c4b89a] mb-3" />
