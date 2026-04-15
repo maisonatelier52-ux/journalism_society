@@ -1317,7 +1317,6 @@ export default function SingleDocketPageClient() {
 }
 
 
-
 // // app/dockets/[slug]/page.jsx
 // "use client";
 
@@ -1326,10 +1325,9 @@ export default function SingleDocketPageClient() {
 // import Link from "next/link";
 // import Header from "@/components/Header";
 // import Footer from "@/components/Footer";
-// import { FiCalendar, FiFileText, FiDownload, FiExternalLink, FiArrowRight, FiInfo, FiPlus } from "react-icons/fi";
+// import { FiCalendar, FiFileText, FiDownload, FiExternalLink, FiArrowRight, FiInfo, FiPlus, FiAlertCircle } from "react-icons/fi";
 // import docketsAPI from "@/services/docketsApi";
 // import mediaAPI from "@/services/mediaApi";
-// import resolveFileUrl from "@/utils/fileUrl";
 
 // /* ── GOOGLE FONTS + RESPONSIVE CSS ── */
 // const FontStyle = () => (
@@ -1477,12 +1475,13 @@ export default function SingleDocketPageClient() {
 //     .action-btn {
 //       font-family: 'DM Mono', monospace;
 //       font-size: 0.56rem; letter-spacing: 0.08em; text-transform: uppercase;
-//       color: #1e2d4a; padding: 9px 0; border: none; border-bottom: 1px solid #ede8dc;
+//       font-weight: 500;
+//       color: #000000; padding: 9px 0; border: none; border-bottom: 1px solid #d8d4c9;
 //       display: flex; align-items: center; gap: 8px; background: none;
 //       cursor: pointer; width: 100%; text-align: left;
 //       transition: color 0.15s, background 0.15s;
 //     }
-//     .action-btn:hover { color: #b8974a; }
+//     .action-btn:hover { color: #a0823b; }
 //     .action-btn:last-child { border-bottom: none; }
 
 //     @keyframes toastIn { from { opacity: 0; transform: translateX(-50%) translateY(10px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
@@ -1497,6 +1496,13 @@ export default function SingleDocketPageClient() {
 //     }
 //     .share-btn:hover { color: #b8974a; }
 //     .share-btn:last-child { border-bottom: none; }
+
+//     /* Correction item */
+//     .cor-item { border-left: 3px solid #d4c8b4; padding-left: 14px; margin-bottom: 14px; }
+//     .cor-item:last-child { margin-bottom: 0; }
+//     .cor-item.type-Correction    { border-color: #b91c1c; }
+//     .cor-item.type-Clarification { border-color: #b45309; }
+//     .cor-item.type-Update        { border-color: #1d4ed8; }
 //   `}</style>
 // );
 
@@ -1527,6 +1533,12 @@ export default function SingleDocketPageClient() {
 //   adversarial: { color: "#b8190c", label: "Adversarial", dot: "#b8190c" },
 //   neutral:     { color: "#6a7a94", label: "Neutral",     dot: "#6a7a94" },
 //   supportive:  { color: "#2d6a4f", label: "Supportive",  dot: "#2d6a4f" },
+// };
+
+// const COR_TYPE_STYLE = {
+//   Correction:    { color: "#b91c1c", bg: "#fef2f2", border: "#fecaca" },
+//   Clarification: { color: "#b45309", bg: "#fffbeb", border: "#fde68a" },
+//   Update:        { color: "#1d4ed8", bg: "#eff6ff", border: "#bfdbfe" },
 // };
 
 // /* ── HELPERS ── */
@@ -1586,11 +1598,9 @@ export default function SingleDocketPageClient() {
 //       setErrors({ description: "Please describe the error." });
 //       return;
 //     }
-
 //     setLoading(true);
 //     try {
 //       const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
-
 //       const res = await fetch(`${API_BASE}/api/flags`, {
 //         method: "POST",
 //         headers: { "Content-Type": "application/json" },
@@ -1601,13 +1611,8 @@ export default function SingleDocketPageClient() {
 //           contactEmail: form.contact.trim(),
 //         }),
 //       });
-
 //       const data = await res.json();
-
-//       if (!res.ok || !data.success) {
-//         throw new Error(data.message || "Submission failed");
-//       }
-
+//       if (!res.ok || !data.success) throw new Error(data.message || "Submission failed");
 //       setSubmitted(true);
 //       setTimeout(onClose, 2400);
 //     } catch (err) {
@@ -1630,7 +1635,6 @@ export default function SingleDocketPageClient() {
 //             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
 //           </button>
 //         </div>
-
 //         {submitted ? (
 //           <div className="success-pop" style={{ padding: "40px 24px", textAlign: "center" }}>
 //             <div style={{ width: 52, height: 52, borderRadius: "50%", background: "#2d6a4f", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px" }}>
@@ -1646,20 +1650,14 @@ export default function SingleDocketPageClient() {
 //             <p style={serif({ fontSize: "0.92rem", fontStyle: "italic", color: "#7a6e5e", lineHeight: 1.65, marginBottom: 18, borderLeft: "3px solid #b8190c", paddingLeft: 12 })}>
 //               Help us maintain accuracy. Describe the error you found in docket <strong>{docketLabel}</strong>.
 //             </p>
-
 //             <div style={{ marginBottom: 14 }}>
 //               <label style={mono({ fontSize: "0.52rem", letterSpacing: "0.14em", textTransform: "uppercase", color: "#9a8870", display: "block", marginBottom: 6 })}>Error Type</label>
-//               <select
-//                 value={form.category}
-//                 onChange={(e) => setForm({ ...form, category: e.target.value })}
-//                 className="modal-select"
-//               >
+//               <select value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} className="modal-select">
 //                 {["Factual Error", "Date Inaccuracy", "Name / Entity Error", "Missing Information", "Document Error", "Other"].map((c) => (
 //                   <option key={c}>{c}</option>
 //                 ))}
 //               </select>
 //             </div>
-
 //             <div style={{ marginBottom: 14 }}>
 //               <label style={mono({ fontSize: "0.52rem", letterSpacing: "0.14em", textTransform: "uppercase", color: "#9a8870", display: "block", marginBottom: 6 })}>Description *</label>
 //               <textarea
@@ -1672,18 +1670,10 @@ export default function SingleDocketPageClient() {
 //               />
 //               {errors.description && <p style={mono({ fontSize: "0.54rem", color: "#b8190c", marginTop: 4 })}>{errors.description}</p>}
 //             </div>
-
 //             <div style={{ marginBottom: 18 }}>
 //               <label style={mono({ fontSize: "0.52rem", letterSpacing: "0.14em", textTransform: "uppercase", color: "#9a8870", display: "block", marginBottom: 6 })}>Your Email (Optional)</label>
-//               <input
-//                 type="email"
-//                 value={form.contact}
-//                 onChange={(e) => setForm({ ...form, contact: e.target.value })}
-//                 className="modal-input"
-//                 placeholder="For follow-up if needed"
-//               />
+//               <input type="email" value={form.contact} onChange={(e) => setForm({ ...form, contact: e.target.value })} className="modal-input" placeholder="For follow-up if needed" />
 //             </div>
-
 //             <div style={{ background: "#fef2f2", border: "1px solid #fecaca", padding: "10px 12px", marginBottom: 18, display: "flex", gap: 8 }}>
 //               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#b8190c" strokeWidth="2" style={{ flexShrink: 0, marginTop: 2 }}>
 //                 <circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/>
@@ -1692,20 +1682,11 @@ export default function SingleDocketPageClient() {
 //                 All reports are reviewed by our editorial team before any changes are made to the public record.
 //               </p>
 //             </div>
-
 //             <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
-//               <button
-//                 type="button"
-//                 onClick={onClose}
-//                 style={mono({ fontSize: "0.58rem", letterSpacing: "0.1em", textTransform: "uppercase", background: "transparent", border: "1px solid #c4b89a", color: "#7a6e5e", padding: "8px 18px", cursor: "pointer" })}
-//               >
+//               <button type="button" onClick={onClose} style={mono({ fontSize: "0.58rem", letterSpacing: "0.1em", textTransform: "uppercase", background: "transparent", border: "1px solid #c4b89a", color: "#7a6e5e", padding: "8px 18px", cursor: "pointer" })}>
 //                 Cancel
 //               </button>
-//               <button
-//                 type="submit"
-//                 disabled={loading}
-//                 style={mono({ fontSize: "0.58rem", letterSpacing: "0.1em", textTransform: "uppercase", background: "#b8190c", color: "#fff", border: "none", padding: "8px 18px", cursor: "pointer", opacity: loading ? 0.6 : 1 })}
-//               >
+//               <button type="submit" disabled={loading} style={mono({ fontSize: "0.58rem", letterSpacing: "0.1em", textTransform: "uppercase", background: "#b8190c", color: "#fff", border: "none", padding: "8px 18px", cursor: "pointer", opacity: loading ? 0.6 : 1 })}>
 //                 {loading ? "Sending…" : "Submit Flag →"}
 //               </button>
 //             </div>
@@ -1718,81 +1699,19 @@ export default function SingleDocketPageClient() {
 
 // /* ── SHARE MODAL ── */
 // function ShareModal({ title, onClose, onCopied }) {
-//   const mono = (extra = {}) => ({ fontFamily: "'DM Mono', monospace", ...extra });
-//   const serif = (extra = {}) => ({ fontFamily: "'EB Garamond', Georgia, serif", ...extra });
+//   const mono    = (extra = {}) => ({ fontFamily: "'DM Mono', monospace", ...extra });
+//   const serif   = (extra = {}) => ({ fontFamily: "'EB Garamond', Georgia, serif", ...extra });
 //   const display = (extra = {}) => ({ fontFamily: "'Playfair Display', Georgia, serif", ...extra });
 
-//   const url = typeof window !== "undefined" ? window.location.href : "";
-//   const encodedUrl = encodeURIComponent(url);
+//   const url          = typeof window !== "undefined" ? window.location.href : "";
+//   const encodedUrl   = encodeURIComponent(url);
 //   const encodedTitle = encodeURIComponent(title);
 
 //   const platforms = [
-//     {
-//       icon: (
-//         <svg width="16" height="16" viewBox="0 0 24 24" fill="#25D366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-//       ),
-//       label: "WhatsApp",
-//       action: () => window.open(`https://wa.me/?text=${encodedTitle}%20${encodedUrl}`, "_blank"),
-//     },
-//     {
-//       icon: (
-//         <svg width="16" height="16" viewBox="0 0 24 24" fill="#000"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.855-8.175-10.645H8.08l4.26 5.632L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-//       ),
-//       label: "X / Twitter",
-//       action: () => window.open(`https://twitter.com/intent/tweet?text=${encodedTitle}&url=${encodedUrl}`, "_blank"),
-//     },
-//     {
-//       icon: (
-//         <svg width="16" height="16" viewBox="0 0 24 24" fill="#FF4500"><path d="M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0zm5.01 4.744c.688 0 1.25.561 1.25 1.249a1.25 1.25 0 0 1-2.498.056l-2.597-.547-.8 3.747c1.824.07 3.48.632 4.674 1.488.308-.309.73-.491 1.207-.491.968 0 1.754.786 1.754 1.754 0 .716-.435 1.333-1.01 1.614a3.111 3.111 0 0 1 .042.52c0 2.694-3.13 4.87-7.004 4.87-3.874 0-7.004-2.176-7.004-4.87 0-.183.015-.366.043-.534A1.748 1.748 0 0 1 4.028 12c0-.968.786-1.754 1.754-1.754.463 0 .898.196 1.207.49 1.207-.883 2.878-1.43 4.744-1.487l.885-4.182a.342.342 0 0 1 .14-.197.35.35 0 0 1 .238-.042l2.906.617a1.214 1.214 0 0 1 1.108-.701zM9.25 12C8.561 12 8 12.562 8 13.25c0 .687.561 1.248 1.25 1.248.687 0 1.248-.561 1.248-1.249 0-.688-.561-1.249-1.249-1.249zm5.5 0c-.687 0-1.248.561-1.248 1.25 0 .687.561 1.248 1.249 1.248.688 0 1.249-.561 1.249-1.249 0-.687-.562-1.249-1.25-1.249zm-5.466 3.99a.327.327 0 0 0-.231.094.33.33 0 0 0 0 .463c.842.842 2.484.913 2.961.913.477 0 2.105-.056 2.961-.913a.361.361 0 0 0 .029-.463.33.33 0 0 0-.464 0c-.547.533-1.684.73-2.512.73-.828 0-1.979-.196-2.512-.73a.326.326 0 0 0-.232-.095z"/></svg>
-//       ),
-//       label: "Reddit",
-//       action: () => window.open(`https://reddit.com/submit?url=${encodedUrl}&title=${encodedTitle}`, "_blank"),
-//     },
-//     {
-//       icon: (
-//         <svg width="16" height="16" viewBox="0 0 24 24" fill="#1877F2"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
-//       ),
-//       label: "Facebook",
-//       action: () => window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`, "_blank"),
-//     },
-//     {
-//       icon: (
-//         <svg width="16" height="16" viewBox="0 0 24 24" fill="url(#ig)">
-//           <defs>
-//             <linearGradient id="ig" x1="0%" y1="100%" x2="100%" y2="0%">
-//               <stop offset="0%" stopColor="#f09433"/>
-//               <stop offset="25%" stopColor="#e6683c"/>
-//               <stop offset="50%" stopColor="#dc2743"/>
-//               <stop offset="75%" stopColor="#cc2366"/>
-//               <stop offset="100%" stopColor="#bc1888"/>
-//             </linearGradient>
-//           </defs>
-//           <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
-//         </svg>
-//       ),
-//       label: "Instagram (Copy Link)",
-//       action: () => {
-//         navigator.clipboard.writeText(url);
-//         onCopied();
-//         onClose();
-//       },
-//     },
-//     {
-//       icon: (
-//         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1e2d4a" strokeWidth="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-//       ),
-//       label: "Email",
-//       action: () => window.open(`mailto:?subject=${encodedTitle}&body=${encodeURIComponent("Public Record: " + title + "\n\n" + url)}`),
-//     },
-//     ...(typeof navigator !== "undefined" && navigator.share
-//       ? [{
-//           icon: (
-//             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1e2d4a" strokeWidth="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-//           ),
-//           label: "More Options",
-//           action: () => navigator.share({ title, url }),
-//         }]
-//       : []),
+//     { icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="#25D366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>, label: "WhatsApp", action: () => window.open(`https://wa.me/?text=${encodedTitle}%20${encodedUrl}`, "_blank") },
+//     { icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="#000"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.855-8.175-10.645H8.08l4.26 5.632L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>, label: "X / Twitter", action: () => window.open(`https://twitter.com/intent/tweet?text=${encodedTitle}&url=${encodedUrl}`, "_blank") },
+//     { icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1e2d4a" strokeWidth="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>, label: "Email", action: () => window.open(`mailto:?subject=${encodedTitle}&body=${encodeURIComponent("Public Record: " + title + "\n\n" + url)}`) },
+//     ...(typeof navigator !== "undefined" && navigator.share ? [{ icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1e2d4a" strokeWidth="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>, label: "More Options", action: () => navigator.share({ title, url }) }] : []),
 //   ];
 
 //   return (
@@ -1827,7 +1746,7 @@ export default function SingleDocketPageClient() {
 
 // /* ── MEDIA CITATION MODAL ── */
 // function MediaCitationModal({ docketId, docketTitle, onClose, onSubmit }) {
-//   const [form, setForm] = useState({ outlet: "", headline: "", url: "", date: "", type: "News", note: "" });
+//   const [form, setForm]     = useState({ outlet: "", headline: "", url: "", date: "", type: "News", note: "" });
 //   const [submitted, setSubmitted] = useState(false);
 //   const [errors, setErrors] = useState({});
 //   const [loading, setLoading] = useState(false);
@@ -1835,15 +1754,15 @@ export default function SingleDocketPageClient() {
 //   const handleChange = (field, value) => {
 //     setForm({ ...form, [field]: value });
 //     if (errors[field]) setErrors({ ...errors, [field]: "" });
-//     if (errors.submit) setErrors({ ...errors, submit: "" });
+//     if (errors.submit)  setErrors({ ...errors, submit: "" });
 //   };
 
 //   const validate = () => {
 //     const e = {};
-//     if (!form.outlet.trim()) e.outlet = "Publication name is required";
+//     if (!form.outlet.trim())   e.outlet   = "Publication name is required";
 //     if (!form.headline.trim()) e.headline = "Headline is required";
-//     if (!form.url.trim()) e.url = "URL is required";
-//     if (!form.date) e.date = "Date is required";
+//     if (!form.url.trim())      e.url      = "URL is required";
+//     if (!form.date)            e.date     = "Date is required";
 //     return e;
 //   };
 
@@ -1874,10 +1793,10 @@ export default function SingleDocketPageClient() {
 //       <div className="modal-panel" onClick={(e) => e.stopPropagation()}>
 //         <div style={{ background: "#1e2d4a", padding: "18px 22px", display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
 //           <div>
-//             <p className="font-mono-dm text-[0.52rem] tracking-[0.14em] text-[#3a4e6a] uppercase mb-1">Media Watch</p>
+//             <p className="font-mono-dm text-[0.52rem] tracking-[0.14em] text-gray-400 uppercase mb-1">Media Watch</p>
 //             <h3 className="font-playfair font-bold text-[1.15rem] text-[#f5f0e8]">Submit a Media Citation</h3>
 //           </div>
-//           <button onClick={onClose} className="text-[#3a4e6a] hover:text-[#c8bfa8] transition-colors p-1 cursor-pointer">
+//           <button onClick={onClose} className="text-gray-400 hover:text-[#c8bfa8] transition-colors p-1 cursor-pointer">
 //             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
 //           </button>
 //         </div>
@@ -1897,60 +1816,51 @@ export default function SingleDocketPageClient() {
 //             <p className="font-garamond text-[0.92rem] italic text-[#7a6e5e] leading-relaxed mb-5 border-l-3 border-[#b8974a] pl-3">
 //               Help improve this record by submitting additional media coverage we may have missed.
 //             </p>
-
 //             <div className="mb-4">
-//               <label className="font-mono-dm text-[0.52rem] tracking-[0.14em] uppercase text-[#9a8870] block mb-1.5">Publication Name *</label>
+//               <label className="font-mono-dm text-[0.53rem] tracking-[0.18em] uppercase text-[#5c4629] block mb-1.5">Publication Name *</label>
 //               <input type="text" value={form.outlet} onChange={(e) => handleChange("outlet", e.target.value)} className="w-full bg-[#faf6ee] border border-[#d4c8b4] p-2.5 font-garamond text-[0.97rem] text-[#1e2d4a] focus:outline-none focus:border-[#1e2d4a]" placeholder="e.g., The Hindu, BBC News"/>
 //               {errors.outlet && <p className="font-mono-dm text-[0.54rem] text-[#b8190c] mt-1">{errors.outlet}</p>}
 //             </div>
-
 //             <div className="mb-4">
-//               <label className="font-mono-dm text-[0.52rem] tracking-[0.14em] uppercase text-[#9a8870] block mb-1.5">Headline *</label>
+//               <label className="font-mono-dm text-[0.53rem] tracking-[0.18em] uppercase text-[#5c4629] block mb-1.5">Headline *</label>
 //               <input type="text" value={form.headline} onChange={(e) => handleChange("headline", e.target.value)} className="w-full bg-[#faf6ee] border border-[#d4c8b4] p-2.5 font-garamond text-[0.97rem] text-[#1e2d4a] focus:outline-none focus:border-[#1e2d4a]" placeholder="Full article title"/>
 //               {errors.headline && <p className="font-mono-dm text-[0.54rem] text-[#b8190c] mt-1">{errors.headline}</p>}
 //             </div>
-
 //             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
 //               <div>
-//                 <label className="font-mono-dm text-[0.52rem] tracking-[0.14em] uppercase text-[#9a8870] block mb-1.5">URL *</label>
+//                 <label className="font-mono-dm text-[0.53rem] tracking-[0.18em] uppercase text-[#5c4629] block mb-1.5">URL *</label>
 //                 <input type="url" value={form.url} onChange={(e) => handleChange("url", e.target.value)} className="w-full bg-[#faf6ee] border border-[#d4c8b4] p-2.5 font-garamond text-[0.97rem] text-[#1e2d4a] focus:outline-none focus:border-[#1e2d4a]" placeholder="https://..."/>
 //                 {errors.url && <p className="font-mono-dm text-[0.54rem] text-[#b8190c] mt-1">{errors.url}</p>}
 //               </div>
 //               <div>
-//                 <label className="font-mono-dm text-[0.52rem] tracking-[0.14em] uppercase text-[#9a8870] block mb-1.5">Date *</label>
+//                 <label className="font-mono-dm text-[0.53rem] tracking-[0.18em] uppercase text-[#5c4629] block mb-1.5">Date *</label>
 //                 <input type="date" value={form.date} onChange={(e) => handleChange("date", e.target.value)} className="w-full bg-[#faf6ee] border border-[#d4c8b4] p-2.5 font-garamond text-[0.97rem] text-[#1e2d4a] focus:outline-none focus:border-[#1e2d4a] cursor-pointer"/>
 //                 {errors.date && <p className="font-mono-dm text-[0.54rem] text-[#b8190c] mt-1">{errors.date}</p>}
 //               </div>
 //             </div>
-
 //             <div className="mb-4">
-//               <label className="font-mono-dm text-[0.52rem] tracking-[0.14em] uppercase text-[#9a8870] block mb-1.5">Type</label>
+//               <label className="font-mono-dm text-[0.53rem] tracking-[0.18em] uppercase text-[#5c4629] block mb-1.5">Type</label>
 //               <select value={form.type} onChange={(e) => handleChange("type", e.target.value)} className="w-full bg-[#faf6ee] border border-[#d4c8b4] p-2.5 font-garamond text-[0.97rem] text-[#1e2d4a] focus:outline-none focus:border-[#1e2d4a] cursor-pointer">
 //                 {["Original Report", "Follow-up", "Opinion", "Fact-Check", "News", "Regional", "Other"].map((t) => <option key={t}>{t}</option>)}
 //               </select>
 //             </div>
-
 //             <div className="mb-5">
-//               <label className="font-mono-dm text-[0.52rem] tracking-[0.14em] uppercase text-[#9a8870] block mb-1.5">Note (Optional)</label>
+//               <label className="font-mono-dm text-[0.53rem] tracking-[0.18em] uppercase text-[#5c4629] block mb-1.5">Note (Optional)</label>
 //               <textarea value={form.note} onChange={(e) => handleChange("note", e.target.value)} className="w-full bg-[#faf6ee] border border-[#d4c8b4] p-2.5 font-garamond text-[0.97rem] text-[#1e2d4a] focus:outline-none focus:border-[#1e2d4a] resize-y min-h-[64px]" rows={2} placeholder="Brief summary or key points from the coverage..."/>
 //             </div>
-
 //             {errors.submit ? (
 //               <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded flex items-start gap-2">
-//                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#b8190c" strokeWidth="2" style={{ flexShrink: 0, marginTop: 2 }}>
-//                   <circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/>
-//                 </svg>
+//                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#b8190c" strokeWidth="2" style={{ flexShrink: 0, marginTop: 2 }}><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
 //                 <p className="font-garamond text-sm text-red-600">{errors.submit}</p>
 //               </div>
 //             ) : (
-//                <div className="bg-[#ede8dc] border border-[#d4c8b4] p-2.5 mb-5 flex gap-2">
-//               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#9a8870" strokeWidth="2" style={{ flexShrink: 0, marginTop: 2 }}><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
-//               <p className="font-garamond text-[0.86rem] italic text-[#7a6e5e]">Submissions are reviewed by our editorial team before appearing in the public record.</p>
-//             </div>
+//               <div className="bg-[#ede8dc] border border-[#d4c8b4] p-2.5 mb-5 flex gap-2">
+//                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#8d785e" strokeWidth="2" style={{ flexShrink: 0, marginTop: 2 }}><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+//                 <p className="font-garamond text-[0.86rem] italic text-[#8d785e]">Submissions are reviewed by our editorial team before appearing in the public record.</p>
+//               </div>
 //             )}
-
 //             <div className="flex gap-2.5 justify-end">
-//               <button type="button" onClick={onClose} className="font-mono-dm bg-transparent border border-[#c4b89a] text-[#7a6e5e] px-5 py-2 text-[0.58rem] tracking-[0.1em] uppercase cursor-pointer hover:bg-[#ede8dc] transition-colors">Cancel</button>
+//               <button type="button" onClick={onClose} className="font-mono-dm bg-transparent border border-[#c4b89a] text-gray-700 px-5 py-2 text-[0.58rem] tracking-[0.1em] uppercase cursor-pointer hover:bg-[#ede8dc] transition-colors">Cancel</button>
 //               <button type="submit" disabled={loading} className="font-mono-dm bg-[#1e2d4a] text-[#f5f0e8] px-5 py-2 text-[0.58rem] tracking-[0.1em] uppercase cursor-pointer hover:bg-[#2a3f6a] transition-colors disabled:opacity-50">
 //                 {loading ? "Submitting..." : "Submit Citation →"}
 //               </button>
@@ -1962,15 +1872,13 @@ export default function SingleDocketPageClient() {
 //   );
 // }
 
-// /* ── ACTIONS PANEL (sidebar) ── */
+// /* ── ACTIONS PANEL ── */
 // function ActionsPanel({ docket, displayTitle, respondentName, filedDate, claimDate, exhibitsCount, claimSource, formattedResponse }) {
-//   const [copiedMsg, setCopiedMsg] = useState(false);
+//   const [copiedMsg, setCopiedMsg]         = useState(false);
 //   const [showShareModal, setShowShareModal] = useState(false);
-//   const [showFlagModal, setShowFlagModal] = useState(false);
+//   const [showFlagModal, setShowFlagModal]   = useState(false);
 
-//   const mono    = (extra = {}) => ({ fontFamily: "'DM Mono', monospace", ...extra });
-//   const serif   = (extra = {}) => ({ fontFamily: "'EB Garamond', Georgia, serif", ...extra });
-//   const display = (extra = {}) => ({ fontFamily: "'Playfair Display', Georgia, serif", ...extra });
+//   const mono = (extra = {}) => ({ fontFamily: "'DM Mono', monospace", ...extra });
 
 //   const handleCopyPermalink = () => {
 //     if (typeof navigator !== "undefined") {
@@ -1989,181 +1897,124 @@ export default function SingleDocketPageClient() {
 //   };
 
 //   const handleDownload = () => {
-//     const printContent = `
-//       <!DOCTYPE html>
-//       <html>
-//       <head>
-//         <meta charset="UTF-8" />
-//         <title>${docket.docketId} — ${displayTitle}</title>
-//         <style>
-//           @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=DM+Mono:wght@400;500&display=swap');
-//           * { box-sizing: border-box; margin: 0; padding: 0; }
-//           body { font-family: 'EB Garamond', Georgia, serif; color: #1e2d4a; padding: 48px 60px; max-width: 820px; margin: 0 auto; background: #fff; }
-//           .header-bar { border-bottom: 3px solid #b8974a; padding-bottom: 18px; margin-bottom: 24px; }
-//           .org-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.14em; text-transform: uppercase; color: #9a8870; margin-bottom: 10px; }
-//           h1 { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 900; line-height: 1.15; color: #1e2d4a; margin-bottom: 10px; }
-//           .status-row { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; color: #9a8870; }
-//           h2 { font-family: 'Playfair Display', serif; font-size: 1.25rem; font-weight: 700; color: #1e2d4a; margin: 32px 0 10px; padding-bottom: 5px; border-bottom: 1.5px solid #b8974a; }
-//           .meta-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; background: #f5f0e8; padding: 16px 18px; margin: 16px 0; border-left: 4px solid #b8974a; }
-//           .meta-label { font-family: 'DM Mono', monospace; font-size: 0.56rem; letter-spacing: 0.1em; text-transform: uppercase; color: #9a8870; margin-bottom: 3px; }
-//           .meta-val { font-size: 0.95rem; color: #1e2d4a; font-family: 'EB Garamond', Georgia, serif; }
-//           .claim-box { background: #ede8dc; border: 1px solid #d4c8b4; padding: 14px 18px; margin: 10px 0; }
-//           .claim-box .box-label { font-family: 'DM Mono', monospace; font-size: 0.56rem; letter-spacing: 0.14em; text-transform: uppercase; color: #b8974a; margin-bottom: 8px; }
-//           .claim-box p { font-size: 1rem; line-height: 1.75; color: #4a4035; }
-//           .response-section p { font-size: 1rem; line-height: 1.85; color: #4a4035; margin-bottom: 1rem; }
-//           .response-section h3 { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 1.15rem; color: #1e2d4a; margin: 1.5rem 0 0.5rem; }
-//           .response-section blockquote { border-left: 3px solid #b8974a; padding: 6px 0 6px 16px; margin: 1.2rem 0; background: #faf6ee; font-style: italic; color: #7a6e5e; }
-//           table { width: 100%; border-collapse: collapse; margin: 10px 0; }
-//           th { font-family: 'DM Mono', monospace; font-size: 0.58rem; text-transform: uppercase; letter-spacing: 0.1em; padding: 8px 10px; background: #1e2d4a; color: #f5f0e8; text-align: left; }
-//           td { padding: 8px 10px; border-bottom: 1px solid #d4c8b4; font-size: 0.9rem; vertical-align: top; }
-//           tr:nth-child(even) td { background: #faf6ee; }
-//           .tl-item { padding: 10px 0 10px 14px; border-left: 2px solid #d4c8b4; margin-left: 6px; margin-bottom: 6px; }
-//           .tl-date { font-family: 'DM Mono', monospace; font-size: 0.58rem; color: #9a8870; letter-spacing: 0.08em; }
-//           .tl-event { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 1rem; color: #1e2d4a; margin: 3px 0; }
-//           .tl-desc { font-size: 0.9rem; color: #6a5e4e; line-height: 1.6; }
-//           .doc-footer { margin-top: 48px; padding-top: 14px; border-top: 1px solid #d4c8b4; display: flex; justify-content: space-between; font-family: 'DM Mono', monospace; font-size: 0.56rem; color: #9a8870; text-transform: uppercase; letter-spacing: 0.1em; }
-//           @media print { body { padding: 24px 32px; } @page { margin: 1.5cm; } }
-//         </style>
-//       </head>
-//       <body>
-//         <div class="header-bar">
-//           <p class="org-label">Journalism Society — Public Record</p>
-//           <h1>${displayTitle}</h1>
-//           <p class="status-row">${docket.docketId} &nbsp;·&nbsp; Status: ${docket.status} &nbsp;·&nbsp; Filed: ${fmtDate(filedDate)}</p>
-//         </div>
-
-//         <div class="meta-grid">
-//           ${[
-//             ["Respondent", respondentName],
-//             ["Claim Source", claimSource],
-//             ["Claim Date", fmtDate(claimDate)],
-//             ["Reply Filed", fmtDate(filedDate)],
-//             ["Exhibits", `${exhibitsCount} documents`],
-//             ["Type", docket.respondent?.type || docket.type || "Other"],
-//           ].map(([l, v]) => `<div><div class="meta-label">${l}</div><div class="meta-val">${v}</div></div>`).join("")}
-//         </div>
-
-//         ${docket.summary ? `
-//         <h2>Summary</h2>
-//         <div class="claim-box"><p class="box-label">The Claim</p><p>${docket.summary.claim}</p></div>
-//         ${docket.summary.context ? `<div class="claim-box"><p class="box-label">Context</p><p>${docket.summary.context}</p></div>` : ""}
-//         ${docket.summary.whyMatters ? `<div class="claim-box"><p class="box-label">Why It Matters</p><p>${docket.summary.whyMatters}</p></div>` : ""}
-//         ` : ""}
-
-//         <h2>Full Response</h2>
-//         <div class="response-section">${formattedResponse || "<p>No response content available.</p>"}</div>
-
-//         ${docket.timeline?.length ? `
-//         <h2>Timeline</h2>
-//         ${docket.timeline.map((item) => `
-//           <div class="tl-item">
-//             <div class="tl-date">${fmtDate(item.date)} &nbsp;·&nbsp; ${item.type}</div>
-//             <div class="tl-event">${item.event}</div>
-//             <div class="tl-desc">${item.description}</div>
-//           </div>`).join("")}
-//         ` : ""}
-
-//         ${docket.exhibits?.length ? `
-//         <h2>Exhibits (${exhibitsCount})</h2>
-//         <table>
-//           <thead><tr><th>ID</th><th>Title</th><th>Category</th><th>Size</th></tr></thead>
-//           <tbody>
-//             ${docket.exhibits.map((ex) => `<tr><td>${ex.exhibitId}</td><td>${ex.title}</td><td>${ex.category}</td><td>${formatFileSize(ex.fileSize)}</td>`).join("")}
-//           </tbody>
-//         </table>
-//         ` : ""}
-
-//         <div class="doc-footer">
-//           <span>Journalism Society Public Record</span>
-//           <span>${docket.docketId} &nbsp;·&nbsp; Downloaded ${new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })}</span>
-//         </div>
-//       </body>
-//       </html>
-//     `;
-
-//     const printWindow = window.open("", "_blank");
-//     if (printWindow) {
-//       printWindow.document.write(printContent);
-//       printWindow.document.close();
-//       printWindow.onload = () => {
-//         setTimeout(() => printWindow.print(), 400);
-//       };
-//     }
+//     const printContent = `<!DOCTYPE html><html><head><meta charset="UTF-8"/><title>${docket.docketId} — ${displayTitle}</title></head><body><h1>${displayTitle}</h1><p>${docket.docketId} · ${docket.status} · Filed: ${fmtDate(filedDate)}</p><hr/><div>${formattedResponse || "<p>No response content.</p>"}</div></body></html>`;
+//     const pw = window.open("", "_blank");
+//     if (pw) { pw.document.write(printContent); pw.document.close(); pw.onload = () => setTimeout(() => pw.print(), 400); }
 //   };
 
 //   return (
 //     <>
-//       {/* Copied toast */}
 //       {copiedMsg && (
 //         <div className="toast" style={{ position: "fixed", bottom: 24, left: "50%", transform: "translateX(-50%)", background: "#1e2d4a", color: "#f5f0e8", padding: "11px 22px", zIndex: 999, display: "flex", alignItems: "center", gap: 10, boxShadow: "0 4px 24px rgba(0,0,0,0.28)", pointerEvents: "none" }}>
 //           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#b8974a" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
 //           <span style={mono({ fontSize: "0.6rem", letterSpacing: "0.1em", textTransform: "uppercase" })}>URL Copied to Clipboard</span>
 //         </div>
 //       )}
-
-//       {/* Share Modal */}
-//       {showShareModal && (
-//         <ShareModal
-//           title={displayTitle}
-//           onClose={() => setShowShareModal(false)}
-//           onCopied={() => { setCopiedMsg(true); setTimeout(() => setCopiedMsg(false), 2500); }}
-//         />
-//       )}
-
-//       {/* Flag Modal — connected to real API */}
-//       {showFlagModal && (
-//         <FlagErrorModal
-//           docketId={docket._id}
-//           docketLabel={docket.docketId}
-//           onClose={() => setShowFlagModal(false)}
-//         />
-//       )}
-
-//       {/* Actions Card */}
+//       {showShareModal && <ShareModal title={displayTitle} onClose={() => setShowShareModal(false)} onCopied={() => { setCopiedMsg(true); setTimeout(() => setCopiedMsg(false), 2500); }} />}
+//       {showFlagModal  && <FlagErrorModal docketId={docket._id} docketLabel={docket.docketId} onClose={() => setShowFlagModal(false)} />}
 //       <div style={{ background: "#faf6ee", border: "1px solid #d4c8b4", padding: "16px 18px", marginBottom: 14 }}>
-//         <p style={mono({ fontSize: "0.54rem", letterSpacing: "0.14em", color: "#9a8870", textTransform: "uppercase", marginBottom: 12 })}>Actions</p>
+//         <p style={mono({ fontSize: "0.54rem", letterSpacing: "0.14em", color: "#41392e", textTransform: "uppercase", marginBottom: 12, fontWeight: 500 })}>Actions</p>
 //         <div className="actions-wrap">
-//           <button className="action-btn" onClick={handleDownload}>
-//             <span style={{ width: 16, textAlign: "center", flexShrink: 0 }}>📥</span>
-//             Download Full Docket
-//           </button>
-//           <button className="action-btn" onClick={handleCopyPermalink}>
-//             <span style={{ width: 16, textAlign: "center", flexShrink: 0 }}>🔗</span>
-//             Copy Permalink
-//           </button>
-//           <button className="action-btn" onClick={() => setShowShareModal(true)}>
-//             <span style={{ width: 16, textAlign: "center", flexShrink: 0 }}>📤</span>
-//             Share this Record
-//           </button>
-//           <button className="action-btn" onClick={() => setShowFlagModal(true)}>
-//             <span style={{ width: 16, textAlign: "center", flexShrink: 0 }}>⚑</span>
-//             Flag an Error
-//           </button>
+//           <button className="action-btn" onClick={handleDownload}><span style={{ width: 16, textAlign: "center", flexShrink: 0 }}>📥</span>Download Full Docket</button>
+//           <button className="action-btn" onClick={handleCopyPermalink}><span style={{ width: 16, textAlign: "center", flexShrink: 0 }}>🔗</span>Copy Permalink</button>
+//           <button className="action-btn" onClick={() => setShowShareModal(true)}><span style={{ width: 16, textAlign: "center", flexShrink: 0 }}>📤</span>Share this Record</button>
+//           <button className="action-btn" onClick={() => setShowFlagModal(true)}><span style={{ width: 16, textAlign: "center", flexShrink: 0 }}>⚑</span>Flag an Error</button>
 //         </div>
 //       </div>
 //     </>
 //   );
 // }
 
+// /* ── CORRECTIONS SECTION (inline on docket page) ── */
+// function DocketCorrections({ docketId }) {
+//   const [corrections, setCorrections] = useState([]);
+//   const [loading, setLoading]         = useState(true);
+
+//   useEffect(() => {
+//     if (!docketId) return;
+//     const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+//     fetch(`${API_BASE}/api/corrections/by-docket/${docketId}`)
+//       .then((r) => r.json())
+//       .then((data) => {
+//         if (data.success) setCorrections(data.corrections || []);
+//       })
+//       .catch(console.error)
+//       .finally(() => setLoading(false));
+//   }, [docketId]);
+
+//   if (loading || corrections.length === 0) return null;
+
+//   return (
+//     <section style={{ marginTop: 36, marginBottom: 36 }}>
+//       {/* Header */}
+//       <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16, padding: "10px 14px", background: "#fef2f2", border: "1px solid #fecaca", borderLeft: "3px solid #b8190c" }}>
+//         <FiAlertCircle size={14} style={{ flexShrink: 0, color: "#b8190c" }} />
+//         <p style={{ fontFamily: "'EB Garamond', Georgia, serif", fontSize: "0.92rem", fontStyle: "italic", color: "#7a3030", lineHeight: 1.6, margin: 0 }}>
+//           This docket has been updated. See corrections below.
+//         </p>
+//         <Link
+//           href="/corrections"
+//           style={{ fontFamily: "'DM Mono', monospace", fontSize: "0.54rem", letterSpacing: "0.1em", textTransform: "uppercase", color: "#b8974a", marginLeft: "auto", whiteSpace: "nowrap", textDecoration: "none", flexShrink: 0 }}
+//         >
+//           Full log →
+//         </Link>
+//       </div>
+
+//       <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 14 }}>
+//         <div style={{ width: 3, height: 22, background: "#b8190c", flexShrink: 0 }} />
+//         <h3 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: "1.2rem", fontWeight: 700, color: "#1e2d4a", margin: 0 }}>
+//           Corrections &amp; Updates
+//         </h3>
+//         <span style={{ fontFamily: "'DM Mono', monospace", fontSize: "0.54rem", letterSpacing: "0.08em", padding: "2px 8px", background: "#fef2f2", color: "#b91c1c", border: "1px solid #fecaca" }}>
+//           {corrections.length}
+//         </span>
+//       </div>
+
+//       <div>
+//         {corrections.map((cor, i) => {
+//           const cs = COR_TYPE_STYLE[cor.type] || COR_TYPE_STYLE.Correction;
+//           return (
+//             <div key={cor._id || i} className={`cor-item type-${cor.type}`} style={{ borderLeftColor: cs.color }}>
+//               <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4, flexWrap: "wrap" }}>
+//                 <span style={{ fontFamily: "'DM Mono', monospace", fontSize: "0.58rem", color: "#9a8870", letterSpacing: "0.06em" }}>
+//                   {fmtDate(cor.createdAt)}
+//                 </span>
+//                 <span style={{ fontFamily: "'DM Mono', monospace", fontSize: "0.52rem", letterSpacing: "0.08em", textTransform: "uppercase", padding: "2px 7px", background: cs.bg, color: cs.color, border: `1px solid ${cs.border}` }}>
+//                   {cor.type}
+//                 </span>
+//                 {cor.sourceFlagNumber && (
+//                   <span style={{ fontFamily: "'DM Mono', monospace", fontSize: "0.50rem", color: "#9a8870", letterSpacing: "0.06em" }}>
+//                     via {cor.sourceFlagNumber}
+//                   </span>
+//                 )}
+//               </div>
+//               <p style={{ fontFamily: "'EB Garamond', Georgia, serif", fontSize: "0.95rem", lineHeight: 1.72, color: "#4a4035", margin: 0 }}>
+//                 {cor.description}
+//               </p>
+//             </div>
+//           );
+//         })}
+//       </div>
+//     </section>
+//   );
+// }
+
 // /* ══════════════════════════════════════
 //    MAIN PAGE
 // ══════════════════════════════════════ */
-// export default function SingleDocketPage() {
+// export default function SingleDocketPageClient() {
 //   const params = useParams();
-//   const [docket, setDocket] = useState(null);
-//   const [mediaItems, setMediaItems] = useState([]);
-//   const [loading, setLoading] = useState(true);
+//   const [docket,       setDocket]       = useState(null);
+//   const [mediaItems,   setMediaItems]   = useState([]);
+//   const [loading,      setLoading]      = useState(true);
 //   const [loadingMedia, setLoadingMedia] = useState(true);
-//   const [activeTab, setActiveTab] = useState("response");
-//   const [exFilter, setExFilter] = useState("All");
+//   const [activeTab,    setActiveTab]    = useState("response");
+//   const [exFilter,     setExFilter]     = useState("All");
 //   const [showCitationModal, setShowCitationModal] = useState(false);
-//   const [previewItem, setPreviewItem] = useState(null);
+//   const [previewItem,  setPreviewItem]  = useState(null);
 
 //   useEffect(() => {
-//     if (params?.slug) {
-//       fetchDocket();
-//       fetchMedia();
-//     }
+//     if (params?.slug) { fetchDocket(); fetchMedia(); }
 //   }, [params?.slug]);
 
 //   const fetchDocket = async () => {
@@ -2177,7 +2028,6 @@ export default function SingleDocketPageClient() {
 //       setLoading(false);
 //     }
 //   };
-  
 
 //   const fetchMedia = async () => {
 //     setLoadingMedia(true);
@@ -2192,25 +2042,6 @@ export default function SingleDocketPageClient() {
 //   };
 
 //   const handleCitationSubmitted = () => fetchMedia();
-
-//   // Simple download function - NO FETCH, just direct link
-//   const handleExhibitDownload = (exhibit) => {
-//     if (!exhibit.fileUrl) {
-//       alert("No file URL available");
-//       return;
-//     }
-
-//     const fileUrl = resolveFileUrl(exhibit.fileUrl);
-    
-//     // Create anchor element and trigger download
-//     const a = document.createElement("a");
-//     a.href = fileUrl;
-//     a.target = "_blank"; // Opens in new tab, browser handles download
-//     a.download = exhibit.title || `exhibit-${exhibit.exhibitId}`;
-//     document.body.appendChild(a);
-//     a.click();
-//     document.body.removeChild(a);
-//   };
 
 //   if (loading) {
 //     return (
@@ -2238,16 +2069,16 @@ export default function SingleDocketPageClient() {
 //   }
 
 //   const st = STATUS_STYLE[docket.status] || STATUS_STYLE["Open"];
-//   const exCategories = ["All", ...Array.from(new Set(docket.exhibits?.map((e) => e.category) || []))];
-//   const filteredEx = exFilter === "All" ? docket.exhibits || [] : docket.exhibits?.filter((e) => e.category === exFilter) || [];
-//   const exBreakdown = (docket.exhibits || []).reduce((acc, e) => { acc[e.category] = (acc[e.category] || 0) + 1; return acc; }, {});
+//   const exCategories  = ["All", ...Array.from(new Set(docket.exhibits?.map((e) => e.category) || []))];
+//   const filteredEx    = exFilter === "All" ? docket.exhibits || [] : docket.exhibits?.filter((e) => e.category === exFilter) || [];
+//   const exBreakdown   = (docket.exhibits || []).reduce((acc, e) => { acc[e.category] = (acc[e.category] || 0) + 1; return acc; }, {});
 
-//   const displayTitle  = docket.response?.title || docket.title || "Untitled";
+//   const displayTitle   = docket.response?.title || docket.title || "Untitled";
 //   const respondentName = docket.respondent?.name || docket.respondent || "Unknown";
-//   const claimSource   = docket.claim?.source || docket.claim_source || "Unknown";
-//   const claimDate     = docket.claim?.date || docket.claim_date;
-//   const filedDate     = docket.publishedDate || docket.filedDate;
-//   const exhibitsCount = docket.exhibits?.length || 0;
+//   const claimSource    = docket.claim?.source || docket.claim_source || "Unknown";
+//   const claimDate      = docket.claim?.date   || docket.claim_date;
+//   const filedDate      = docket.publishedDate || docket.filedDate;
+//   const exhibitsCount  = docket.exhibits?.length || 0;
 
 //   const mono    = (extra = {}) => ({ fontFamily: "'DM Mono', monospace", wordWrap: "break-word", overflowWrap: "break-word", ...extra });
 //   const serif   = (extra = {}) => ({ fontFamily: "'EB Garamond', Georgia, serif", wordWrap: "break-word", overflowWrap: "break-word", ...extra });
@@ -2270,17 +2101,10 @@ export default function SingleDocketPageClient() {
 //       <FontStyle />
 //       <Header />
 
-//       {/* Citation Modal */}
 //       {showCitationModal && (
-//         <MediaCitationModal
-//           docketId={docket._id}
-//           docketTitle={docket.docketId}
-//           onClose={() => setShowCitationModal(false)}
-//           onSubmit={handleCitationSubmitted}
-//         />
+//         <MediaCitationModal docketId={docket._id} docketTitle={docket.docketId} onClose={() => setShowCitationModal(false)} onSubmit={handleCitationSubmitted} />
 //       )}
 
-//       {/* Media Preview Modal */}
 //       {previewItem && (
 //         <div className="modal-backdrop" onClick={() => setPreviewItem(null)}>
 //           <div className="modal-panel preview-panel" onClick={(e) => e.stopPropagation()}>
@@ -2297,9 +2121,7 @@ export default function SingleDocketPageClient() {
 //             <div className="p-5">
 //               <p className="font-mono-dm text-[0.54rem] text-[#9a8870] mb-2">{fmtDate(previewItem.date)}</p>
 //               <h3 className="font-playfair font-bold text-[1.15rem] leading-tight text-[#1e2d4a] mb-3">{previewItem.headline}</h3>
-//               <div className="bg-[#ede8dc] p-3 mb-4 rounded">
-//                 <p className="font-garamond text-sm text-[#4a4035]">{previewItem.summary || "No summary available."}</p>
-//               </div>
+//               <div className="bg-[#ede8dc] p-3 mb-4 rounded"><p className="font-garamond text-sm text-[#4a4035]">{previewItem.summary || "No summary available."}</p></div>
 //               <a href={previewItem.url} target="_blank" className="flex items-center justify-between bg-[#1e2d4a] p-3 no-underline hover:bg-[#2a3f6a] transition-colors">
 //                 <span className="font-mono-dm text-[0.6rem] text-[#f5f0e8] uppercase">Read Full Article</span>
 //                 <FiExternalLink size={14} className="text-[#6a7a94]" />
@@ -2316,9 +2138,7 @@ export default function SingleDocketPageClient() {
 //             Public Record / Dockets / {docket.docketId}
 //           </p>
 //           <div className="badge-row" style={{ marginBottom: 16 }}>
-//             <span style={mono({ fontSize: "0.62rem", letterSpacing: "0.1em", color: "#cfd5de", textTransform: "uppercase", background: "rgba(255,255,255,0.07)", padding: "4px 12px", border: "1px solid rgba(255,255,255,0.12)" })}>
-//               {docket.docketId}
-//             </span>
+//             <span style={mono({ fontSize: "0.62rem", letterSpacing: "0.1em", color: "#cfd5de", textTransform: "uppercase", background: "rgba(255,255,255,0.07)", padding: "4px 12px", border: "1px solid rgba(255,255,255,0.12)" })}>{docket.docketId}</span>
 //             <span style={mono({ fontSize: "0.6rem", letterSpacing: "0.1em", textTransform: "uppercase", padding: "4px 10px", border: `1px solid ${st.border}`, background: st.bg, color: st.text, display: "inline-flex", alignItems: "center", gap: 6 })}>
 //               <span style={{ width: 7, height: 7, borderRadius: "50%", background: st.dot, display: "inline-block", flexShrink: 0 }} />
 //               {docket.status}
@@ -2330,11 +2150,11 @@ export default function SingleDocketPageClient() {
 //           </h1>
 //           <div className="banner-meta" style={{ paddingTop: 18, borderTop: "1px solid rgba(255,255,255,0.1)" }}>
 //             {[
-//               ["Respondent", respondentName, true],
-//               ["In Response To", claimSource, false],
+//               ["Respondent",      respondentName, true],
+//               ["In Response To",  claimSource,    false],
 //               ["Claim Published", claimDate ? fmtDate(claimDate) : "N/A", false],
-//               ["Docket Filed", filedDate ? fmtDate(filedDate) : "N/A", false],
-//               ["Exhibits", `${exhibitsCount} docs`, false],
+//               ["Docket Filed",    filedDate ? fmtDate(filedDate) : "N/A", false],
+//               ["Exhibits",        `${exhibitsCount} docs`,                false],
 //             ].map(([label, val, italic], i) => (
 //               <div key={label} style={{ display: "flex", alignItems: "flex-start", gap: 18, minWidth: 0 }}>
 //                 {i > 0 && <div className="meta-divider" />}
@@ -2363,19 +2183,22 @@ export default function SingleDocketPageClient() {
 //                   <h2 style={display({ fontSize: "1.45rem", fontWeight: 700, color: "#1e2d4a" })}>Summary</h2>
 //                 </div>
 //                 <div style={{ background: "#ede8dc", border: "1px solid #d4c8b4", padding: "20px 22px", marginBottom: 12 }}>
-//                   <p style={mono({ fontSize: "0.56rem", letterSpacing: "0.14em", color: "#b8974a", textTransform: "uppercase", marginBottom: 10 })}>The Claim</p>
+//                   <p style={mono({ fontSize: "0.58rem", letterSpacing: "0.14em", color: "#b8974a", textTransform: "uppercase", marginBottom: 10, fontWeight: 700 })}>The Claim</p>
 //                   <p style={serif({ fontSize: "1.02rem", lineHeight: 1.75, color: "#4a4035" })}>{docket.summary.claim}</p>
 //                 </div>
 //                 <div className="summary-cards">
 //                   {[["Context", docket.summary.context], ["Why It Matters", docket.summary.whyMatters]].filter(([_, text]) => text).map(([label, text]) => (
 //                     <div key={label} style={{ background: "#faf6ee", border: "1px solid #d4c8b4", padding: "16px 18px" }}>
-//                       <p style={mono({ fontSize: "0.56rem", letterSpacing: "0.14em", color: "#9a8870", textTransform: "uppercase", marginBottom: 8 })}>{label}</p>
-//                       <p style={serif({ fontSize: "0.95rem", lineHeight: 1.7, color: "#5a5048" })}>{text}</p>
+//                       <p style={mono({ fontSize: "0.56rem", letterSpacing: "0.18em", color: "#6e604b", textTransform: "uppercase", marginBottom: 8, fontWeight: "700" })}>{label}</p>
+//                       <p style={serif({ fontSize: "0.95rem", lineHeight: 1.7, color: "#181716" })}>{text}</p>
 //                     </div>
 //                   ))}
 //                 </div>
 //               </section>
 //             )}
+
+//             {/* ── CORRECTIONS SECTION (shown before tabs, only if exists) ── */}
+//             {/* <DocketCorrections docketId={docket._id} /> */}
 
 //             {/* Tabs */}
 //             <div className="tab-strip" style={{ display: "flex", borderBottom: "2px solid #1e2d4a", marginBottom: 26 }}>
@@ -2383,10 +2206,10 @@ export default function SingleDocketPageClient() {
 //                 { key: "response", label: "Full Response" },
 //                 { key: "timeline", label: "Timeline" },
 //                 { key: "exhibits", label: `Exhibits (${exhibitsCount})` },
-//                 { key: "media", label: `Media Watch (${mediaItems.length})` },
+//                 { key: "media",    label: `Media Watch (${mediaItems.length})` },
 //               ].map((tab) => (
 //                 <button key={tab.key} onClick={() => setActiveTab(tab.key)} className="tab-btn"
-//                   style={mono({ fontSize: "0.6rem", letterSpacing: "0.12em", textTransform: "uppercase", padding: "10px 14px", border: "none", cursor: "pointer", whiteSpace: "nowrap", background: activeTab === tab.key ? "#1e2d4a" : "transparent", color: activeTab === tab.key ? "#f5f0e8" : "#9a8870", marginBottom: -2, flexShrink: 0 })}>
+//                   style={mono({ fontSize: "0.6rem", letterSpacing: "0.12em", textTransform: "uppercase", padding: "10px 14px", border: "none", cursor: "pointer", whiteSpace: "nowrap", background: activeTab === tab.key ? "#1e2d4a" : "transparent", color: activeTab === tab.key ? "#f5f0e8" : "#643f0f", marginBottom: -2, flexShrink: 0 })}>
 //                   {tab.label}
 //                 </button>
 //               ))}
@@ -2402,16 +2225,15 @@ export default function SingleDocketPageClient() {
 //                   </p>
 //                 </div>
 //                 <div className="response-body" style={{ minWidth: 0, overflow: "hidden" }}>
-//                   {formattedResponse ? (
-//                     <div dangerouslySetInnerHTML={{ __html: formattedResponse }} />
-//                   ) : (
-//                     <p className="font-garamond text-[#7a6e5e]">No response content available.</p>
-//                   )}
+//                   {formattedResponse
+//                     ? <div dangerouslySetInnerHTML={{ __html: formattedResponse }} />
+//                     : <p className="font-garamond text-[#7a6e5e]">No response content available.</p>
+//                   }
 //                 </div>
 //                 <div style={{ marginTop: 20, paddingTop: 18, borderTop: "1px solid #d4c8b4", display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center" }}>
-//                   <span style={mono({ fontSize: "0.56rem", color: "#9a8870", letterSpacing: "0.1em", textTransform: "uppercase" })}>Submitted: {fmtDate(filedDate)}</span>
+//                   <span style={mono({ fontSize: "0.56rem", color: "#534737", letterSpacing: "0.1em", textTransform: "uppercase", fontWeight: "500" })}>Submitted: {fmtDate(filedDate)}</span>
 //                   <span style={{ width: 1, height: 12, background: "#d4c8b4", flexShrink: 0 }} />
-//                   <span style={mono({ fontSize: "0.56rem", color: "#9a8870", letterSpacing: "0.1em", textTransform: "uppercase" })}>{respondentName}</span>
+//                   <span style={mono({ fontSize: "0.56rem", color: "#534737", letterSpacing: "0.1em", textTransform: "uppercase", fontWeight: "500" })}>{respondentName}</span>
 //                 </div>
 //               </section>
 //             )}
@@ -2435,11 +2257,11 @@ export default function SingleDocketPageClient() {
 //                         <div className="tl-line" style={{ position: "absolute", left: -28 + 6, top: 20, bottom: -8, width: 2, background: "#d4c8b4" }} />
 //                         <div style={{ position: "absolute", left: -28, top: 6, width: 14, height: 14, borderRadius: "50%", background: t.color, border: "3px solid #f5f0e8", boxShadow: `0 0 0 2px ${t.color}`, flexShrink: 0 }} />
 //                         <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6, flexWrap: "wrap" }}>
-//                           <span style={mono({ fontSize: "0.58rem", color: "#9a8870", letterSpacing: "0.06em" })}>{fmtDate(item.date)}</span>
+//                           <span style={mono({ fontSize: "0.58rem", color: "#564e44", letterSpacing: "0.06em" })}>{fmtDate(item.date)}</span>
 //                           <span style={mono({ fontSize: "0.54rem", letterSpacing: "0.08em", textTransform: "uppercase", padding: "2px 8px", background: t.bg, color: t.color, border: `1px solid ${t.color}30` })}>{t.label}</span>
 //                         </div>
 //                         <h4 style={display({ fontSize: "0.98rem", fontWeight: 700, color: "#1e2d4a", marginBottom: 5 })}>{item.event}</h4>
-//                         <p style={serif({ fontSize: "0.95rem", lineHeight: 1.7, color: "#6a5e4e" })}>{item.description}</p>
+//                         <p style={serif({ fontSize: "0.95rem", lineHeight: 1.7, color: "#2d2b29" })}>{item.description}</p>
 //                       </div>
 //                     );
 //                   })}
@@ -2454,37 +2276,52 @@ export default function SingleDocketPageClient() {
 //                   <span style={mono({ fontSize: "0.56rem", letterSpacing: "0.12em", color: "#9a8870", textTransform: "uppercase", marginRight: 4 })}>Filter:</span>
 //                   {exCategories.map((cat) => (
 //                     <button key={cat} onClick={() => setExFilter(cat)}
-//                       style={mono({ fontSize: "0.56rem", letterSpacing: "0.1em", textTransform: "uppercase", padding: "4px 10px", border: "1px solid", cursor: "pointer", background: exFilter === cat ? "#1e2d4a" : "transparent", color: exFilter === cat ? "#f5f0e8" : "#7a6e5e", borderColor: exFilter === cat ? "#1e2d4a" : "#c4b89a" })}>
+//                       style={mono({ fontSize: "0.56rem", letterSpacing: "0.1em", textTransform: "uppercase", padding: "4px 10px", border: "1px solid", cursor: "pointer", background: exFilter === cat ? "#1e2d4a" : "transparent", color: exFilter === cat ? "#f5f0e8" : "#564938", borderColor: exFilter === cat ? "#1e2d4a" : "#8d846f" })}>
 //                       {cat}
 //                     </button>
 //                   ))}
-//                   <span style={mono({ marginLeft: "auto", fontSize: "0.56rem", color: "#9a8870", letterSpacing: "0.08em", textTransform: "uppercase" })}>{filteredEx.length}/{exhibitsCount}</span>
+//                   <span style={mono({ marginLeft: "auto", fontSize: "0.56rem", color: "#574e42", letterSpacing: "0.08em", textTransform: "uppercase" })}>{filteredEx.length}/{exhibitsCount}</span>
 //                 </div>
 //                 <div className="ex-table" style={{ paddingBottom: 8, borderBottom: "2px solid #1e2d4a" }}>
-//                   <span style={mono({ fontSize: "0.54rem", letterSpacing: "0.1em", textTransform: "uppercase", color: "#9a8870" })}>ID</span>
-//                   <span style={mono({ fontSize: "0.54rem", letterSpacing: "0.1em", textTransform: "uppercase", color: "#9a8870" })}>Document</span>
-//                   <span style={mono({ fontSize: "0.54rem", letterSpacing: "0.1em", textTransform: "uppercase", color: "#9a8870" })}>Category</span>
-//                   <span className="col-pages" style={mono({ fontSize: "0.54rem", letterSpacing: "0.1em", textTransform: "uppercase", color: "#9a8870" })}>Size</span>
+//                   <span style={mono({ fontSize: "0.54rem", letterSpacing: "0.1em", textTransform: "uppercase", color: "#5e4f3d", fontWeight: 500 })}>ID</span>
+//                   <span style={mono({ fontSize: "0.54rem", letterSpacing: "0.1em", textTransform: "uppercase", color: "#5e4f3d", fontWeight: 500 })}>Document</span>
+//                   <span style={mono({ fontSize: "0.54rem", letterSpacing: "0.1em", textTransform: "uppercase", color: "#5e4f3d", fontWeight: 500 })}>Category</span>
+//                   <span className="col-pages" style={mono({ fontSize: "0.54rem", letterSpacing: "0.1em", textTransform: "uppercase", color: "#5e4f3d", fontWeight: 500 })}>Size</span>
 //                   <span />
 //                 </div>
 //                 {filteredEx.map((ex) => {
 //                   const cat = CAT_COLOR[ex.category] || CAT_COLOR["Evidence"];
 //                   return (
-//                     <div key={ex.exhibitId} className="exhibit-row ex-table" style={{ padding: "11px 0", borderBottom: "1px solid #d4c8b4", alignItems: "center", transition: "background 0.15s" }}>
+//                     <div key={ex.exhibitId} className="exhibit-row ex-table cursor-pointer" style={{ padding: "11px 0", borderBottom: "1px solid #d4c8b4", alignItems: "center", transition: "background 0.15s" }}>
 //                       <span style={mono({ fontSize: "0.6rem", fontWeight: 500, color: "#1e2d4a", letterSpacing: "0.05em" })}>{ex.exhibitId}</span>
 //                       <span className="exhibit-title" style={serif({ fontSize: "0.95rem", color: "#1e2d4a", lineHeight: 1.3 })}>{ex.title}</span>
 //                       <span className="ex-cat-badge" style={mono({ fontSize: "0.5rem", letterSpacing: "0.08em", textTransform: "uppercase", padding: "3px 6px", background: cat.bg, color: cat.text, border: `1px solid ${cat.border}` })}>{ex.category}</span>
 //                       <span className="col-pages text-gray-500 text-xs">{formatFileSize(ex.fileSize)}</span>
 //                       <button
-//                         onClick={(e) => {
-//                           e.preventDefault();
-//                           e.stopPropagation();
-//                           handleExhibitDownload(ex);
+//                         onClick={async (e) => {
+//                           e.preventDefault(); e.stopPropagation();
+//                           if (!ex.fileUrl) { alert("No file URL available"); return; }
+//                           const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+//                           let fileUrl = ex.fileUrl;
+//                           if (fileUrl.startsWith("/")) fileUrl = `${API_BASE_URL}${fileUrl}`;
+//                           try {
+//                             const response = await fetch(fileUrl);
+//                             if (!response.ok) throw new Error(`HTTP ${response.status}`);
+//                             const blob = await response.blob();
+//                             const url  = window.URL.createObjectURL(blob);
+//                             const a    = document.createElement("a");
+//                             a.href = url; a.download = ex.title || `exhibit-${ex.exhibitId}`;
+//                             document.body.appendChild(a); a.click();
+//                             window.URL.revokeObjectURL(url); document.body.removeChild(a);
+//                           } catch (error) {
+//                             console.error("Download error:", error);
+//                             alert("Failed to download file. Please try again.");
+//                           }
 //                         }}
 //                         className="dl-arrow"
 //                         style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", color: "#b8974a", background: "none", border: "none", cursor: "pointer" }}
 //                       >
-//                         <FiDownload size={13}/>
+//                         <FiDownload size={13} />
 //                       </button>
 //                     </div>
 //                   );
@@ -2557,21 +2394,18 @@ export default function SingleDocketPageClient() {
 
 //           {/* ── SIDEBAR ── */}
 //           <aside className="sidebar-col" style={{ minWidth: 0, overflow: "hidden" }}>
-
 //             {/* Docket Details */}
 //             <div style={{ background: "#1e2d4a", padding: "20px 22px", marginBottom: 14 }}>
-//               <p style={mono({ fontSize: "0.54rem", letterSpacing: "0.14em", color: "#c1c8d2", textTransform: "uppercase", paddingBottom: 12, marginBottom: 14, borderBottom: "1px solid rgba(255,255,255,0.08)" })}>
-//                 Docket Details
-//               </p>
+//               <p style={mono({ fontSize: "0.54rem", letterSpacing: "0.14em", color: "#e6eaed", textTransform: "uppercase", paddingBottom: 12, marginBottom: 14, borderBottom: "1px solid rgba(255,255,255,0.08)", fontWeight: 700 })}>Docket Details</p>
 //               <div className="detail-grid">
 //                 {[
-//                   ["Docket ID", docket.docketId],
-//                   ["Status", docket.status],
-//                   ["Type", docket.respondent?.type || docket.type || "Other"],
+//                   ["Docket ID",  docket.docketId],
+//                   ["Status",     docket.status],
+//                   ["Type",       docket.respondent?.type || docket.type || "Other"],
 //                   ["Respondent", respondentName],
 //                   ["Claim Filed", claimDate ? fmtDate(claimDate) : "N/A"],
 //                   ["Reply Filed", filedDate ? fmtDate(filedDate) : "N/A"],
-//                   ["Exhibits", `${exhibitsCount} documents`],
+//                   ["Exhibits",   `${exhibitsCount} documents`],
 //                 ].map(([label, val]) => (
 //                   <div key={label} style={{ marginBottom: 12, minWidth: 0 }}>
 //                     <p style={mono({ fontSize: "0.5rem", letterSpacing: "0.1em", color: "#c1c8d2", textTransform: "uppercase", marginBottom: 3 })}>{label}</p>
@@ -2583,8 +2417,8 @@ export default function SingleDocketPageClient() {
 
 //             {/* Cite This Docket */}
 //             <div style={{ background: "#faf6ee", border: "1px solid #d4c8b4", padding: "16px 18px", marginBottom: 14 }}>
-//               <p style={mono({ fontSize: "0.54rem", letterSpacing: "0.14em", color: "#9a8870", textTransform: "uppercase", marginBottom: 10 })}>Cite This Docket</p>
-//               <p className="cite-text" style={serif({ fontSize: "0.85rem", fontStyle: "italic", lineHeight: 1.7, color: "#7a6e5e" })}>
+//               <p style={mono({ fontSize: "0.54rem", letterSpacing: "0.14em", color: "#41392e", textTransform: "uppercase", marginBottom: 10, fontWeight: 500 })}>Cite This Docket</p>
+//               <p className="cite-text" style={serif({ fontSize: "0.85rem", fontStyle: "italic", lineHeight: 1.7, color: "#6c6153" })}>
 //                 {respondentName}. "{displayTitle}." <em>Journalism Society Public Record</em>, {docket.docketId}, {fmtDate(filedDate)}.
 //               </p>
 //             </div>
@@ -2604,15 +2438,15 @@ export default function SingleDocketPageClient() {
 //             {/* Exhibit Breakdown */}
 //             {Object.keys(exBreakdown).length > 0 && (
 //               <div style={{ background: "#faf6ee", border: "1px solid #d4c8b4", padding: "16px 18px" }}>
-//                 <p style={mono({ fontSize: "0.54rem", letterSpacing: "0.14em", color: "#9a8870", textTransform: "uppercase", marginBottom: 14 })}>Exhibit Breakdown</p>
+//                 <p style={mono({ fontSize: "0.54rem", letterSpacing: "0.14em", color: "#41392e", textTransform: "uppercase", marginBottom: 14, fontWeight: 500 })}>Exhibit Breakdown</p>
 //                 {Object.entries(exBreakdown).map(([cat, count]) => {
-//                   const c = CAT_COLOR[cat] || CAT_COLOR["Evidence"];
+//                   const c   = CAT_COLOR[cat] || CAT_COLOR["Evidence"];
 //                   const pct = Math.round((count / exhibitsCount) * 100);
 //                   return (
 //                     <div key={cat} style={{ marginBottom: 10 }}>
 //                       <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4, gap: 8 }}>
 //                         <span style={mono({ fontSize: "0.54rem", letterSpacing: "0.08em", textTransform: "uppercase", color: c.text, minWidth: 0, overflowWrap: "break-word" })}>{cat}</span>
-//                         <span style={mono({ fontSize: "0.54rem", color: "#9a8870", flexShrink: 0 })}>{count}</span>
+//                         <span style={mono({ fontSize: "0.54rem", color: "#867660", flexShrink: 0 })}>{count}</span>
 //                       </div>
 //                       <div style={{ height: 4, background: "#e4ddd0", borderRadius: 2 }}>
 //                         <div style={{ height: 4, width: `${pct}%`, background: c.text, borderRadius: 2 }} />

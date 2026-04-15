@@ -38,6 +38,7 @@ const ENTITY_CONFIG = {
   press_release: { icon: FiBookOpen,      color: "#b8974a", bg: "#fffbeb", label: "Press Release" },
   document:      { icon: FiFolder,        color: "#475569", bg: "#f8fafc", label: "Document" },
   flag:          { icon: FiAlertTriangle, color: "#b8190c", bg: "#fef2f2", label: "Flag Report" },
+  correction:    { icon: FiEdit2,         color: "#2d6a4f", bg: "#f0fdf4", label: "Correction" }
 };
 
 const ACTION_CONFIG = {
