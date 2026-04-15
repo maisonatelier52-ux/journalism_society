@@ -82,7 +82,7 @@ export default function PublishingPrinciplesClient() {
 
       <div className="bg-[#1e2d4a] border-b-4 border-[#b8974a]">
         <div className="max-w-6xl mx-auto px-6 py-16 md:py-20">
-          <p className="font-mono-dm text-xs tracking-[0.16em] text-[#3a4e6a] uppercase mb-4">
+          <p className="font-mono-dm text-xs tracking-[0.16em] text-[#adb7c4] uppercase mb-4">
             Our Philosophy
           </p>
           <h1 className="font-playfair font-black text-5xl md:text-6xl leading-tight text-[#f5f0e8] mb-6 max-w-4xl">
@@ -107,7 +107,7 @@ export default function PublishingPrinciplesClient() {
                   </div>
                   <div>
                     <h3 className="font-playfair font-bold text-xl text-[#1e2d4a] mb-2">{principle.title}</h3>
-                    <p className="font-garamond text-[#7a6e5e] leading-relaxed">{principle.description}</p>
+                    <p className="font-garamond text-[#1a1818] leading-relaxed">{principle.description}</p>
                   </div>
                 </div>
               </div>

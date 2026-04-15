@@ -38,7 +38,7 @@ export default function CorrectionsClient() {
 
       <div className="bg-[#1e2d4a] border-b-4 border-[#b8974a]">
         <div className="max-w-6xl mx-auto px-6 py-16 md:py-20">
-          <p className="font-mono-dm text-xs tracking-[0.16em] text-[#3a4e6a] uppercase mb-4">
+          <p className="font-mono-dm text-xs tracking-[0.16em] text-[#adb7c4] uppercase mb-4">
             Accountability
           </p>
           <h1 className="font-playfair font-black text-5xl md:text-6xl leading-tight text-[#f5f0e8] mb-6 max-w-4xl">
@@ -58,21 +58,21 @@ export default function CorrectionsClient() {
           <div className="border border-[#d4c8b4] bg-[#faf6ee] p-6">
             <FiEdit size={32} className="text-[#b8974a] mb-4" />
             <h3 className="font-playfair font-bold text-xl text-[#1e2d4a] mb-2">Correction</h3>
-            <p className="font-garamond text-[#7a6e5e] leading-relaxed">
+            <p className="font-garamond text-[#1a1818] leading-relaxed">
               For factual errors in dates, names, or data. Original content is preserved with correction notes.
             </p>
           </div>
           <div className="border border-[#d4c8b4] bg-[#faf6ee] p-6">
             <FiInfo size={32} className="text-[#b8974a] mb-4" />
             <h3 className="font-playfair font-bold text-xl text-[#1e2d4a] mb-2">Clarification</h3>
-            <p className="font-garamond text-[#7a6e5e] leading-relaxed">
+            <p className="font-garamond text-[#1a1818] leading-relaxed">
               For context or ambiguity issues. Added to provide additional clarity without changing content.
             </p>
           </div>
           <div className="border border-[#d4c8b4] bg-[#faf6ee] p-6">
             <FiRefreshCw size={32} className="text-[#b8974a] mb-4" />
             <h3 className="font-playfair font-bold text-xl text-[#1e2d4a] mb-2">Update</h3>
-            <p className="font-garamond text-[#7a6e5e] leading-relaxed">
+            <p className="font-garamond text-[#1a1818] leading-relaxed">
               For new information or developments after publication. Appended with date and source.
             </p>
           </div>
@@ -84,10 +84,10 @@ export default function CorrectionsClient() {
             <FiAlertCircle size={24} className="text-[#b8974a] flex-shrink-0 mt-1" />
             <div>
               <p className="font-playfair font-bold text-lg text-[#1e2d4a] mb-2">Our Corrections Policy</p>
-              <p className="font-garamond text-[#7a6e5e] leading-relaxed mb-3">
+              <p className="font-garamond text-[#1a1818] leading-relaxed mb-3">
                 We correct errors promptly and transparently. When a correction is made, we:
               </p>
-              <ul className="space-y-2 text-[#7a6e5e] font-garamond">
+              <ul className="space-y-2 text-[#1a1818] font-garamond">
                 <li className="flex items-start gap-2">
                   <FiCheckCircle size={16} className="text-[#2d6a4f] flex-shrink-0 mt-1" />
                   <span>Add a correction note to the docket</span>
@@ -117,7 +117,7 @@ export default function CorrectionsClient() {
           </div>
 
           <div className="space-y-3">
-            <div className="grid grid-cols-12 gap-4 pb-3 border-b-2 border-[#1e2d4a] font-mono-dm text-xs tracking-widest uppercase text-[#9a8870]">
+            <div className="grid grid-cols-12 gap-4 pb-3 border-b-2 border-[#1e2d4a] font-mono-dm text-xs tracking-widest uppercase text-[#6e5a40] font-semibold">
               <span className="col-span-2">Date</span>
               <span className="col-span-2">Docket</span>
               <span className="col-span-2">Type</span>
@@ -136,7 +136,7 @@ export default function CorrectionsClient() {
                     {entry.type}
                   </span>
                 </span>
-                <span className="col-span-6 font-garamond text-sm text-[#5a5040]">{entry.description}</span>
+                <span className="col-span-6 font-garamond text-sm text-[#1a1818]">{entry.description}</span>
               </div>
             ))}
           </div>

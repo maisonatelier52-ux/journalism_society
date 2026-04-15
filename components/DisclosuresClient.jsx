@@ -23,7 +23,7 @@ export default function DisclosuresClient() {
 
       <div className="bg-[#1e2d4a] border-b-4 border-[#b8974a]">
         <div className="max-w-6xl mx-auto px-6 py-16 md:py-20">
-          <p className="font-mono-dm text-xs tracking-[0.16em] text-[#3a4e6a] uppercase mb-4">
+          <p className="font-mono-dm text-xs tracking-[0.16em] text-[#adb7c4] uppercase mb-4">
             Transparency
           </p>
           <h1 className="font-playfair font-black text-5xl md:text-6xl leading-tight text-[#f5f0e8] mb-6 max-w-4xl">

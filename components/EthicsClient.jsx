@@ -66,7 +66,7 @@ export default function EthicsClient() {
 
       <div className="bg-[#1e2d4a] border-b-4 border-[#b8974a]">
         <div className="max-w-6xl mx-auto px-6 py-16 md:py-20">
-          <p className="font-mono-dm text-xs tracking-[0.16em] text-[#3a4e6a] uppercase mb-4">
+          <p className="font-mono-dm text-xs tracking-[0.16em] text-[#adb7c4] uppercase mb-4">
             Our Integrity
           </p>
           <h1 className="font-playfair font-black text-5xl md:text-6xl leading-tight text-[#f5f0e8] mb-6 max-w-4xl">
@@ -96,7 +96,7 @@ export default function EthicsClient() {
                     <Icon size={28} style={{ color: principle.color }} className="flex-shrink-0 mt-1" />
                     <div>
                       <h3 className="font-playfair font-bold text-xl text-[#1e2d4a] mb-2">{principle.title}</h3>
-                      <p className="font-garamond text-[#7a6e5e] leading-relaxed">{principle.description}</p>
+                      <p className="font-garamond text-[#1a1818] leading-relaxed">{principle.description}</p>
                     </div>
                   </div>
                 </div>
@@ -117,7 +117,7 @@ export default function EthicsClient() {
             </div>
             <ul className="space-y-3">
               {CONFLICTS.map((item, index) => (
-                <li key={index} className="flex items-start gap-3 text-[#7a6e5e] font-garamond">
+                <li key={index} className="flex items-start gap-3 text-[#1a1818] font-garamond">
                   <span className="text-[#b8974a] mt-1">•</span>
                   <span>{item}</span>
                 </li>
@@ -138,7 +138,7 @@ export default function EthicsClient() {
             </div>
             <ul className="space-y-3">
               {PROHIBITED.map((item, index) => (
-                <li key={index} className="flex items-start gap-3 text-[#7a6e5e] font-garamond">
+                <li key={index} className="flex items-start gap-3 text-[#1a1818] font-garamond">
                   <span className="text-[#b8190c] mt-1">✗</span>
                   <span>{item}</span>
                 </li>

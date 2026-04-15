@@ -68,7 +68,7 @@ export default function EditorialStandardsClient() {
 
       <div className="bg-[#1e2d4a] border-b-4 border-[#b8974a]">
         <div className="max-w-6xl mx-auto px-6 py-16 md:py-20">
-          <p className="font-mono-dm text-xs tracking-[0.16em] text-[#3a4e6a] uppercase mb-4">
+          <p className="font-mono-dm text-xs tracking-[0.16em] text-[#adb7c4] uppercase mb-4">
             Our Standards
           </p>
           <h1 className="font-playfair font-black text-5xl md:text-6xl leading-tight text-[#f5f0e8] mb-6 max-w-4xl">
@@ -100,7 +100,7 @@ export default function EditorialStandardsClient() {
                     </div>
                     <div>
                       <h3 className="font-playfair font-bold text-xl text-[#1e2d4a] mb-2">{item.title}</h3>
-                      <p className="font-garamond text-[#7a6e5e] leading-relaxed">{item.description}</p>
+                      <p className="font-garamond text-[#1a1818] leading-relaxed">{item.description}</p>
                     </div>
                   </div>
                 </div>
@@ -129,7 +129,7 @@ export default function EditorialStandardsClient() {
                 </div>
                 <div className="md:w-3/4 bg-[#faf6ee] border border-[#d4c8b4] p-6">
                   <h3 className="font-playfair font-bold text-xl text-[#1e2d4a] mb-2">{step.title}</h3>
-                  <p className="font-garamond text-[#7a6e5e] leading-relaxed">{step.description}</p>
+                  <p className="font-garamond text-[#1a1818] leading-relaxed">{step.description}</p>
                 </div>
               </div>
             ))}
@@ -156,7 +156,7 @@ export default function EditorialStandardsClient() {
                     <Icon size={24} style={{ color: item.color }} className="flex-shrink-0 mt-1" />
                     <div>
                       <h3 className="font-playfair font-bold text-lg text-[#1e2d4a] mb-2">{item.title}</h3>
-                      <p className="font-garamond text-[#7a6e5e] leading-relaxed">{item.description}</p>
+                      <p className="font-garamond text-[#1a1818] leading-relaxed">{item.description}</p>
                     </div>
                   </div>
                 </div>
@@ -184,7 +184,7 @@ export default function EditorialStandardsClient() {
                     <Icon size={24} style={{ color: item.color }} className="flex-shrink-0 mt-1" />
                     <div>
                       <h3 className="font-playfair font-bold text-lg text-[#1e2d4a] mb-2">{item.title}</h3>
-                      <p className="font-garamond text-[#7a6e5e] leading-relaxed">{item.description}</p>
+                      <p className="font-garamond text-[#1a1818] leading-relaxed">{item.description}</p>
                     </div>
                   </div>
                 </div>

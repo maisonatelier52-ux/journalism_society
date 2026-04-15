@@ -133,7 +133,7 @@ export default function AboutClient() {
       {/* Hero Section */}
       <div className="bg-[#1e2d4a] border-b-4 border-[#b8974a]">
         <div className="max-w-6xl mx-auto px-6 py-16 md:py-20">
-          <p className="font-mono-dm text-xs tracking-[0.16em] text-[#3a4e6a] uppercase mb-4">
+          <p className="font-mono-dm text-xs tracking-[0.16em] text-[#adb7c4] uppercase mb-4">
             About Us
           </p>
           <h1 className="font-playfair font-black text-5xl md:text-6xl lg:text-7xl leading-tight text-[#f5f0e8] mb-6 max-w-4xl">
@@ -161,7 +161,7 @@ export default function AboutClient() {
                 What is the<br />
                 Journalism Society?
               </h2>
-              <div className="space-y-4 text-[#5a5040] font-garamond text-lg leading-relaxed">
+              <div className="space-y-4 text-black font-garamond text-lg leading-relaxed">
                 <p>
                   The Journalism Society is a non-partisan, independent platform dedicated to documenting and publishing 
                   Right of Reply responses. We provide a permanent public record where individuals, organisations, and 
@@ -185,12 +185,12 @@ export default function AboutClient() {
                 <div className="font-playfair font-black text-6xl text-[#b8974a] mb-2">alteram</div>
                 <div className="font-playfair font-black text-6xl text-[#b8974a] mb-4">partem</div>
               </div>
-              <p className="font-garamond text-[#7a6e5e] leading-relaxed">
+              <p className="font-garamond text-[#1a1818] leading-relaxed">
                 "Hear the other side" — a principle of natural justice that no person should be judged without a fair hearing.
               </p>
               <div className="mt-6 pt-6 border-t border-[#d4c8b4]">
                 <p className="font-mono-dm text-xs tracking-widest uppercase text-[#9a8870] mb-2">Our Commitment</p>
-                <p className="font-garamond text-sm text-[#6a5e4e]">
+                <p className="font-garamond text-sm text-[#1a1818]">
                   Every docket is reviewed for evidence and relevance. Every response is published in full. 
                   Every exhibit is archived permanently.
                 </p>
@@ -239,7 +239,7 @@ export default function AboutClient() {
                 <FiShield size={24} className="text-[#1e2d4a]" />
               </div>
               <h3 className="font-playfair font-bold text-xl text-[#1e2d4a] mb-3">Preserving Context</h3>
-              <p className="font-garamond text-[#7a6e5e] leading-relaxed">
+              <p className="font-garamond text-[#1a1818] leading-relaxed">
                 Claims made in isolation can distort public understanding. The Right of Reply ensures that full context is preserved and accessible.
               </p>
             </div>
@@ -249,7 +249,7 @@ export default function AboutClient() {
                 <FiFileText size={24} className="text-[#b8974a]" />
               </div>
               <h3 className="font-playfair font-bold text-xl text-[#1e2d4a] mb-3">Documented Evidence</h3>
-              <p className="font-garamond text-[#7a6e5e] leading-relaxed">
+              <p className="font-garamond text-[#1a1818] leading-relaxed">
                 A response without evidence is just another claim. We require documented evidence, creating a verifiable public record.
               </p>
             </div>
@@ -259,7 +259,7 @@ export default function AboutClient() {
                 <FiMic size={24} className="text-[#b8190c]" />
               </div>
               <h3 className="font-playfair font-bold text-xl text-[#1e2d4a] mb-3">Media Accountability</h3>
-              <p className="font-garamond text-[#7a6e5e] leading-relaxed">
+              <p className="font-garamond text-[#1a1818] leading-relaxed">
                 Our platform holds media accountable by tracking which outlets publish corrections and how they respond to documented replies.
               </p>
             </div>
@@ -289,7 +289,7 @@ export default function AboutClient() {
                     </div>
                     <div>
                       <h3 className="font-playfair font-bold text-xl text-[#1e2d4a] mb-2">{value.title}</h3>
-                      <p className="font-garamond text-[#7a6e5e] leading-relaxed">{value.description}</p>
+                      <p className="font-garamond text-[#1a1818] leading-relaxed">{value.description}</p>
                     </div>
                   </div>
                 </div>
@@ -317,7 +317,7 @@ export default function AboutClient() {
                       <Icon size={20} className="text-[#b8974a] flex-shrink-0 mt-1" />
                       <div>
                         <h3 className="font-playfair font-bold text-lg text-[#1e2d4a] mb-1">{principle.title}</h3>
-                        <p className="font-garamond text-[#7a6e5e] leading-relaxed">{principle.description}</p>
+                        <p className="font-garamond text-[#1a1818] leading-relaxed">{principle.description}</p>
                       </div>
                     </div>
                   );
@@ -387,7 +387,7 @@ export default function AboutClient() {
                 </div>
                 <div className="md:w-3/4 bg-[#faf6ee] border border-[#d4c8b4] p-6 hover:shadow-md transition-shadow">
                   <h3 className="font-playfair font-bold text-xl text-[#1e2d4a] mb-2">{item.title}</h3>
-                  <p className="font-garamond text-[#7a6e5e] leading-relaxed">{item.description}</p>
+                  <p className="font-garamond text-[#1a1818] leading-relaxed">{item.description}</p>
                 </div>
               </div>
             ))}
@@ -399,12 +399,12 @@ export default function AboutClient() {
           <div className="text-center mb-12">
             <div className="inline-block mb-4">
               <div className="h-1 w-12 bg-[#b8974a] mx-auto mb-3" />
-              <p className="font-mono-dm text-xs tracking-[0.12em] uppercase text-[#9a8870]">The Team</p>
+              <p className="font-mono-dm text-md tracking-[0.12em] uppercase text-[#9a8870]">The Team</p>
             </div>
             <h2 className="font-playfair font-bold text-3xl md:text-4xl text-[#1e2d4a] mb-4">
               Who We Are
             </h2>
-            <p className="font-garamond text-lg text-[#7a6e5e] max-w-2xl mx-auto">
+            <p className="font-garamond text-lg text-[#1a1818] max-w-2xl mx-auto">
               A dedicated team of journalists, lawyers, and technologists committed to building public accountability infrastructure.
             </p>
           </div>
@@ -420,7 +420,7 @@ export default function AboutClient() {
                 <div className="p-5">
                   <h3 className="font-playfair font-bold text-lg text-[#1e2d4a] mb-1">{member.name}</h3>
                   <p className="font-mono-dm text-xs text-[#b8974a] tracking-wider uppercase mb-2">{member.role}</p>
-                  <p className="font-garamond text-sm text-[#7a6e5e] leading-relaxed">{member.bio}</p>
+                  <p className="font-garamond text-sm text-[#1a1818] leading-relaxed">{member.bio}</p>
                 </div>
               </div>
             ))}

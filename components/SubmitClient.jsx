@@ -1845,11 +1845,11 @@ export default function SubmitClient() {
   const SectionHead = useCallback(({ num, title, desc }) => (
     <div className="mb-8">
       <div className="flex items-center gap-3 mb-3">
-        <span className="font-playfair font-black text-4xl leading-none" style={{ color: "#ede8dc" }}>{String(num).padStart(2, "0")}</span>
+        <span className="font-playfair font-black text-4xl leading-none" style={{ color: "#686661" }}>{String(num).padStart(2, "0")}</span>
         <div className="w-px h-8 bg-[#d4c8b4]" />
         <h2 className="font-playfair font-bold text-2xl leading-tight" style={{ color: "#1e2d4a" }}>{title}</h2>
       </div>
-      {desc && <p className="font-garamond italic text-base" style={{ color: "#9a8870" }}>{desc}</p>}
+      {desc && <p className="font-garamond italic text-base" style={{ color: "#8d775b" }}>{desc}</p>}
     </div>
   ), []);
 
@@ -1953,7 +1953,7 @@ export default function SubmitClient() {
       {/* ── PAGE BANNER ── */}
       <div style={{ background: "#1e2d4a", borderBottom: "4px solid #b8974a" }}>
         <div className="max-w-4xl mx-auto px-6 py-10 md:py-12">
-          <p className="font-mono-dm text-xs tracking-widest uppercase mb-3" style={{ color: "#3a4e6a" }}>
+          <p className="font-mono-dm text-xs tracking-widest uppercase mb-3" style={{ color: "#adb7c4" }}>
             Public Record / Submit a Reply
           </p>
           <h1 className="font-playfair font-black leading-none mb-4" style={{ fontSize: "clamp(2rem, 5vw, 3.5rem)", color: "#f5f0e8" }}>
@@ -1971,7 +1971,7 @@ export default function SubmitClient() {
             ].map(([icon, text]) => (
               <div key={text} className="flex items-center gap-2">
                 <span>{icon}</span>
-                <span className="font-mono-dm text-xs tracking-wider" style={{ color: "#6a7a94", textTransform: "uppercase", letterSpacing: "0.08em" }}>{text}</span>
+                <span className="font-mono-dm text-xs tracking-wider" style={{ color: "#adb7c4", textTransform: "uppercase", letterSpacing: "0.08em" }}>{text}</span>
               </div>
             ))}
           </div>
@@ -2535,7 +2535,7 @@ export default function SubmitClient() {
             {/* Checklist */}
             <div className="border border-[#d4c8b4]" style={{ background: "#faf6ee" }}>
               <div className="px-5 py-3 border-b border-[#d4c8b4]" style={{ background: "#ede8dc" }}>
-                <p className="font-mono-dm text-xs tracking-widest uppercase" style={{ color: "#9a8870" }}>Checklist</p>
+                <p className="font-mono-dm text-xs tracking-widest uppercase" style={{ color: "#77654e" }}>Checklist</p>
               </div>
               <div className="p-5 space-y-3">
                 {[
