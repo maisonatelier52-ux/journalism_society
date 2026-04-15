@@ -470,9 +470,9 @@ import AboutClient from "@/components/AboutClient";
 const SITE_URL = "https://journalism-society.vercel.app";
 
 export const metadata = {
-  title: "About Journalism Society — Building Public Accountability",
+  title: "About Journalism Society | Right of Reply India",
   description:
-    "Journalism Society is a non-partisan, independent platform dedicated to documenting and publishing Right of Reply responses in India. Learn about our mission, values, editorial principles, and the team behind India's first comprehensive Right of Reply public record.",
+    "Learn about Journalism Society, India’s independent platform for Right of Reply, media accountability, and public record transparency",
   keywords: [
     "about journalism society",
     "right of reply India",
@@ -484,7 +484,7 @@ export const metadata = {
   ],
   alternates: { canonical: `${SITE_URL}/about` },
   openGraph: {
-    title: "About Journalism Society — Building Public Accountability",
+    title: "About Journalism Society | Right of Reply India",
     description:
       "We exist to ensure every public claim has a documented, permanent response. Non-partisan, independent, and free to use.",
     url: `${SITE_URL}/about`,
@@ -493,7 +493,7 @@ export const metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "About Journalism Society — Building Public Accountability",
+    title: "About Journalism Society | Right of Reply India",
     description: "Non-partisan, independent, and free. Journalism Society ensures every public claim has a permanent response.",
     images: [`${SITE_URL}/og-about.jpg`],
   },

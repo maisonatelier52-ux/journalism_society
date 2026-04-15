@@ -353,7 +353,7 @@ export default function AboutClient() {
                 <p className="font-mono-dm text-xs tracking-widest uppercase text-[#8a9bb8]">
                   Read our full editorial standards
                 </p>
-                <Link href="/editorial-standards" className="font-garamond text-sm text-[#b8974a] hover:text-[#c8bfa8] transition-colors inline-flex items-center gap-1 mt-1">
+                <Link href="/editorial-standards" title="Read Editorial Standards" className="font-garamond text-sm text-[#b8974a] hover:text-[#c8bfa8] transition-colors inline-flex items-center gap-1 mt-1">
                   Editorial Guidelines <FiExternalLink size={12} />
                 </Link>
               </div>

@@ -162,17 +162,17 @@ export default function SingleDocumentPage() {
         {/* Metadata row - Responsive */}
         <div className="flex flex-col sm:flex-row flex-wrap items-start sm:items-center gap-3 sm:gap-5 mb-6 sm:mb-8 pb-4 border-b border-[#d4c8b4]">
           <div>
-            <p className="font-mono-dm text-[0.6rem] sm:text-xs tracking-widest uppercase mb-1" style={{ color: "#9a8870" }}>Type</p>
-            <span className="font-mono-dm text-[0.7rem] sm:text-sm px-2 py-0.5 border" style={{ color: "#7a6e5e", borderColor: "#c4b89a" }}>{doc.type}</span>
+            <p className="font-mono-dm text-[0.6rem] sm:text-xs tracking-widest uppercase mb-1" style={{ color: "#645a4d" }}>Type</p>
+            <span className="font-mono-dm text-[0.7rem] sm:text-sm px-2 py-0.5 border" style={{ color: "#", borderColor: "#c4b89a" }}>{doc.type}</span>
           </div>
           <div>
-            <p className="font-mono-dm text-[0.6rem] sm:text-xs tracking-widest uppercase mb-1" style={{ color: "#9a8870" }}>Date</p>
+            <p className="font-mono-dm text-[0.6rem] sm:text-xs tracking-widest uppercase mb-1" style={{ color: "#645a4d" }}>Date</p>
             <p className="font-garamond text-xs sm:text-sm" style={{ color: "#1e2d4a" }}>{fmtDate(doc.createdAt || doc.publishedDate)}</p>
           </div>
           {doc.sourceDocketNumber && (
             <div>
-              <p className="font-mono-dm text-[0.6rem] sm:text-xs tracking-widest uppercase mb-1" style={{ color: "#9a8870" }}>Source Docket</p>
-              <Link href={`/dockets/${doc.sourceDocketId}`} className="font-mono-dm text-[0.7rem] sm:text-sm text-[#b8974a] hover:underline">
+              <p className="font-mono-dm text-[0.6rem] sm:text-xs tracking-widest uppercase mb-1" style={{ color: "#645a4d" }}>Source Docket</p>
+              <Link href={`/dockets/${doc.sourceDocketId}`} className="font-mono-dm text-[0.7rem] sm:text-sm text-[#917739] hover:underline">
                 {doc.sourceDocketNumber}
               </Link>
             </div>
@@ -216,7 +216,7 @@ export default function SingleDocumentPage() {
         {/* Document Preview - Responsive */}
         <div className="preview-container rounded-sm overflow-hidden">
           <div className="preview-header px-3 sm:px-4 py-2 flex items-center justify-between">
-            <span className="font-mono-dm text-[0.6rem] sm:text-xs uppercase tracking-wider" style={{ color: "#9a8870" }}>Document Preview</span>
+            <span className="font-mono-dm text-[0.6rem] sm:text-xs uppercase tracking-wider" style={{ color: "#6d5f4c" }}>Document Preview</span>
             <span className="font-mono-dm text-[0.6rem] sm:text-xs" style={{ color: "#9a8870" }}>{doc.fileType?.split('/').pop() || 'PDF'}</span>
           </div>
           <div className="p-3 sm:p-4 flex-1 bg-[#fefcf8]">
@@ -227,18 +227,18 @@ export default function SingleDocumentPage() {
                 </div>
                 <div className="flex-1 w-full">
                   <p className="font-playfair font-bold text-sm sm:text-md md:text-lg mb-1" style={{ color: "#1e2d4a" }}>{doc.title}</p>
-                  <p className="font-garamond text-xs sm:text-sm mb-3" style={{ color: "#7a6e5e" }}>{doc.description || doc.preview || "No description available."}</p>
+                  <p className="font-garamond text-xs sm:text-sm mb-3" style={{ color: "#282623" }}>{doc.description || doc.preview || "No description available."}</p>
                   <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-[0.6rem] sm:text-xs font-mono-dm">
-                    <span style={{ color: "#9a8870" }}>ID: {doc.documentId || doc.id}</span>
-                    <span style={{ color: "#9a8870" }}>•</span>
-                    <span style={{ color: "#9a8870" }}>{doc.type}</span>
-                    <span style={{ color: "#9a8870" }}>•</span>
-                    <span style={{ color: "#9a8870" }}>{fmtDate(doc.createdAt || doc.publishedDate)}</span>
+                    <span style={{ color: "#7b6e5e" }}>ID: {doc.documentId || doc.id}</span>
+                    <span style={{ color: "#7b6e5e" }}>•</span>
+                    <span style={{ color: "#7b6e5e" }}>{doc.type}</span>
+                    <span style={{ color: "#7b6e5e" }}>•</span>
+                    <span style={{ color: "#7b6e5e" }}>{fmtDate(doc.createdAt || doc.publishedDate)}</span>
                   </div>
                 </div>
               </div>
             </div>
-            <p className="font-mono-dm text-[0.6rem] sm:text-xs text-center mt-4 sm:mt-6" style={{ color: "#b8b0a0" }}>
+            <p className="font-mono-dm text-[0.6rem] sm:text-xs text-center mt-4 sm:mt-6" style={{ color: "#605d58" }}>
               Full preview requires file viewer. Click the download button to view the complete file.
             </p>
           </div>
@@ -254,18 +254,18 @@ export default function SingleDocumentPage() {
             </div>
           )}
           <div className="bg-[#ede8dc] p-3 sm:p-4 border border-[#d4c8b4]">
-            <p className="font-mono-dm text-[0.6rem] sm:text-xs uppercase tracking-wider mb-2" style={{ color: "#9a8870" }}>Source</p>
-            <p className="font-garamond text-xs sm:text-sm" style={{ color: "#1e2d4a" }}>Journalism Society Public Record</p>
-            <p className="font-mono-dm text-[0.6rem] sm:text-xs mt-1" style={{ color: "#9a8870" }}>Added: {fmtDate(doc.createdAt)}</p>
+            <p className="font-mono-dm text-[0.6rem] sm:text-xs uppercase tracking-wider mb-2" style={{ color: "#73614a", fontWeight: 500 }}>Source</p>
+            <p className="font-garamond text-xs sm:text-sm" style={{ color: "#000000" }}>Journalism Society Public Record</p>
+            <p className="font-mono-dm text-[0.6rem] sm:text-xs mt-1" style={{ color: "#807260" }}>Added: {fmtDate(doc.createdAt)}</p>
             {doc.fileSize && (
-              <p className="font-mono-dm text-[0.6rem] sm:text-xs mt-1" style={{ color: "#9a8870" }}>Size: {(doc.fileSize / 1024).toFixed(1)} KB</p>
+              <p className="font-mono-dm text-[0.6rem] sm:text-xs mt-1" style={{ color: "#807260" }}>Size: {(doc.fileSize / 1024).toFixed(1)} KB</p>
             )}
           </div>
         </div>
 
         {/* Back link */}
         <div className="mt-8 sm:mt-10 pt-5 sm:pt-6 border-t border-[#d4c8b4]">
-          <Link href="/document-room" className="font-mono-dm text-xs sm:text-sm inline-flex items-center gap-1 hover:text-[#b8974a] transition-colors" style={{ color: "#9a8870" }}>
+          <Link href="/document-room" className="font-mono-dm text-xs sm:text-sm inline-flex items-center gap-1 hover:text-[#b8974a] transition-colors" style={{ color: "#776a5a" }}>
             <FiArrowLeft size={14} />
             Back to Document Room
           </Link>

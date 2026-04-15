@@ -270,7 +270,7 @@ export default function DocumentRoomClient() {
               <div key={s.label} className="pr-4 sm:pr-8 pb-2 sm:pb-0">
                 <div className="mb-2 sm:mb-3 h-0.5" style={{ background: s.accent }} />
                 <div className="font-playfair font-black text-3xl sm:text-4xl md:text-5xl leading-none" style={{ color: s.accent }}>{s.val}</div>
-                <div className="font-mono-dm text-[0.55rem] sm:text-xs tracking-widest uppercase mt-1 sm:mt-2" style={{ color: "#9a8870" }}>{s.label}</div>
+                <div className="font-mono-dm text-[0.55rem] sm:text-xs tracking-widest uppercase mt-1 sm:mt-2 font-semibold" style={{ color: "#967d61" }}>{s.label}</div>
               </div>
             ))}
           </div>
@@ -297,8 +297,8 @@ export default function DocumentRoomClient() {
               <span className="font-mono-dm text-xs tracking-widest uppercase mr-1 flex-shrink-0" style={{ color: "#9a8870" }}>Type</span>
               {typeList.map(t => (
                 <button key={t} onClick={() => setType(t)}
-                  className="font-mono-dm text-[0.6rem] sm:text-xs tracking-wider uppercase px-2 sm:px-3 py-1 border transition-all cursor-pointer whitespace-nowrap flex-shrink-0"
-                  style={typeFilter === t ? { background: "#1e2d4a", color: "#f5f0e8", borderColor: "#1e2d4a" } : { background: "transparent", color: "#7a6e5e", borderColor: "#c4b89a" }}
+                  className="font-mono-dm text-[0.6rem] sm:text-xs tracking-wider uppercase px-2 sm:px-3 py-1 border transition-all cursor-pointer whitespace-nowrap flex-shrink-0 rounded-md"
+                  style={typeFilter === t ? { background: "#1e2d4a", color: "#f5f0e8", borderColor: "#1e2d4a" } : { background: "transparent", color: "#7b7054", borderColor: "#c4b89a" }}
                 >{t}</button>
               ))}
             </div>
@@ -336,11 +336,11 @@ export default function DocumentRoomClient() {
               <div style={{ minWidth: "800px" }}>
                 {/* Header */}
                 <div className="grid grid-cols-12 gap-3 sm:gap-4 pb-3 border-b-2 mb-0" style={{ borderColor: "#1e2d4a" }}>
-                  <span className="col-span-5 font-mono-dm text-xs tracking-widest uppercase" style={{ color: "#9a8870" }}>Document Title</span>
-                  <span className="col-span-2 font-mono-dm text-xs tracking-widest uppercase" style={{ color: "#9a8870" }}>Type</span>
-                  <span className="col-span-2 font-mono-dm text-xs tracking-widest uppercase" style={{ color: "#9a8870" }}>Docket</span>
-                  <span className="col-span-2 font-mono-dm text-xs tracking-widest uppercase" style={{ color: "#9a8870" }}>Date</span>
-                  <span className="col-span-1 font-mono-dm text-xs tracking-widest uppercase text-right" style={{ color: "#9a8870" }}>Action</span>
+                  <span className="col-span-5 font-mono-dm text-xs tracking-widest uppercase font-semibold" style={{ color: "#6e5a40" }}>Document Title</span>
+                  <span className="col-span-2 font-mono-dm text-xs tracking-widest uppercase font-semibold" style={{ color: "#6e5a40" }}>Type</span>
+                  <span className="col-span-2 font-mono-dm text-xs tracking-widest uppercase font-semibold" style={{ color: "#6e5a40" }}>Docket</span>
+                  <span className="col-span-2 font-mono-dm text-xs tracking-widest uppercase font-semibold" style={{ color: "#6e5a40" }}>Date</span>
+                  <span className="col-span-1 font-mono-dm text-xs tracking-widest uppercase text-right font-semibold" style={{ color: "#6e5a40" }}>Action</span>
                 </div>
 
                 {paginated.map(doc => (
@@ -355,13 +355,13 @@ export default function DocumentRoomClient() {
                       <div className="font-mono-dm text-[0.65rem] sm:text-xs mt-0.5 sm:mt-1" style={{ color: "#9a8870" }}>{doc.documentId || doc.id}</div>
                     </div>
                     <div className="col-span-2 flex items-center">
-                      <span className="font-mono-dm text-[0.6rem] sm:text-xs tracking-wider uppercase px-1.5 sm:px-2 py-0.5 border whitespace-nowrap" style={{ color: "#7a6e5e", borderColor: "#c4b89a" }}>{doc.type}</span>
+                      <span className="font-mono-dm text-[0.6rem] sm:text-xs tracking-wider uppercase px-1.5 sm:px-2 py-0.5 border whitespace-nowrap" style={{ color: "#53483a", borderColor: "#a59b83" }}>{doc.type}</span>
                     </div>
                     <div className="col-span-2 flex items-center">
-                      <span className="font-mono-dm text-xs text-[#b8974a] truncate">{doc.sourceDocketNumber || "—"}</span>
+                      <span className="font-mono-dm text-xs text-[#78622f] truncate">{doc.sourceDocketNumber || "—"}</span>
                     </div>
                     <div className="col-span-2 flex items-center">
-                      <span className="font-mono-dm text-xs whitespace-nowrap" style={{ color: "#9a8870" }}>{fmtDate(doc.createdAt || doc.publishedDate)}</span>
+                      <span className="font-mono-dm text-xs whitespace-nowrap" style={{ color: "#796953" }}>{fmtDate(doc.createdAt || doc.publishedDate)}</span>
                     </div>
                     <div className="col-span-1 flex items-center justify-end">
                       <button

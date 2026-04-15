@@ -158,12 +158,13 @@ const FontStyle = () => (
     .action-btn {
       font-family: 'DM Mono', monospace;
       font-size: 0.56rem; letter-spacing: 0.08em; text-transform: uppercase;
-      color: #1e2d4a; padding: 9px 0; border: none; border-bottom: 1px solid #ede8dc;
+      font-weight: 500;
+      color: #000000; padding: 9px 0; border: none; border-bottom: 1px solid #d8d4c9;
       display: flex; align-items: center; gap: 8px; background: none;
       cursor: pointer; width: 100%; text-align: left;
       transition: color 0.15s, background 0.15s;
     }
-    .action-btn:hover { color: #b8974a; }
+    .action-btn:hover { color: #a0823b; }
     .action-btn:last-child { border-bottom: none; }
 
     @keyframes toastIn { from { opacity: 0; transform: translateX(-50%) translateY(10px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
@@ -555,10 +556,10 @@ function MediaCitationModal({ docketId, docketTitle, onClose, onSubmit }) {
       <div className="modal-panel" onClick={(e) => e.stopPropagation()}>
         <div style={{ background: "#1e2d4a", padding: "18px 22px", display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
           <div>
-            <p className="font-mono-dm text-[0.52rem] tracking-[0.14em] text-[#3a4e6a] uppercase mb-1">Media Watch</p>
+            <p className="font-mono-dm text-[0.52rem] tracking-[0.14em] text-gray-400 uppercase mb-1">Media Watch</p>
             <h3 className="font-playfair font-bold text-[1.15rem] text-[#f5f0e8]">Submit a Media Citation</h3>
           </div>
-          <button onClick={onClose} className="text-[#3a4e6a] hover:text-[#c8bfa8] transition-colors p-1 cursor-pointer">
+          <button onClick={onClose} className="text-gray-400 hover:text-[#c8bfa8] transition-colors p-1 cursor-pointer">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
           </button>
         </div>
@@ -582,39 +583,39 @@ function MediaCitationModal({ docketId, docketTitle, onClose, onSubmit }) {
             
 
             <div className="mb-4">
-              <label className="font-mono-dm text-[0.52rem] tracking-[0.14em] uppercase text-[#9a8870] block mb-1.5">Publication Name *</label>
+              <label className="font-mono-dm text-[0.53rem] tracking-[0.18em] uppercase text-[#5c4629] block mb-1.5">Publication Name *</label>
               <input type="text" value={form.outlet} onChange={(e) => handleChange("outlet", e.target.value)} className="w-full bg-[#faf6ee] border border-[#d4c8b4] p-2.5 font-garamond text-[0.97rem] text-[#1e2d4a] focus:outline-none focus:border-[#1e2d4a]" placeholder="e.g., The Hindu, BBC News"/>
               {errors.outlet && <p className="font-mono-dm text-[0.54rem] text-[#b8190c] mt-1">{errors.outlet}</p>}
             </div>
 
             <div className="mb-4">
-              <label className="font-mono-dm text-[0.52rem] tracking-[0.14em] uppercase text-[#9a8870] block mb-1.5">Headline *</label>
+              <label className="font-mono-dm text-[0.53rem] tracking-[0.18em] uppercase text-[#5c4629] block mb-1.5">Headline *</label>
               <input type="text" value={form.headline} onChange={(e) => handleChange("headline", e.target.value)} className="w-full bg-[#faf6ee] border border-[#d4c8b4] p-2.5 font-garamond text-[0.97rem] text-[#1e2d4a] focus:outline-none focus:border-[#1e2d4a]" placeholder="Full article title"/>
               {errors.headline && <p className="font-mono-dm text-[0.54rem] text-[#b8190c] mt-1">{errors.headline}</p>}
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
               <div>
-                <label className="font-mono-dm text-[0.52rem] tracking-[0.14em] uppercase text-[#9a8870] block mb-1.5">URL *</label>
+                <label className="font-mono-dm text-[0.53rem] tracking-[0.18em] uppercase text-[#5c4629] block mb-1.5">URL *</label>
                 <input type="url" value={form.url} onChange={(e) => handleChange("url", e.target.value)} className="w-full bg-[#faf6ee] border border-[#d4c8b4] p-2.5 font-garamond text-[0.97rem] text-[#1e2d4a] focus:outline-none focus:border-[#1e2d4a]" placeholder="https://..."/>
                 {errors.url && <p className="font-mono-dm text-[0.54rem] text-[#b8190c] mt-1">{errors.url}</p>}
               </div>
               <div>
-                <label className="font-mono-dm text-[0.52rem] tracking-[0.14em] uppercase text-[#9a8870] block mb-1.5">Date *</label>
+                <label className="font-mono-dm text-[0.53rem] tracking-[0.18em] uppercase text-[#5c4629] block mb-1.5">Date *</label>
                 <input type="date" value={form.date} onChange={(e) => handleChange("date", e.target.value)} className="w-full bg-[#faf6ee] border border-[#d4c8b4] p-2.5 font-garamond text-[0.97rem] text-[#1e2d4a] focus:outline-none focus:border-[#1e2d4a] cursor-pointer"/>
                 {errors.date && <p className="font-mono-dm text-[0.54rem] text-[#b8190c] mt-1">{errors.date}</p>}
               </div>
             </div>
 
             <div className="mb-4">
-              <label className="font-mono-dm text-[0.52rem] tracking-[0.14em] uppercase text-[#9a8870] block mb-1.5">Type</label>
+              <label className="font-mono-dm text-[0.53rem] tracking-[0.18em] uppercase text-[#5c4629] block mb-1.5">Type</label>
               <select value={form.type} onChange={(e) => handleChange("type", e.target.value)} className="w-full bg-[#faf6ee] border border-[#d4c8b4] p-2.5 font-garamond text-[0.97rem] text-[#1e2d4a] focus:outline-none focus:border-[#1e2d4a] cursor-pointer">
                 {["Original Report", "Follow-up", "Opinion", "Fact-Check", "News", "Regional", "Other"].map((t) => <option key={t}>{t}</option>)}
               </select>
             </div>
 
             <div className="mb-5">
-              <label className="font-mono-dm text-[0.52rem] tracking-[0.14em] uppercase text-[#9a8870] block mb-1.5">Note (Optional)</label>
+              <label className="font-mono-dm text-[0.53rem] tracking-[0.18em] uppercase text-[#5c4629] block mb-1.5">Note (Optional)</label>
               <textarea value={form.note} onChange={(e) => handleChange("note", e.target.value)} className="w-full bg-[#faf6ee] border border-[#d4c8b4] p-2.5 font-garamond text-[0.97rem] text-[#1e2d4a] focus:outline-none focus:border-[#1e2d4a] resize-y min-h-[64px]" rows={2} placeholder="Brief summary or key points from the coverage..."/>
             </div>
 
@@ -628,13 +629,13 @@ function MediaCitationModal({ docketId, docketTitle, onClose, onSubmit }) {
               </div>
             ) : (
                <div className="bg-[#ede8dc] border border-[#d4c8b4] p-2.5 mb-5 flex gap-2">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#9a8870" strokeWidth="2" style={{ flexShrink: 0, marginTop: 2 }}><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
-              <p className="font-garamond text-[0.86rem] italic text-[#7a6e5e]">Submissions are reviewed by our editorial team before appearing in the public record.</p>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#8d785e" strokeWidth="2" style={{ flexShrink: 0, marginTop: 2 }}><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+              <p className="font-garamond text-[0.86rem] italic text-[#8d785e]">Submissions are reviewed by our editorial team before appearing in the public record.</p>
             </div>
             )}
 
             <div className="flex gap-2.5 justify-end">
-              <button type="button" onClick={onClose} className="font-mono-dm bg-transparent border border-[#c4b89a] text-[#7a6e5e] px-5 py-2 text-[0.58rem] tracking-[0.1em] uppercase cursor-pointer hover:bg-[#ede8dc] transition-colors">Cancel</button>
+              <button type="button" onClick={onClose} className="font-mono-dm bg-transparent border border-[#c4b89a] text-gray-700 px-5 py-2 text-[0.58rem] tracking-[0.1em] uppercase cursor-pointer hover:bg-[#ede8dc] transition-colors">Cancel</button>
               <button type="submit" disabled={loading} className="font-mono-dm bg-[#1e2d4a] text-[#f5f0e8] px-5 py-2 text-[0.58rem] tracking-[0.1em] uppercase cursor-pointer hover:bg-[#2a3f6a] transition-colors disabled:opacity-50">
                 {loading ? "Submitting..." : "Submit Citation →"}
               </button>
@@ -805,7 +806,7 @@ function ActionsPanel({ docket, displayTitle, respondentName, filedDate, claimDa
 
       {/* Actions Card */}
       <div style={{ background: "#faf6ee", border: "1px solid #d4c8b4", padding: "16px 18px", marginBottom: 14 }}>
-        <p style={mono({ fontSize: "0.54rem", letterSpacing: "0.14em", color: "#9a8870", textTransform: "uppercase", marginBottom: 12 })}>Actions</p>
+        <p style={mono({ fontSize: "0.54rem", letterSpacing: "0.14em", color: "#41392e", textTransform: "uppercase", marginBottom: 12, fontWeight: 500 })}>Actions</p>
         <div className="actions-wrap">
           <button className="action-btn" onClick={handleDownload}>
             <span style={{ width: 16, textAlign: "center", flexShrink: 0 }}>📥</span>
@@ -1028,14 +1029,14 @@ export default function SingleDocketPageClient() {
                   <h2 style={display({ fontSize: "1.45rem", fontWeight: 700, color: "#1e2d4a" })}>Summary</h2>
                 </div>
                 <div style={{ background: "#ede8dc", border: "1px solid #d4c8b4", padding: "20px 22px", marginBottom: 12 }}>
-                  <p style={mono({ fontSize: "0.56rem", letterSpacing: "0.14em", color: "#b8974a", textTransform: "uppercase", marginBottom: 10 })}>The Claim</p>
+                  <p style={mono({ fontSize: "0.58rem", letterSpacing: "0.14em", color: "#b8974a", textTransform: "uppercase", marginBottom: 10, fontWeight: 700 })}>The Claim</p>
                   <p style={serif({ fontSize: "1.02rem", lineHeight: 1.75, color: "#4a4035" })}>{docket.summary.claim}</p>
                 </div>
                 <div className="summary-cards">
                   {[["Context", docket.summary.context], ["Why It Matters", docket.summary.whyMatters]].filter(([_, text]) => text).map(([label, text]) => (
                     <div key={label} style={{ background: "#faf6ee", border: "1px solid #d4c8b4", padding: "16px 18px" }}>
-                      <p style={mono({ fontSize: "0.56rem", letterSpacing: "0.14em", color: "#9a8870", textTransform: "uppercase", marginBottom: 8 })}>{label}</p>
-                      <p style={serif({ fontSize: "0.95rem", lineHeight: 1.7, color: "#5a5048" })}>{text}</p>
+                      <p style={mono({ fontSize: "0.56rem", letterSpacing: "0.18em", color: "#6e604b", textTransform: "uppercase", marginBottom: 8, fontWeight: "700" })}>{label}</p>
+                      <p style={serif({ fontSize: "0.95rem", lineHeight: 1.7, color: "#181716" })}>{text}</p>
                     </div>
                   ))}
                 </div>
@@ -1074,9 +1075,9 @@ export default function SingleDocketPageClient() {
                   )}
                 </div>
                 <div style={{ marginTop: 20, paddingTop: 18, borderTop: "1px solid #d4c8b4", display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center" }}>
-                  <span style={mono({ fontSize: "0.56rem", color: "#9a8870", letterSpacing: "0.1em", textTransform: "uppercase" })}>Submitted: {fmtDate(filedDate)}</span>
+                  <span style={mono({ fontSize: "0.56rem", color: "#534737", letterSpacing: "0.1em", textTransform: "uppercase", fontWeight: "500" })}>Submitted: {fmtDate(filedDate)}</span>
                   <span style={{ width: 1, height: 12, background: "#d4c8b4", flexShrink: 0 }} />
-                  <span style={mono({ fontSize: "0.56rem", color: "#9a8870", letterSpacing: "0.1em", textTransform: "uppercase" })}>{respondentName}</span>
+                  <span style={mono({ fontSize: "0.56rem", color: "#534737", letterSpacing: "0.1em", textTransform: "uppercase", fontWeight: "500" })}>{respondentName}</span>
                 </div>
               </section>
             )}
@@ -1100,11 +1101,11 @@ export default function SingleDocketPageClient() {
                         <div className="tl-line" style={{ position: "absolute", left: -28 + 6, top: 20, bottom: -8, width: 2, background: "#d4c8b4" }} />
                         <div style={{ position: "absolute", left: -28, top: 6, width: 14, height: 14, borderRadius: "50%", background: t.color, border: "3px solid #f5f0e8", boxShadow: `0 0 0 2px ${t.color}`, flexShrink: 0 }} />
                         <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6, flexWrap: "wrap" }}>
-                          <span style={mono({ fontSize: "0.58rem", color: "#9a8870", letterSpacing: "0.06em" })}>{fmtDate(item.date)}</span>
+                          <span style={mono({ fontSize: "0.58rem", color: "#564e44", letterSpacing: "0.06em" })}>{fmtDate(item.date)}</span>
                           <span style={mono({ fontSize: "0.54rem", letterSpacing: "0.08em", textTransform: "uppercase", padding: "2px 8px", background: t.bg, color: t.color, border: `1px solid ${t.color}30` })}>{t.label}</span>
                         </div>
                         <h4 style={display({ fontSize: "0.98rem", fontWeight: 700, color: "#1e2d4a", marginBottom: 5 })}>{item.event}</h4>
-                        <p style={serif({ fontSize: "0.95rem", lineHeight: 1.7, color: "#6a5e4e" })}>{item.description}</p>
+                        <p style={serif({ fontSize: "0.95rem", lineHeight: 1.7, color: "#2d2b29" })}>{item.description}</p>
                       </div>
                     );
                   })}
@@ -1119,17 +1120,17 @@ export default function SingleDocketPageClient() {
                   <span style={mono({ fontSize: "0.56rem", letterSpacing: "0.12em", color: "#9a8870", textTransform: "uppercase", marginRight: 4 })}>Filter:</span>
                   {exCategories.map((cat) => (
                     <button key={cat} onClick={() => setExFilter(cat)}
-                      style={mono({ fontSize: "0.56rem", letterSpacing: "0.1em", textTransform: "uppercase", padding: "4px 10px", border: "1px solid", cursor: "pointer", background: exFilter === cat ? "#1e2d4a" : "transparent", color: exFilter === cat ? "#f5f0e8" : "#7a6e5e", borderColor: exFilter === cat ? "#1e2d4a" : "#c4b89a" })}>
+                      style={mono({ fontSize: "0.56rem", letterSpacing: "0.1em", textTransform: "uppercase", padding: "4px 10px", border: "1px solid", cursor: "pointer", background: exFilter === cat ? "#1e2d4a" : "transparent", color: exFilter === cat ? "#f5f0e8" : "#564938", borderColor: exFilter === cat ? "#1e2d4a" : "#8d846f" })}>
                       {cat}
                     </button>
                   ))}
-                  <span style={mono({ marginLeft: "auto", fontSize: "0.56rem", color: "#9a8870", letterSpacing: "0.08em", textTransform: "uppercase" })}>{filteredEx.length}/{exhibitsCount}</span>
+                  <span style={mono({ marginLeft: "auto", fontSize: "0.56rem", color: "#574e42", letterSpacing: "0.08em", textTransform: "uppercase" })}>{filteredEx.length}/{exhibitsCount}</span>
                 </div>
                 <div className="ex-table" style={{ paddingBottom: 8, borderBottom: "2px solid #1e2d4a" }}>
-                  <span style={mono({ fontSize: "0.54rem", letterSpacing: "0.1em", textTransform: "uppercase", color: "#9a8870" })}>ID</span>
-                  <span style={mono({ fontSize: "0.54rem", letterSpacing: "0.1em", textTransform: "uppercase", color: "#9a8870" })}>Document</span>
-                  <span style={mono({ fontSize: "0.54rem", letterSpacing: "0.1em", textTransform: "uppercase", color: "#9a8870" })}>Category</span>
-                  <span className="col-pages" style={mono({ fontSize: "0.54rem", letterSpacing: "0.1em", textTransform: "uppercase", color: "#9a8870" })}>Size</span>
+                  <span style={mono({ fontSize: "0.54rem", letterSpacing: "0.1em", textTransform: "uppercase", color: "#5e4f3d", fontWeight: 500 })}>ID</span>
+                  <span style={mono({ fontSize: "0.54rem", letterSpacing: "0.1em", textTransform: "uppercase", color: "#5e4f3d", fontWeight: 500 })}>Document</span>
+                  <span style={mono({ fontSize: "0.54rem", letterSpacing: "0.1em", textTransform: "uppercase", color: "#5e4f3d", fontWeight: 500 })}>Category</span>
+                  <span className="col-pages" style={mono({ fontSize: "0.54rem", letterSpacing: "0.1em", textTransform: "uppercase", color: "#5e4f3d", fontWeight: 500 })}>Size</span>
                   <span />
                 </div>
                 {filteredEx.map((ex) => {
@@ -1244,7 +1245,7 @@ export default function SingleDocketPageClient() {
 
             {/* Docket Details */}
             <div style={{ background: "#1e2d4a", padding: "20px 22px", marginBottom: 14 }}>
-              <p style={mono({ fontSize: "0.54rem", letterSpacing: "0.14em", color: "#c1c8d2", textTransform: "uppercase", paddingBottom: 12, marginBottom: 14, borderBottom: "1px solid rgba(255,255,255,0.08)" })}>
+              <p style={mono({ fontSize: "0.54rem", letterSpacing: "0.14em", color: "#e6eaed", textTransform: "uppercase", paddingBottom: 12, marginBottom: 14, borderBottom: "1px solid rgba(255,255,255,0.08)", fontWeight: 700 })}>
                 Docket Details
               </p>
               <div className="detail-grid">
@@ -1267,8 +1268,8 @@ export default function SingleDocketPageClient() {
 
             {/* Cite This Docket */}
             <div style={{ background: "#faf6ee", border: "1px solid #d4c8b4", padding: "16px 18px", marginBottom: 14 }}>
-              <p style={mono({ fontSize: "0.54rem", letterSpacing: "0.14em", color: "#9a8870", textTransform: "uppercase", marginBottom: 10 })}>Cite This Docket</p>
-              <p className="cite-text" style={serif({ fontSize: "0.85rem", fontStyle: "italic", lineHeight: 1.7, color: "#7a6e5e" })}>
+              <p style={mono({ fontSize: "0.54rem", letterSpacing: "0.14em", color: "#41392e", textTransform: "uppercase", marginBottom: 10, fontWeight: 500 })}>Cite This Docket</p>
+              <p className="cite-text" style={serif({ fontSize: "0.85rem", fontStyle: "italic", lineHeight: 1.7, color: "#6c6153" })}>
                 {respondentName}. "{displayTitle}." <em>Journalism Society Public Record</em>, {docket.docketId}, {fmtDate(filedDate)}.
               </p>
             </div>
@@ -1288,7 +1289,7 @@ export default function SingleDocketPageClient() {
             {/* Exhibit Breakdown */}
             {Object.keys(exBreakdown).length > 0 && (
               <div style={{ background: "#faf6ee", border: "1px solid #d4c8b4", padding: "16px 18px" }}>
-                <p style={mono({ fontSize: "0.54rem", letterSpacing: "0.14em", color: "#9a8870", textTransform: "uppercase", marginBottom: 14 })}>Exhibit Breakdown</p>
+                <p style={mono({ fontSize: "0.54rem", letterSpacing: "0.14em", color: "#41392e", textTransform: "uppercase", marginBottom: 14, fontWeight: 500 })}>Exhibit Breakdown</p>
                 {Object.entries(exBreakdown).map(([cat, count]) => {
                   const c = CAT_COLOR[cat] || CAT_COLOR["Evidence"];
                   const pct = Math.round((count / exhibitsCount) * 100);
@@ -1296,7 +1297,7 @@ export default function SingleDocketPageClient() {
                     <div key={cat} style={{ marginBottom: 10 }}>
                       <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4, gap: 8 }}>
                         <span style={mono({ fontSize: "0.54rem", letterSpacing: "0.08em", textTransform: "uppercase", color: c.text, minWidth: 0, overflowWrap: "break-word" })}>{cat}</span>
-                        <span style={mono({ fontSize: "0.54rem", color: "#9a8870", flexShrink: 0 })}>{count}</span>
+                        <span style={mono({ fontSize: "0.54rem", color: "#867660", flexShrink: 0 })}>{count}</span>
                       </div>
                       <div style={{ height: 4, background: "#e4ddd0", borderRadius: 2 }}>
                         <div style={{ height: 4, width: `${pct}%`, background: c.text, borderRadius: 2 }} />

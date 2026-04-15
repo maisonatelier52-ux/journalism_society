@@ -200,10 +200,10 @@ function SubmitCitationModal({ onClose, onSuccess, dockets }) {
       <div className="w-full max-w-[95%] sm:max-w-[560px] bg-[#f5f0e8] border-t-4 border-[#b8974a] max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
         <div className="bg-[#1e2d4a] p-4 sm:p-5 flex justify-between items-start">
           <div>
-            <p className="font-mono-dm text-[0.5rem] sm:text-[0.52rem] tracking-[0.14em] text-[#3a4e6a] uppercase mb-1">Media Watch</p>
+            <p className="font-mono-dm text-[0.5rem] sm:text-[0.52rem] tracking-[0.14em] text-[#b6babf] uppercase mb-1">Media Watch</p>
             <h3 className="font-playfair font-bold text-base sm:text-[1.15rem] text-[#f5f0e8]">Submit a Media Citation</h3>
           </div>
-          <button onClick={onClose} className="text-[#3a4e6a] hover:text-[#c8bfa8] transition-colors p-1 cursor-pointer"><FiX size={16} /></button>
+          <button onClick={onClose} className="text-[#b6babf] hover:text-[#c8bfa8] transition-colors p-1 cursor-pointer"><FiX size={16} /></button>
         </div>
         {submitted ? (
           <div className="success-pop p-6 sm:p-10 text-center">
@@ -226,7 +226,7 @@ function SubmitCitationModal({ onClose, onSuccess, dockets }) {
               </div>
             )}
             <div className="mb-4 docket-search-container">
-              <label className="font-mono-dm text-[0.5rem] sm:text-[0.52rem] tracking-[0.14em] uppercase text-[#9a8870] block mb-1.5">Search & Select Docket <span className="text-[#b8974a]">*</span></label>
+              <label className="font-mono-dm text-[0.5rem] sm:text-[0.58rem] tracking-[0.18em] uppercase text-[#5c4629] block mb-1.5">Search & Select Docket <span className="text-[#b8974a]">*</span></label>
               <div className="relative">
                 <div className="relative">
                   <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-[#9a8870]" size={14} />
@@ -252,36 +252,36 @@ function SubmitCitationModal({ onClose, onSuccess, dockets }) {
             </div>
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-2.5 mb-4">
               <div className="flex-1">
-                <label className="font-mono-dm text-[0.52rem] tracking-[0.14em] uppercase text-[#9a8870] block mb-1.5">Publication <span className="text-[#b8974a]">*</span></label>
+                <label className="font-mono-dm text-[0.58rem] tracking-[0.18em] uppercase text-[#5c4629] block mb-1.5">Publication <span className="text-[#b8974a]">*</span></label>
                 <input type="text" className={`w-full bg-[#faf6ee] border p-2 font-garamond text-sm sm:text-[0.97rem] text-[#1e2d4a] focus:outline-none focus:border-[#1e2d4a] ${errors.publication ? "border-[#b8190c]" : "border-[#d4c8b4]"}`} value={form.publication} onChange={(e) => setForm({ ...form, publication: e.target.value })} placeholder="e.g. NDTV, BBC" />
                 {errors.publication && <p className="font-mono-dm text-[0.54rem] text-[#b8190c] mt-1">{errors.publication}</p>}
               </div>
               <div className="sm:w-[130px]">
-                <label className="font-mono-dm text-[0.52rem] tracking-[0.14em] uppercase text-[#9a8870] block mb-1.5">Type</label>
+                <label className="font-mono-dm text-[0.58rem] tracking-[0.18em] uppercase text-[#5c4629] block mb-1.5">Type</label>
                 <select className="w-full bg-[#faf6ee] border border-[#d4c8b4] p-2 font-garamond text-sm sm:text-[0.97rem] text-[#1e2d4a] focus:outline-none cursor-pointer" value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value })}>
                   {["Original Report", "Follow-up", "Opinion", "Fact-Check", "News", "Regional", "Other"].map((t) => <option key={t}>{t}</option>)}
                 </select>
               </div>
             </div>
             <div className="mb-4">
-              <label className="font-mono-dm text-[0.52rem] tracking-[0.14em] uppercase text-[#9a8870] block mb-1.5">Headline <span className="text-[#b8974a]">*</span></label>
+              <label className="font-mono-dm text-[0.58rem] tracking-[0.18em] uppercase text-[#5c4629] block mb-1.5">Headline <span className="text-[#b8974a]">*</span></label>
               <input type="text" className={`w-full bg-[#faf6ee] border p-2 font-garamond text-sm sm:text-[0.97rem] text-[#1e2d4a] focus:outline-none focus:border-[#1e2d4a] ${errors.headline ? "border-[#b8190c]" : "border-[#d4c8b4]"}`} value={form.headline} onChange={(e) => setForm({ ...form, headline: e.target.value })} placeholder="Full article title" />
               {errors.headline && <p className="font-mono-dm text-[0.54rem] text-[#b8190c] mt-1">{errors.headline}</p>}
             </div>
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-2.5 mb-4">
               <div className="flex-1">
-                <label className="font-mono-dm text-[0.52rem] tracking-[0.14em] uppercase text-[#9a8870] block mb-1.5">Article URL <span className="text-[#b8974a]">*</span></label>
+                <label className="font-mono-dm text-[0.58rem] tracking-[0.18em] uppercase text-[#5c4629] block mb-1.5">Article URL <span className="text-[#b8974a]">*</span></label>
                 <input type="url" className={`w-full bg-[#faf6ee] border p-2 font-garamond text-sm sm:text-[0.97rem] text-[#1e2d4a] focus:outline-none focus:border-[#1e2d4a] ${errors.url ? "border-[#b8190c]" : "border-[#d4c8b4]"}`} value={form.url} onChange={(e) => setForm({ ...form, url: e.target.value })} placeholder="https://..." />
                 {errors.url && <p className="font-mono-dm text-[0.54rem] text-[#b8190c] mt-1">{errors.url}</p>}
               </div>
               <div className="sm:w-[130px]">
-                <label className="font-mono-dm text-[0.52rem] tracking-[0.14em] uppercase text-[#9a8870] block mb-1.5">Date <span className="text-[#b8974a]">*</span></label>
+                <label className="font-mono-dm text-[0.58rem] tracking-[0.18em] uppercase text-[#5c4629] block mb-1.5">Date <span className="text-[#b8974a]">*</span></label>
                 <input type="date" className={`w-full bg-[#faf6ee] border p-2 font-garamond text-sm sm:text-[0.97rem] text-[#1e2d4a] focus:outline-none cursor-pointer ${errors.date ? "border-[#b8190c]" : "border-[#d4c8b4]"}`} value={form.date} onChange={(e) => setForm({ ...form, date: e.target.value })} />
                 {errors.date && <p className="font-mono-dm text-[0.54rem] text-[#b8190c] mt-1">{errors.date}</p>}
               </div>
             </div>
             <div className="mb-5">
-              <label className="font-mono-dm text-[0.52rem] tracking-[0.14em] uppercase text-[#9a8870] block mb-1.5">Summary / Note <span className="text-[#b8b0a0]">(optional)</span></label>
+              <label className="font-mono-dm text-[0.58rem] tracking-[0.18em] uppercase text-[#5c4629] block mb-1.5">Summary / Note <span className="text-[#696662]">(optional)</span></label>
               <textarea className="w-full bg-[#faf6ee] border border-[#d4c8b4] p-2 font-garamond text-sm sm:text-[0.97rem] text-[#1e2d4a] focus:outline-none focus:border-[#1e2d4a] resize-y min-h-[60px]" value={form.note} onChange={(e) => setForm({ ...form, note: e.target.value })} placeholder="Brief summary of the article..." />
             </div>
             <div className="bg-[#ede8dc] border border-[#d4c8b4] p-2.5 mb-5 flex gap-2">
@@ -289,7 +289,7 @@ function SubmitCitationModal({ onClose, onSuccess, dockets }) {
               <p className="font-garamond text-xs sm:text-[0.86rem] italic text-[#7a6e5e]">All citations are reviewed before appearing in the public record.</p>
             </div>
             <div className="flex gap-2.5 justify-end">
-              <button type="button" onClick={onClose} disabled={isSubmitting} className="font-mono-dm bg-transparent border border-[#c4b89a] text-[#7a6e5e] px-4 sm:px-5 py-1.5 sm:py-2 text-[0.58rem] tracking-[0.1em] uppercase cursor-pointer hover:bg-[#ede8dc] transition-colors disabled:opacity-50">Cancel</button>
+              <button type="button" onClick={onClose} disabled={isSubmitting} className="font-mono-dm bg-transparent border border-gray-500 text-gray-800 px-4 sm:px-5 py-1.5 sm:py-2 text-[0.58rem] tracking-[0.1em] uppercase cursor-pointer hover:bg-[#ede8dc] transition-colors disabled:opacity-50">Cancel</button>
               <button type="submit" disabled={isSubmitting} className="font-mono-dm bg-[#1e2d4a] text-[#f5f0e8] px-4 sm:px-5 py-1.5 sm:py-2 text-[0.58rem] tracking-[0.1em] uppercase cursor-pointer hover:bg-[#2a3f6a] transition-colors disabled:opacity-50">{isSubmitting ? "Submitting..." : "Submit Citation →"}</button>
             </div>
           </form>
@@ -460,12 +460,12 @@ export default function MediaWatchClient() {
       {/* Banner */}
       <div className="bg-[#1e2d4a] border-b-4 border-[#b8974a]">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-11 md:py-12">
-          <p className="font-mono-dm text-[0.56rem] tracking-[0.16em] text-[#3a4e6a] uppercase mb-3">Public Record / Media Watch</p>
+          <p className="font-mono-dm text-[0.56rem] tracking-[0.16em] text-[#adb7c4] uppercase mb-3">Public Record / Media Watch</p>
           <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4 mb-6">
             <h1 className="font-playfair font-black text-3xl sm:text-4xl md:text-5xl lg:text-[clamp(2.4rem,6vw,4.2rem)] leading-[0.95] text-[#f5f0e8]">
               Media<br /><em className="text-[#b8974a] font-normal">Watch</em>
             </h1>
-            <p className="font-garamond text-sm sm:text-base italic text-[#8a9bb8] max-w-[380px] leading-relaxed">
+            <p className="font-garamond text-sm sm:text-base italic text-[#adb7c4] max-w-[380px] leading-relaxed">
               All media coverage across every active docket — tracked, categorised, and cross-referenced for full accountability.
             </p>
           </div>
@@ -481,7 +481,7 @@ export default function MediaWatchClient() {
               <div key={s.label} className="bg-[#1e2d4a]/60 p-3 sm:p-4">
                 <div className="h-0.5 mb-2 sm:mb-3" style={{ background: s.accent }} />
                 {loading ? <div className="skeleton h-6 w-8 sm:h-8 sm:w-10 mb-1.5 rounded" /> : <div className="font-playfair font-black text-xl sm:text-2xl md:text-3xl leading-none" style={{ color: s.accent }}>{s.val}</div>}
-                <div className="font-mono-dm text-[0.48rem] sm:text-[0.52rem] tracking-[0.12em] uppercase text-[#3a4e6a] mt-1">{s.label}</div>
+                <div className="font-mono-dm text-[0.48rem] sm:text-[0.52rem] tracking-[0.12em] uppercase text-[#adb7c4] mt-1">{s.label}</div>
               </div>
             ))}
           </div>
@@ -524,7 +524,7 @@ export default function MediaWatchClient() {
             <div className="flex gap-1.5 items-center flex-wrap">
               <span className="font-mono-dm text-[0.54rem] tracking-[0.12em] uppercase text-[#9a8870] mr-0.5">Stance</span>
               {uniqueStances.map((s) => (
-                <button key={s} onClick={() => setStanceFilter(s)} className={`font-mono-dm text-[0.58rem] tracking-[0.12em] uppercase px-2 sm:px-3 py-1 border transition-all whitespace-nowrap cursor-pointer ${stanceFilter === s ? "bg-[#1e2d4a] text-[#f5f0e8] border-[#1e2d4a]" : "bg-transparent text-[#7a6e5e] border-[#c4b89a] hover:border-[#9a8870]"}`}>
+                <button key={s} onClick={() => setStanceFilter(s)} className={`font-mono-dm text-[0.58rem] tracking-[0.12em] uppercase px-2 sm:px-3 py-1 border transition-all whitespace-nowrap cursor-pointer rounded-md ${stanceFilter === s ? "bg-[#1e2d4a] text-[#f5f0e8] border-[#1e2d4a]" : "bg-transparent text-[#594832] border-[#b0a487] hover:border-[#9a8870]"}`}>
                   {s === "All" ? "All" : STANCE_CFG[s]?.label || s}
                 </button>
               ))}
@@ -555,13 +555,13 @@ export default function MediaWatchClient() {
         <div className="filter-scroll py-2 pb-3 flex gap-1.5 flex-nowrap overflow-x-auto items-center" style={{ WebkitOverflowScrolling: "touch" }}>
           <span className="font-mono-dm text-[0.52rem] tracking-[0.12em] uppercase text-[#9a8870] mr-0.5 flex-shrink-0">Docket</span>
           {uniqueDocketIds.slice(0, 4).map((d) => (
-            <button key={d} onClick={() => setDocketFilter(d)} className={`font-mono-dm text-[0.58rem] tracking-[0.12em] uppercase px-2 sm:px-3 py-1 border transition-all cursor-pointer whitespace-nowrap flex-shrink-0 ${docketFilter === d ? "bg-[#1e2d4a] text-[#f5f0e8] border-[#1e2d4a]" : "bg-transparent text-[#7a6e5e] border-[#c4b89a]"}`}>{typeof d === "string" && d.length > 15 ? d.slice(0, 12) + "..." : d}</button>
+            <button key={d} onClick={() => setDocketFilter(d)} className={`font-mono-dm text-[0.58rem] tracking-[0.12em] uppercase px-2 sm:px-3 py-1 border transition-all cursor-pointer whitespace-nowrap flex-shrink-0 ${docketFilter === d ? "bg-[#1e2d4a] text-[#f5f0e8] border-[#1e2d4a]" : "bg-transparent text-[#594832] border-[#b0a487]"}`}>{typeof d === "string" && d.length > 15 ? d.slice(0, 12) + "..." : d}</button>
           ))}
           {uniqueDocketIds.length > 4 && <select onChange={(e) => setDocketFilter(e.target.value)} value={docketFilter} className="font-mono-dm text-[0.58rem] tracking-[0.08em] uppercase border border-[#c4b89a] px-2 py-1 pl-2 pr-6 cursor-pointer outline-none bg-[#faf6ee] text-[#7a6e5e] appearance-none flex-shrink-0" style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%23c4b89a' stroke-width='1.5' fill='none'/%3E%3C/svg%3E\")", backgroundRepeat: "no-repeat", backgroundPosition: "right 6px center" }}>{uniqueDocketIds.map((d) => <option key={d}>{d}</option>)}</select>}
           <div className="w-px h-3 bg-[#d4c8b4] mx-1" />
           <span className="font-mono-dm text-[0.52rem] tracking-[0.12em] uppercase text-[#9a8870] mr-0.5 flex-shrink-0">Type</span>
           {uniqueTypes.slice(0, 3).map((t) => (
-            <button key={t} onClick={() => setTypeFilter(t)} className={`font-mono-dm text-[0.58rem] tracking-[0.12em] uppercase px-2 sm:px-3 py-1 border transition-all cursor-pointer whitespace-nowrap flex-shrink-0 ${typeFilter === t ? "bg-[#1e2d4a] text-[#f5f0e8] border-[#1e2d4a]" : "bg-transparent text-[#7a6e5e] border-[#c4b89a]"}`}>{t}</button>
+            <button key={t} onClick={() => setTypeFilter(t)} className={`font-mono-dm text-[0.58rem] tracking-[0.12em] uppercase px-2 sm:px-3 py-1 border transition-all cursor-pointer whitespace-nowrap flex-shrink-0 ${typeFilter === t ? "bg-[#1e2d4a] text-[#f5f0e8] border-[#1e2d4a]" : "bg-transparent text-[#594832] border-[#b0a487]"}`}>{t}</button>
           ))}
           {uniqueTypes.length > 3 && <select onChange={(e) => setTypeFilter(e.target.value)} value={typeFilter} className="font-mono-dm text-[0.58rem] uppercase border border-[#c4b89a] px-2 py-1 pl-2 pr-6 cursor-pointer outline-none bg-[#faf6ee] text-[#7a6e5e] appearance-none flex-shrink-0" style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%23c4b89a' stroke-width='1.5' fill='none'/%3E%3C/svg%3E\")", backgroundRepeat: "no-repeat", backgroundPosition: "right 6px center" }}>{uniqueTypes.map((t) => <option key={t}>{t}</option>)}</select>}
           <div className="w-px h-3 bg-[#d4c8b4] mx-1" />
@@ -598,12 +598,12 @@ export default function MediaWatchClient() {
                           <span className="px-1 py-0.5 border text-[0.5rem] tracking-[0.08em] uppercase" style={{ borderColor: tc.border, background: tc.bg, color: tc.text }}>{item.type}</span>
                           <span className="px-1 py-0.5 border flex items-center gap-1 text-[0.5rem]" style={{ borderColor: sc.border, background: sc.bg, color: sc.color }}><span className="w-1.5 h-1.5 rounded-full" style={{ background: sc.color }} /><span className="hidden sm:inline">{sc.label}</span></span>
                         </div>
-                        <span className="font-mono-dm text-[0.52rem] text-[#9a8870] whitespace-nowrap flex-shrink-0">{fmtDate(item.date)}</span>
+                        <span className="font-mono-dm text-[0.52rem] text-[#4f4941] whitespace-nowrap flex-shrink-0">{fmtDate(item.date)}</span>
                       </div>
                       <span className="font-mono-dm text-[0.62rem] font-medium tracking-[0.1em] uppercase text-[#1e2d4a] truncate">{item.outlet}</span>
                       <div className="border-t border-[#1e2d4a] pt-2 sm:pt-3">
                         <p className="font-playfair font-bold text-sm sm:text-base leading-tight text-[#1e2d4a] mb-1 sm:mb-2 line-clamp-2">{item.headline}</p>
-                        <p className="font-garamond text-[0.88rem] leading-relaxed text-[#7a6e5e] line-clamp-2">{item.summary}</p>
+                        <p className="font-garamond text-[0.88rem] leading-relaxed text-black line-clamp-2">{item.summary}</p>
                       </div>
                       <div className="mt-auto pt-2 border-t border-[#e4ddd0] flex justify-between items-center">
                         {item.docketId ? <Link href={`/dockets/${item.docketId}`} onClick={(e) => e.stopPropagation()} className="font-mono-dm text-[0.52rem] tracking-[0.1em] uppercase text-[#b8974a] no-underline">{item.docketId.length > 12 ? item.docketId.slice(0, 10) + "…" : item.docketId} →</Link> : <span className="font-mono-dm text-[0.52rem] text-[#c4b89a]">No docket linked</span>}
@@ -626,7 +626,7 @@ export default function MediaWatchClient() {
             <div className="overflow-x-auto" style={{ WebkitOverflowScrolling: "touch" }}>
               <div style={{ minWidth: "700px" }}>
                 <div className="grid grid-cols-[80px_1fr_140px_90px_70px_24px] gap-3 items-center pb-2 border-b-2 border-[#1e2d4a]">
-                  {["Type", "Headline", "Outlet", "Docket", "Date", ""].map(h => <span key={h} className="font-mono-dm text-[0.54rem] tracking-[0.1em] uppercase text-[#9a8870]">{h}</span>)}
+                  {["Type", "Headline", "Outlet", "Docket", "Date", ""].map(h => <span key={h} className="font-mono-dm text-[0.54rem] tracking-[0.1em] uppercase text-[#6e5a40] font-semibold">{h}</span>)}
                 </div>
                 {paginated.map((item, idx) => {
                   const sc = STANCE_CFG[item.stance] || STANCE_CFG.pending;

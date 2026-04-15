@@ -156,7 +156,7 @@ export default function DocketsClient() {
               <div key={s.label} className="pr-4 sm:pr-8">
                 <div className="mb-2 sm:mb-3 h-0.5" style={{ background: s.accent }} />
                 <div className="font-playfair font-black text-2xl sm:text-3xl md:text-4xl lg:text-5xl leading-none" style={{ color: s.accent }}>{s.val}</div>
-                <div className="font-mono-dm text-[0.55rem] sm:text-xs tracking-widest uppercase mt-1 sm:mt-2" style={{ color: "#9a8870" }}>{s.label}</div>
+                <div className="font-mono-dm text-[0.55rem] sm:text-xs tracking-widest uppercase mt-1 sm:mt-2 font-semibold" style={{ color: "#967d61" }}>{s.label}</div>
               </div>
             ))}
           </div>
@@ -189,15 +189,15 @@ export default function DocketsClient() {
 
             {/* Status chips - scrollable on mobile */}
             <div className="flex items-center gap-1 flex-nowrap overflow-x-auto pb-1 md:pb-0" style={{ scrollbarWidth: "thin" }}>
-              <span className="font-mono-dm text-[0.6rem] tracking-widest uppercase mr-1 flex-shrink-0" style={{ color: "#9a8870" }}>Status</span>
+              <span className="font-mono-dm text-[0.6rem] tracking-widest uppercase mr-1 flex-shrink-0" style={{ color: "#574732" }}>Status</span>
               {STATUS_LIST.map(s => (
                 <button
                   key={s}
                   onClick={() => setStatus(s)}
-                  className="font-mono-dm text-[0.55rem] sm:text-xs tracking-wider uppercase px-2 sm:px-3 py-1 border transition-all cursor-pointer whitespace-nowrap flex-shrink-0"
+                  className="font-mono-dm text-[0.55rem] sm:text-xs tracking-wider uppercase px-2 sm:px-3 py-1 border transition-all cursor-pointer whitespace-nowrap flex-shrink-0 rounded-md"
                   style={statusFilter === s
                     ? { background: "#1e2d4a", color: "#f5f0e8", borderColor: "#1e2d4a" }
-                    : { background: "transparent", color: "#7a6e5e", borderColor: "#c4b89a" }
+                    : { background: "transparent", color: "#71614c", borderColor: "#7b7054" }
                   }
                 >
                   {s}
@@ -239,7 +239,7 @@ export default function DocketsClient() {
 
         {/* Type Filter Row - scrollable on mobile */}
         <div className="flex items-center gap-1.5 flex-nowrap overflow-x-auto pb-2 mb-4 pt-2" style={{ scrollbarWidth: "thin" }}>
-          <span className="font-mono-dm text-[0.6rem] tracking-widest uppercase mr-1 flex-shrink-0" style={{ color: "#9a8870" }}>Filter:</span>
+          <span className="font-mono-dm text-[0.6rem] tracking-widest uppercase mr-1 flex-shrink-0 font-medium" style={{ color: "#6f5f49" }}>Filter:</span>
           {typeList.map(t => (
             <button
               key={t}
@@ -247,7 +247,7 @@ export default function DocketsClient() {
               className="font-mono-dm text-[0.55rem] sm:text-xs tracking-wider uppercase px-2 sm:px-3 py-1 border transition-all cursor-pointer whitespace-nowrap flex-shrink-0"
               style={typeFilter === t
                 ? { background: "#1e2d4a", color: "#f5f0e8", borderColor: "#1e2d4a" }
-                : { background: "transparent", color: "#7a6e5e", borderColor: "#c4b89a" }
+                : { background: "transparent", color: "#675844", borderColor: "#8e8777" }
               }
             >
               {t}
@@ -257,12 +257,12 @@ export default function DocketsClient() {
             <button
               onClick={clearAll}
               className="font-mono-dm text-[0.55rem] sm:text-xs tracking-wider uppercase px-2 sm:px-3 py-1 border border-dashed transition-colors cursor-pointer whitespace-nowrap flex-shrink-0"
-              style={{ color: "#b8974a", borderColor: "#b8974a" }}
+              style={{ color: "#977d40", borderColor: "#977b38" }}
             >
               Reset Filters
             </button>
           )}
-          <span className="hidden sm:block ml-auto font-mono-dm text-xs uppercase tracking-wider flex-shrink-0" style={{ color: "#9a8870" }}>
+          <span className="hidden sm:block ml-auto font-mono-dm text-xs uppercase tracking-wider flex-shrink-0" style={{ color: "#7d6c55" }}>
             {filtered.length} of {dockets.length} dockets
           </span>
         </div>
@@ -282,7 +282,7 @@ export default function DocketsClient() {
               <div style={{ minWidth: "650px" }}>
                 <div className="grid gap-x-4 sm:gap-x-6 pb-2 border-b-2 mb-0" style={{ gridTemplateColumns: "100px 1fr 80px", borderColor: "#1e2d4a" }}>
                   {["Docket ID", "Category", "Filed ↓"].map(h => (
-                    <span key={h} className="font-mono-dm text-[0.6rem] sm:text-xs tracking-widest uppercase" style={{ color: "#9a8870" }}>{h}</span>
+                    <span key={h} className="font-mono-dm text-[0.6rem] sm:text-xs tracking-widest uppercase font-semibold" style={{ color: "#6e5a40" }}>{h}</span>
                   ))}
                 </div>
 
@@ -313,14 +313,14 @@ export default function DocketsClient() {
                         <div className="font-playfair font-bold text-[0.85rem] sm:text-base leading-snug mb-1 sm:mb-1.5" style={{ color: "#1e2d4a" }}>{displayTitle}</div>
                         <div className="flex flex-wrap items-center gap-1.5 sm:gap-3">
                           <span className="font-garamond italic text-[0.7rem] sm:text-sm" style={{ color: "#7a6e5e" }}>{respondentName}</span>
-                          <span className="font-mono-dm text-[0.55rem] sm:text-xs tracking-wider uppercase px-1.5 sm:px-2 py-0.5 border" style={{ color: "#9a8870", borderColor: "#c4b89a" }}>{docketType}</span>
-                          <span className="font-mono-dm text-[0.6rem] sm:text-xs" style={{ color: "#b8b0a0" }}>{exhibitCount} exhibits</span>
+                          <span className="font-mono-dm text-[0.55rem] sm:text-xs tracking-wider uppercase px-1.5 sm:px-2 py-0.5 border" style={{ color: "#978266", borderColor: "#aca288" }}>{docketType}</span>
+                          <span className="font-mono-dm text-[0.6rem] sm:text-xs" style={{ color: "#7e7b75" }}>{exhibitCount} exhibits</span>
                         </div>
                       </div>
 
                       <div className="text-right pt-0.5 flex flex-col items-end gap-1 sm:gap-2">
-                        <span className="font-mono-dm text-[0.6rem] sm:text-xs" style={{ color: "#9a8870" }}>{fmtDate(filedDate)}</span>
-                        <span className="arrow-icon font-mono-dm text-xs sm:text-sm" style={{ color: "#b8974a" }}>→</span>
+                        <span className="font-mono-dm text-[0.6rem] sm:text-xs" style={{ color: "#796953" }}>{fmtDate(filedDate)}</span>
+                        <span className="arrow-icon font-mono-dm text-xs sm:text-sm pe-5" style={{ color: "#b8974a" }}>→</span>
                       </div>
                     </Link>
                   );
@@ -367,14 +367,14 @@ export default function DocketsClient() {
                     </div>
                     <div className="border-t pt-2 sm:pt-3" style={{ borderColor: "#1e2d4a" }}>
                       <div className="font-playfair font-bold text-sm sm:text-base leading-snug mb-2" style={{ color: "#1e2d4a" }}>{displayTitle}</div>
-                      <p className="font-garamond text-xs sm:text-sm leading-relaxed line-clamp-3" style={{ color: "#7a6e5e" }}>{summaryText}</p>
+                      <p className="font-garamond text-xs sm:text-sm leading-relaxed line-clamp-3" style={{ color: "#10100f" }}>{summaryText}</p>
                     </div>
                     <div className="mt-auto pt-2 sm:pt-3 flex items-end justify-between border-t" style={{ borderColor: "#e4ddd0" }}>
                       <div>
-                        <div className="font-garamond italic text-[0.65rem] sm:text-xs" style={{ color: "#9a8870" }}>{respondentName}</div>
-                        <div className="font-mono-dm text-[0.6rem] sm:text-xs mt-0.5" style={{ color: "#b8b0a0" }}>{fmtDate(filedDate)} · {exhibitCount} exhibits</div>
+                        <div className="font-garamond italic text-[0.65rem] sm:text-xs" style={{ color: "#87745c" }}>{respondentName}</div>
+                        <div className="font-mono-dm text-[0.6rem] sm:text-xs mt-0.5" style={{ color: "#7d735d" }}>{fmtDate(filedDate)} · {exhibitCount} exhibits</div>
                       </div>
-                      <span className="font-mono-dm text-[0.55rem] sm:text-xs tracking-wider uppercase px-1.5 sm:px-2 py-0.5 border" style={{ color: "#9a8870", borderColor: "#c4b89a" }}>{docketType}</span>
+                      <span className="font-mono-dm text-[0.55rem] sm:text-xs tracking-wider uppercase px-1.5 sm:px-2 py-0.5 border" style={{ color: "#76644b", borderColor: "#625d52" }}>{docketType}</span>
                     </div>
                   </Link>
                 );

@@ -243,7 +243,7 @@ export default function HomePageClient() {
       <section className="bg-[#f5f0e8] px-4 sm:px-6 pb-10 sm:pb-12" aria-labelledby="featured-docket-label">
         <div className="max-w-6xl mx-auto">
           <div className="border-t-2 border-[#1e2d4a] pt-2.5 mb-4 sm:mb-5 flex justify-between items-baseline">
-            <span id="featured-docket-label" className="font-mono-dm text-[0.6rem] tracking-[0.16em] uppercase text-[#9a8870]">Featured Docket</span>
+            <span id="featured-docket-label" className="font-mono-dm text-[0.7rem] tracking-[0.16em] uppercase text-[#9a8870]">Featured Docket</span>
             <Link href="/dockets" title="View all Right of Reply dockets" className="font-mono-dm text-[0.6rem] tracking-[0.1em] uppercase text-[#1e2d4a] no-underline hover:text-[#b8974a] transition-colors">All Dockets →</Link>
           </div>
 
@@ -264,7 +264,7 @@ export default function HomePageClient() {
                 <h2 className="font-playfair font-bold text-lg sm:text-xl md:text-[clamp(1.3rem,2.5vw,1.9rem)] leading-tight text-[#1e2d4a] mb-3 sm:mb-4 max-w-[520px]">
                   {featuredDocket.response?.title || featuredDocket.title || "Featured Docket"}
                 </h2>
-                <p className="font-garamond text-sm sm:text-[1.05rem] leading-relaxed text-[#5a5040] max-w-[500px] mb-5 sm:mb-7">
+                <p className="font-garamond text-sm sm:text-[1.05rem] leading-relaxed text-black max-w-[500px] mb-5 sm:mb-7">
                   {featuredDocket.summary?.claim || "A documented response to public claims."}
                 </p>
                 <div className="flex gap-4 sm:gap-7 flex-wrap mb-5 sm:mb-7">
@@ -302,7 +302,7 @@ export default function HomePageClient() {
               <Link key={s.label} href={s.href} title={`Explore ${s.label} — ${s.desc}`} className="p-4 sm:p-5 border border-[#d4c8b4] bg-[#faf6ee] hover:bg-white hover:shadow-md transition-all no-underline text-inherit flex flex-col gap-2 sm:gap-2.5 rounded-lg">
                 <div className="transform hover:scale-105 transition-transform duration-200">{s.icon}</div>
                 <div className="font-playfair font-bold text-sm sm:text-base text-[#1e2d4a]">{s.label}</div>
-                <p className="font-garamond text-xs sm:text-[0.88rem] leading-relaxed text-[#6a5e4e]">{s.desc}</p>
+                <p className="font-garamond text-xs sm:text-[0.88rem] leading-relaxed text-[#1a1818]">{s.desc}</p>
               </Link>
             ))}
           </div>
@@ -318,7 +318,7 @@ export default function HomePageClient() {
               <div key={step.num} className="border border-[#d4c8b4] p-5 sm:p-6 bg-[#faf6ee] relative">
                 <div className="font-playfair font-black text-2xl sm:text-[2.8rem] leading-none text-[#c8b89a] mb-3 sm:mb-3.5">{step.num}</div>
                 <h3 className="font-playfair font-bold text-sm sm:text-base text-[#1e2d4a] mb-2 sm:mb-2.5">{step.title}</h3>
-                <p className="font-garamond text-xs sm:text-[0.88rem] leading-relaxed text-[#6a5e4e]">{step.desc}</p>
+                <p className="font-garamond text-xs sm:text-[0.88rem] leading-relaxed text-[#1a1818]">{step.desc}</p>
                 {i < STEPS.length - 1 && <div className="hidden lg:block absolute -right-2 top-[40%] text-[#c8b89a] text-xl font-light" aria-hidden="true">›</div>}
               </div>
             ))}
@@ -331,7 +331,7 @@ export default function HomePageClient() {
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row gap-8 sm:gap-12 items-start">
           <div className="flex-1 min-w-[140px] sm:min-w-[160px]">
             <div className="border-t-2 border-[#b8974a] pt-2.5">
-              <span className="font-mono-dm text-[0.58rem] tracking-[0.16em] uppercase text-[#b8974a]">Our Purpose</span>
+              <span className="font-mono-dm text-[0.65rem] tracking-[0.16em] uppercase text-[#b8974a]">Our Purpose</span>
             </div>
           </div>
           <div className="flex-[2]">
@@ -350,7 +350,7 @@ export default function HomePageClient() {
       <section className="bg-[#1e2d4a] py-10 sm:py-12 px-4 sm:px-6" aria-labelledby="impact-stats-heading">
         <div className="max-w-6xl mx-auto">
           <div className="border-t-2 border-[#b8974a] pt-2.5 mb-7 sm:mb-9">
-            <span id="impact-stats-heading" className="font-mono-dm text-[0.6rem] tracking-[0.16em] uppercase text-[#b8974a]">By the Numbers</span>
+            <span id="impact-stats-heading" className="font-mono-dm text-[0.7rem] tracking-[0.16em] uppercase text-[#b8974a]">By the Numbers</span>
           </div>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-px bg-white/10">
             {IMPACT_STATS.map((s) => (
@@ -370,7 +370,7 @@ export default function HomePageClient() {
           <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4 mb-7 sm:mb-9">
             <div>
               <div className="border-t-2 border-[#1e2d4a] pt-2.5 mb-3">
-                <span className="font-mono-dm text-[0.6rem] tracking-[0.16em] uppercase text-[#9a8870]">Editorial Principles</span>
+                <span className="font-mono-dm text-[0.7rem] tracking-[0.16em] uppercase text-[#9a8870]">Editorial Principles</span>
               </div>
               <h2 id="editorial-principles-heading" className="font-playfair font-bold text-xl sm:text-2xl md:text-[clamp(1.6rem,3.5vw,2.2rem)] text-[#1e2d4a] leading-tight max-w-md">
                 The rules we hold ourselves to.
@@ -390,7 +390,7 @@ export default function HomePageClient() {
                 </div>
                 <div>
                   <h3 className="font-playfair font-bold text-sm sm:text-base text-[#1e2d4a] mb-1.5 sm:mb-2">{p.title}</h3>
-                  <p className="font-garamond text-xs sm:text-[0.92rem] leading-relaxed text-[#6a5e4e]">{p.desc}</p>
+                  <p className="font-garamond text-xs sm:text-[0.92rem] leading-relaxed text-[#1a1818]">{p.desc}</p>
                 </div>
               </div>
             ))}
@@ -403,7 +403,7 @@ export default function HomePageClient() {
         <section className="bg-[#ede8dc] border-y border-[#d4c8b4] py-10 sm:py-12 px-4 sm:px-6" aria-labelledby="recent-dockets-heading">
           <div className="max-w-6xl mx-auto">
             <div className="border-t-2 border-[#1e2d4a] pt-2.5 mb-5 sm:mb-7 flex justify-between items-baseline">
-              <span id="recent-dockets-heading" className="font-mono-dm text-[0.6rem] tracking-[0.16em] uppercase text-[#9a8870]">Recent Dockets</span>
+              <span id="recent-dockets-heading" className="font-mono-dm text-[0.7rem] tracking-[0.16em] uppercase text-[#9a8870]">Recent Dockets</span>
               <Link href="/dockets" title="View all dockets in the public record" className="font-mono-dm text-[0.6rem] tracking-[0.1em] uppercase text-[#1e2d4a] no-underline hover:text-[#b8974a] transition-colors">View All →</Link>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
@@ -416,10 +416,10 @@ export default function HomePageClient() {
                   <h3 className="font-playfair font-bold text-sm sm:text-base text-[#1e2d4a] leading-snug line-clamp-2 group-hover:text-[#b8974a] transition-colors">
                     {d.response?.title || "Untitled Docket"}
                   </h3>
-                  <p className="font-garamond text-xs sm:text-[0.88rem] text-[#7a6e5e] line-clamp-2">{d.summary?.claim || "No summary available."}</p>
+                  <p className="font-garamond text-xs sm:text-[0.88rem] text-[#1a1818] line-clamp-2">{d.summary?.claim || "No summary available."}</p>
                   <div className="flex items-center justify-between mt-1 pt-2 border-t border-[#e4ddd0]">
-                    <span className="font-garamond text-xs sm:text-[0.85rem] italic text-[#9a8870]">{d.respondent?.name || "Unknown"}</span>
-                    <span className="font-mono-dm text-[0.55rem] text-[#9a8870]">{formatDate(d.publishedDate || d.createdAt)}</span>
+                    <span className="font-garamond text-xs sm:text-[0.85rem] italic text-[#5c5b5b]">{d.respondent?.name || "Unknown"}</span>
+                    <span className="font-mono-dm text-[0.55rem] text-[#5c5b5b]">{formatDate(d.publishedDate || d.createdAt)}</span>
                   </div>
                 </Link>
               ))}
@@ -433,7 +433,7 @@ export default function HomePageClient() {
         <section className="bg-[#f5f0e8] py-10 sm:py-12 px-4 sm:px-6" aria-labelledby="media-watch-heading">
           <div className="max-w-6xl mx-auto">
             <div className="border-t-2 border-[#1e2d4a] pt-2.5 mb-5 sm:mb-7 flex justify-between items-baseline">
-              <span id="media-watch-heading" className="font-mono-dm text-[0.6rem] tracking-[0.16em] uppercase text-[#9a8870]">Media Watch</span>
+              <span id="media-watch-heading" className="font-mono-dm text-[0.7rem] tracking-[0.16em] uppercase text-[#9a8870]">Media Watch</span>
               <Link href="/media-watch" title="View all tracked media coverage across dockets" className="font-mono-dm text-[0.6rem] tracking-[0.1em] uppercase text-[#1e2d4a] no-underline hover:text-[#b8974a] transition-colors">All Coverage →</Link>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
@@ -449,7 +449,7 @@ export default function HomePageClient() {
                       </span>
                     </div>
                     <h3 className="font-playfair font-bold text-sm text-[#1e2d4a] line-clamp-2 group-hover:text-[#b8974a] transition-colors">{m.headline}</h3>
-                    <p className="font-garamond text-xs sm:text-[0.85rem] text-[#7a6e5e] line-clamp-2 mt-auto">{m.summary || "No summary available."}</p>
+                    <p className="font-garamond text-xs sm:text-[0.85rem] text-[#1a1818] line-clamp-2 mt-auto">{m.summary || "No summary available."}</p>
                     <div className="flex items-center justify-between pt-2 border-t border-[#e4ddd0] mt-1">
                       <span className="font-mono-dm text-[0.55rem] uppercase text-[#b8974a]">{m.type}</span>
                       <span className="font-mono-dm text-[0.55rem] text-[#9a8870]">{formatDate(m.date)}</span>
@@ -468,12 +468,12 @@ export default function HomePageClient() {
           <div className="grid grid-cols-1 md:grid-cols-[1fr_2fr] gap-8 sm:gap-12 items-start">
             <div>
               <div className="border-t-2 border-[#b8974a] pt-2.5 mb-4">
-                <span className="font-mono-dm text-[0.6rem] tracking-[0.16em] uppercase text-[#b8974a]">Transparency Pledge</span>
+                <span className="font-mono-dm text-[0.7rem] tracking-[0.16em] uppercase text-[#b8974a]">Transparency Pledge</span>
               </div>
               <h2 id="transparency-heading" className="font-playfair font-bold text-xl sm:text-2xl text-[#1e2d4a] leading-tight mb-4">
                 We hold ourselves to the same standard.
               </h2>
-              <p className="font-garamond text-sm sm:text-[0.95rem] leading-relaxed text-[#6a5e4e]">
+              <p className="font-garamond text-sm sm:text-[0.95rem] leading-relaxed text-[#1a1818]">
                 Every editorial decision we make is governed by documented policies. We publish our standards so anyone can hold us accountable.
               </p>
             </div>
@@ -489,7 +489,7 @@ export default function HomePageClient() {
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2d6a4f" strokeWidth="2.5" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
                     <h3 className="font-mono-dm text-[0.6rem] tracking-[0.1em] uppercase text-[#1e2d4a] font-bold">{item.title}</h3>
                   </div>
-                  <p className="font-garamond text-xs sm:text-[0.88rem] leading-relaxed text-[#6a5e4e]">{item.desc}</p>
+                  <p className="font-garamond text-xs sm:text-[0.88rem] leading-relaxed text-[#1a1818]">{item.desc}</p>
                 </div>
               ))}
             </div>
@@ -501,7 +501,7 @@ export default function HomePageClient() {
       <section className="bg-[#f5f0e8] py-10 sm:py-12 px-4 sm:px-6 border-t border-[#d4c8b4]" aria-labelledby="latest-updates-heading">
         <div className="max-w-6xl mx-auto">
           <div className="border-t-2 border-[#1e2d4a] pt-2.5 mb-4 sm:mb-5 flex justify-between items-baseline">
-            <span id="latest-updates-heading" className="font-mono-dm text-[0.6rem] tracking-[0.16em] uppercase text-[#9a8870]">Latest Updates</span>
+            <span id="latest-updates-heading" className="font-mono-dm text-[0.7rem] tracking-[0.16em] uppercase text-[#9a8870] font-semibold">Latest Updates</span>
             <Link href="/dockets" title="View all updates in the public record" className="font-mono-dm text-[0.6rem] tracking-[0.1em] uppercase text-[#1e2d4a] no-underline hover:text-[#b8974a] transition-colors">View all →</Link>
           </div>
           {loading ? (
@@ -509,10 +509,10 @@ export default function HomePageClient() {
           ) : (
             latestUpdates.map((u) => (
               <Link key={u.id} href={u.href} title={`${u.type}: ${u.title}`} className="flex flex-col sm:flex-row sm:items-baseline gap-2 sm:gap-3.5 py-3 sm:py-3.5 border-b border-[#d4c8b4] hover:bg-[#ede8dc] transition-colors no-underline group">
-                <span className="font-mono-dm text-[0.55rem] tracking-[0.1em] uppercase border border-[#c4b89a] px-1.5 py-0.5 text-[#7a6e5e] whitespace-nowrap self-start sm:self-auto">{u.type}</span>
+                <span className="font-mono-dm text-[0.55rem] tracking-[0.1em] uppercase border border-[#61513c] px-1.5 py-0.5 text-[#595248] whitespace-nowrap self-start sm:self-auto">{u.type}</span>
                 <span className="font-mono-dm text-[0.65rem] text-[#b8974a] whitespace-nowrap">{u.id}</span>
                 <span className="font-garamond text-sm sm:text-[0.95rem] text-[#2a2018] flex-1 group-hover:underline">{u.title}</span>
-                <span className="font-mono-dm text-[0.6rem] text-[#9a8870] whitespace-nowrap">{formatDate(u.date)}</span>
+                <span className="font-mono-dm text-[0.6rem] text-[#5c5b5b] whitespace-nowrap">{formatDate(u.date)}</span>
               </Link>
             ))
           )}
@@ -546,15 +546,15 @@ export default function HomePageClient() {
       {/* ── TRUST & POLICIES ── */}
       <section className="bg-[#ede8dc] border-y border-[#d4c8b4] py-6 sm:py-7 px-4 sm:px-6" aria-label="Editorial policies and standards">
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
-          <p className="font-garamond italic text-xs sm:text-[0.95rem] text-[#7a6e5e] text-center sm:text-left">
+          <p className="font-garamond italic text-xs sm:text-[0.95rem] text-[#302e2b] text-center sm:text-left">
             Governed by clear editorial principles. Independently operated.
           </p>
           <nav aria-label="Policy links">
             <div className="flex flex-wrap justify-center gap-0">
               {POLICIES.map((p, i) => (
                 <span key={p.href}>
-                  <Link href={p.href} title={`Read our ${p.name}`} className="font-mono-dm text-[0.58rem] tracking-[0.1em] uppercase text-[#6a5e4e] hover:text-[#1e2d4a] transition-colors no-underline">{p.name}</Link>
-                  {i < POLICIES.length - 1 && <span className="text-[#c8b89a] px-2 sm:px-3 font-serif" aria-hidden="true">·</span>}
+                  <Link href={p.href} title={`Read our ${p.name}`} className="font-mono-dm text-[0.58rem] tracking-[0.1em] uppercase text-[#302e2b] hover:text-[#1e2d4a] transition-colors no-underline">{p.name}</Link>
+                  {i < POLICIES.length - 1 && <span className="text-[#ab946a] px-2 sm:px-3 font-serif" aria-hidden="true">·</span>}
                 </span>
               ))}
             </div>

@@ -673,7 +673,7 @@ export default function Header() {
                 key={link.name}
                 href={link.href}
                 title={link.title}
-                className="font-mono-dm text-[0.6rem] tracking-[0.1em] uppercase text-[#4a5568] hover:text-[#1e2d4a] transition-colors no-underline"
+                className="font-mono-dm text-[0.6rem] tracking-[0.1em] uppercase text-[#000000] hover:text-[#1a3366] transition-colors no-underline"
               >
                 {link.name}
               </Link>
